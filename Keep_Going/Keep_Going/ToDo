@@ -6,10 +6,8 @@
 //
 /*
 
-1. to decide if we need computed variable goalStatus or we can solve problem of status on new goal/changing of status in different way, for example in Goal init or some functions
-    goalStatus - pros:
-        - logic what is happening will be hidden and I'll use it to set/get value
-2. Sprawdz dlaczego "+" nie może dodawać nowy goal wraz z jeho historia
+1. To work on "work in background" to be able to remind user about his goals
+2. Add to Goal "user motivators" - possibility to add frazes, words that motivates user to achieve his target => perform task; That "user motivators" (I guess togather with app motivators) will be used by "reminder"
 
         
         
