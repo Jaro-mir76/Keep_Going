@@ -1,0 +1,18 @@
+//
+//  ToDo
+//  Keep_Going
+//
+//  Created by Jaromir Jagieluk on 17.06.2025.
+//
+/*
+
+1. to decide if we need computed variable goalStatus or we can solve problem of status on new goal/changing of status in different way, for example in Goal init or some functions
+    goalStatus - pros:
+        - logic what is happening will be hidden and I'll use it to set/get value
+2. Sprawdz dlaczego "+" nie może dodawać nowy goal wraz z jeho historia
+
+        
+        
+        
+        
+*/
