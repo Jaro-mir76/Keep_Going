@@ -53,20 +53,22 @@ struct EditGoalView: View {
                         DaysPicker(schedule: $weeklySchedule)
                     }
                 }
-                if let history = goal?.history {
-                    Section {
-                        List{
-                            ForEach(history.sorted(by: {$0.date > $1.date}), id: \.date) { status in
-                                Text("date: \(status.date) status: \(status.statusCode)")
-                            }
-                            if let goal = goal, goal.isItStrike() {
-                                Text("So far this is strike so keep going! 😎")
-                            }
-                        }
-                    } header: {
-                        Text("History")
-                    }
-                }
+                
+// This was used only for debud purposes
+//                if let history = goal?.history {
+//                    Section {
+//                        List{
+//                            if let goal = goal, goal.isItStrike() {
+//                                Text("So far this is strike so keep going! 😎")
+//                            }
+//                            ForEach(history.sorted(by: {$0.date > $1.date}), id: \.date) { status in
+//                                Text("date: \(status.date) status: \(status.statusCode)")
+//                            }
+//                        }
+//                    } header: {
+//                        Text("History")
+//                    }
+//                }
                 HStack{
                     Spacer()
                     Button {

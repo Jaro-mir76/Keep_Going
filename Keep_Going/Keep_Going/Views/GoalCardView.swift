@@ -9,20 +9,34 @@ import SwiftUI
 
 struct GoalCardView: View {
     @Bindable var goal: Goal
+    @State private var descriptionLimit: Int = 1
     
     var body: some View {
         HStack {
-            Spacer()
-            VStack {
-                Text(goal.name)
-                HStack {
-                    Text("Total: \(goal.total)")
-                    if goal.inRow > 0 {
-                        Text("Strike: \(goal.inRow)")
+            VStack{
+                HStack(alignment: .bottom) {
+                    Text(goal.name)
+                        .font(.title2)
+                    Spacer()
+                    if goal.inRow > 1 {
+                        Text("Strike:")
+                            .font(.caption)
+                        Text(goal.inRow.description)
+                            .font(.callout)
                     }
+                    Text("Total:")
+                        .font(.caption)
+                    Text(goal.total.description)
+                        .font(.callout)
                 }
+                TextField(text: $goal.goalDescription, axis: .vertical, label: {})
+                    .lineLimit(descriptionLimit)
+                    .font(.footnote)
+                    .disabled(true)
             }
-            Spacer()
+            .onTapGesture {
+                descriptionLimit = (descriptionLimit == 1 ? 5 : 1)
+            }
             switch goal.goalStatus {
             case .done:
                 Label("Todays status", systemImage: "checkmark.seal")

@@ -19,7 +19,7 @@ struct MainView: View {
             List{
                 ForEach(goals, id: \.id) { goal in
                     GoalCardView(goal: goal)
-                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
+                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button {
                                 withAnimation {
                                     goal.toggleTodaysStatus()
@@ -29,7 +29,7 @@ struct MainView: View {
                                     .labelStyle(.iconOnly)
                             }
                         }
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        .swipeActions(edge: .leading, allowsFullSwipe: false) {
                             Button {
                                 navigationManager.selectedGoal = goal
                                 showEditing = true
@@ -43,12 +43,7 @@ struct MainView: View {
             .toolbar{
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("", systemImage: "plus") {
-                        //                        showEditing = true
-                        var tmpGoal = Goal.exampleGoal()[0]
-//                        context.append(Goal.exampleGoal()[0])
-                        print ("tmpGoal addes \(tmpGoal)")
-                        context.insert(tmpGoal)
-                        context.insert(Goal.exampleGoal()[1])
+                        addGoal()
                     }
                 }
             }
@@ -56,6 +51,15 @@ struct MainView: View {
                 EditGoalView(goal: navigationManager.selectedGoal)
             }
         }
+    }
+    
+    func addGoal() {
+        showEditing = true
+//        var tmpGoal = Goal.exampleGoal()[0]
+//                        context.append(Goal.exampleGoal()[0])
+//        print ("tmpGoal addes \(tmpGoal)")
+//        context.insert(tmpGoal)
+//        context.insert(Goal.exampleGoal()[1])
     }
 }
 
