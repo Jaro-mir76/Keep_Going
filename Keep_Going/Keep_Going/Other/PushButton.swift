@@ -7,12 +7,43 @@
 
 import SwiftUI
 
+enum PushButtonEnum {
+    case next, done
+    
+    var label: String {
+        switch self {
+        case .next: return "Next"
+        case .done: return "Done"
+        }
+    }
+    
+    var icon: String {
+        switch self {
+        case .next: return "chevron.right"
+        case .done: return "checkmark"
+        }
+    }
+}
+
 struct PushButton: View {
+    var function: PushButtonEnum
+    var execute: () -> Void
+    
     var body: some View {
-        Text(/*@START_MENU_TOKEN@*/"Hello, World!"/*@END_MENU_TOKEN@*/)
+        Button {
+            withAnimation {
+                execute()
+            }
+            
+        } label: {
+            Label(function.label, systemImage: function.icon)
+                .labelStyle(.titleOnly)
+        }
+        .buttonStyle(.borderedProminent)
+        .buttonBorderShape(.roundedRectangle)
     }
 }
 
 #Preview {
-    PushButton()
+    PushButton(function: .next, execute: {})
 }

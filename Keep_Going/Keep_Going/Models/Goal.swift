@@ -7,7 +7,6 @@
 
 import Foundation
 import SwiftData
-import _SwiftData_SwiftUI
 
 @Model
 class Goal {
@@ -42,7 +41,7 @@ class Goal {
     var inRow: Int
     
 //    becaue of strange reason can not use enum in Status and have to replace it with more primitive method
-//    similat problem here: https://developer.apple.com/forums/thread/773564
+//    similar problem here: https://developer.apple.com/forums/thread/773564
 //    @Relationship() var status: Status?
     var todaysStatus: StatusCode.RawValue?
     var todaysDate: Date?
@@ -171,21 +170,23 @@ class Goal {
         }
     }
     
+// I have to improve it because it is alaways checking entire hisotry which is not effective
     func isItStrike() -> Bool {
+        var strike = true
         if let history = self.history {
             let statuses = history.sorted(by: {$0.date > $1.date})
             for status in statuses {
                 switch status.statusCode {
                 case .done:
-                    return true
+                    continue
                 case .scheduledNotDone:
-                    return false
+                    strike = false
                 case .freeDay:
                     continue
                 }
             }
         }
-        return true
+        return strike
     }
     
 // function returning true if today is training day (based on interval)

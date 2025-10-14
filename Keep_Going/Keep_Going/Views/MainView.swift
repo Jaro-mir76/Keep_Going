@@ -40,6 +40,7 @@ struct MainView: View {
                         .tint(.green)
                 }
             }
+            .background(Gradient(colors: gradientColors))
             .toolbar{
                 ToolbarItem(placement: .topBarTrailing) {
                     Button("", systemImage: "plus") {
@@ -47,6 +48,7 @@ struct MainView: View {
                     }
                 }
             }
+            .background(Gradient(colors: gradientColors))
             .sheet(isPresented: $showEditing) {
                 EditGoalView(goal: navigationManager.selectedGoal)
             }

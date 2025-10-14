@@ -14,12 +14,18 @@ struct Keep_GoingApp: App {
     
     var body: some Scene {
         WindowGroup() {
-            MainView()
-                .modelContainer(for: [
-                    Goal.self,
-                    Status.self
-                ])
-                .environment(navigationManager)
+            ZStack {
+                MainView()
+                    .modelContainer(for: [
+                        Goal.self,
+                        Status.self
+                    ])
+                    .environment(navigationManager)
+                if !navigationManager.welcomePageSeen {
+                    WelcomeView()
+                        .environment(navigationManager)
+                }
+            } 
         }
     }
 }
