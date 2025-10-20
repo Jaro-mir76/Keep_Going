@@ -37,8 +37,9 @@ class Goal {
     @Relationship(deleteRule: .cascade) var history: [Status]?
 //    total -> how many times it was done
     var total: Int
-//    inRow -> how many times it was done without skipping any
-    var inRow: Int
+//    strike -> how many times it was done without missing any
+    var strike: Int
+    var strikeCheckDate: Date
     
 //    becaue of strange reason can not use enum in Status and have to replace it with more primitive method
 //    similar problem here: https://developer.apple.com/forums/thread/773564
@@ -67,7 +68,7 @@ class Goal {
         }
     }
     
-    init(name: String, goalDescription: String, requiredTime: Int? = nil, weeklySchedule: [WeekDay]? = nil, interval: Int? = nil, startDate: Date? = Date(), history: [Status]? = nil, total: Int = 0, inRow: Int = 0, todaysStatus: StatusCode.RawValue? = nil, todaysDate: Date? = nil) {
+    init(name: String, goalDescription: String, requiredTime: Int? = nil, weeklySchedule: [WeekDay]? = nil, interval: Int? = nil, startDate: Date? = Date(), history: [Status]? = nil, total: Int = 0, inRow: Int = 0, strikeCheckDate: Date = Date(), todaysStatus: StatusCode.RawValue? = nil, todaysDate: Date? = nil) {
         self.name = name
         self.goalDescription = goalDescription
         self.requiredTime = requiredTime
@@ -77,7 +78,8 @@ class Goal {
         self.unifiedStartDate = NSCalendar.current.startOfDay(for: startDate!) + timeDiffFromGMT
         self.history = history
         self.total = total
-        self.inRow = inRow
+        self.strike = inRow
+        self.strikeCheckDate = strikeCheckDate
         self.todaysStatus = todaysStatus
         self.todaysDate = todaysDate
     }
@@ -155,17 +157,19 @@ class Goal {
             self.goalStatus = .done
             self.total += 1
             if isItStrike() {
-                self.inRow += 1
+                self.strike += 1
             } else {
-                self.inRow = 1
+                self.strike = 1
             }
+            self.strikeCheckDate = beginningOfDay()
         }else if self.goalStatus == .done{
             whatDoWeHaveToday()
             if self.total > 0 {
                 self.total -= 1
-                if self.inRow > 0 {
-                    self.inRow -= 1
+                if self.strike > 0 {
+                    self.strike -= 1
                 }
+                self.strikeCheckDate = beginningOfDay() - 1.day
             }
         }
     }
@@ -174,7 +178,7 @@ class Goal {
     func isItStrike() -> Bool {
         var strike = true
         if let history = self.history {
-            let statuses = history.sorted(by: {$0.date > $1.date})
+            let statuses = history.filter({$0.date > self.strikeCheckDate}).sorted(by: {$0.date > $1.date})
             for status in statuses {
                 switch status.statusCode {
                 case .done:

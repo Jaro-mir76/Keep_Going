@@ -84,7 +84,7 @@ struct ScheduleTests {
     
     @Test("Goal history save", .disabled("to be implemented"))
     func goalHistorySaved() {
-//        before saving there should be not status
+//        before saving there should be no status
         
 //        after saving there should be status
 

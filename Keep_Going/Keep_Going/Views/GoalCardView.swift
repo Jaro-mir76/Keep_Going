@@ -18,10 +18,10 @@ struct GoalCardView: View {
                     Text(goal.name)
                         .font(.title2)
                     Spacer()
-                    if goal.inRow > 1 {
+                    if goal.strike > 1 {
                         Text("Strike:")
                             .font(.caption)
-                        Text(goal.inRow.description)
+                        Text(goal.strike.description)
                             .font(.callout)
                     }
                     Text("Total:")
