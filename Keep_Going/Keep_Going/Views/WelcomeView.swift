@@ -14,16 +14,19 @@ struct WelcomeView: View {
     
     var body: some View {
         @Bindable var navigationManager = navigationManager
-        TabView (selection: $navigationManager.welcomeTab) {
-            WelcomePage()
-                .tag(1)
-            FeaturesPage()
-                .tag(2)
-            HowToPage()
-                .tag(3)
+        ZStack {
+            TabView (selection: $navigationManager.welcomeTab) {
+                WelcomePage()
+                    .tag(1)
+                FeaturesPage()
+                    .tag(2)
+                HowToPage()
+                    .tag(3)
+            }
+            .background(Gradient(colors: gradientColors))
+            .tabViewStyle(.page)
+            NextSkipDoneButtonsView()
         }
-        .background(Gradient(colors: gradientColors))
-        .tabViewStyle(.page)
     }
 }
 
@@ -63,7 +66,7 @@ struct WelcomePage: View {
             Text("Welcome to")
                 .font(.title)
                 .padding([.top], 40)
-//                .foregroundStyle(.white)
+                .foregroundStyle(.black)
             Text("Keep Going")
                 .font(.system(size: 35, design: .rounded))
                 .fontWeight(.semibold)
@@ -71,14 +74,6 @@ struct WelcomePage: View {
                 .shadow(color: .black, radius: 5, x: 1, y: 1)
             Spacer()
             Spacer()
-            HStack {
-                Spacer()
-                PushButton(function: .next, execute: {
-                    navigationManager.welcomeTab = 2
-                })
-                    .padding(.trailing, 40)
-                    .padding(.bottom, 40)
-            }
         }
 //        .padding(.bottom, 00)
     }
@@ -94,7 +89,8 @@ struct FeaturesPage: View {
                     Text("Features")
                         .font(.title)
                         .padding(.top, 80)
-                    
+                        .foregroundStyle(.black)
+
                     FeaturesCard(icon: "bolt.fill", description: "Transform into the person you've always wanted to be.")
                     FeaturesCard(icon: "sparkles", description: "Master your time. Master your life.")
                     FeaturesCard(icon: "sun.max", description: "Wake up excited. Go to bed fulfilled.")
@@ -102,14 +98,6 @@ struct FeaturesPage: View {
                     
                 }
                 .padding()
-            }
-            HStack {
-                Spacer()
-                PushButton(function: .next, execute: {
-                    navigationManager.welcomeTab = 3
-                })
-                .padding(.trailing, 40)
-                .padding(.bottom, 40)
             }
         }
     }
@@ -125,21 +113,14 @@ struct HowToPage: View {
                     Text("How to do it")
                         .font(.title)
                         .padding(.top, 80)
-                    
+                        .foregroundStyle(.black)
+
                     FeaturesCard(icon: "target", description: "Define your goals. What do you want to achieve?")
                     FeaturesCard(icon: "timer", description: "Schedule micro-tasks — quick wins that fit your day.")
                     FeaturesCard(icon: "chart.line.uptrend.xyaxis", description: "Build momentum. Small actions. Big results.")
                     Spacer()
                 }
                 .padding()
-            }
-            HStack {
-                Spacer()
-                PushButton(function: .done, execute: {
-                        navigationManager.welcomePageSeen = true
-                })
-                .padding(.trailing, 40)
-                .padding(.bottom, 40)
             }
         }
     }
@@ -167,5 +148,41 @@ struct FeaturesCard: View {
 //                .brightness(-0.1)
         }
         .foregroundStyle(.white)
+    }
+}
+
+struct NextSkipDoneButtonsView: View {
+    @Environment(NavigationManager.self) private var navigationManager
+    
+    var body: some View {
+        VStack {
+            HStack {
+                Spacer()
+                if navigationManager.welcomeTab < 3 {
+                    PushButton(function: .skip, execute: {
+                        navigationManager.welcomePageSeen = true
+                    })
+                        .padding(.trailing, 40)
+                        .padding(.top, 40)
+                }
+            }
+            Spacer()
+            HStack {
+                Spacer()
+                if navigationManager.welcomeTab < 3 {
+                    PushButton(function: .next, execute: {
+                        navigationManager.welcomeTab += 1
+                    })
+                        .padding(.trailing, 40)
+                        .padding(.bottom, 40)
+                } else if navigationManager.welcomeTab == 3 {
+                    PushButton(function: .done, execute: {
+                        navigationManager.welcomePageSeen = true
+                    })
+                    .padding(.trailing, 40)
+                    .padding(.bottom, 40)
+                }
+            }
+        }
     }
 }

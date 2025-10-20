@@ -57,7 +57,9 @@ struct MainView: View {
     
     func addGoal() {
         showEditing = true
-        var tmpGoal = Goal.exampleGoal()[0]
+//        part below was used for testing of some functionality
+//        
+//        var tmpGoal = Goal.exampleGoal()[0]
 //        print ("tmpGoal addes \(tmpGoal)")
 //        context.insert(tmpGoal)
 //        context.insert(Goal.exampleGoal()[1])

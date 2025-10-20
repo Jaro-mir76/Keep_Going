@@ -8,12 +8,13 @@
 import SwiftUI
 
 enum PushButtonEnum {
-    case next, done
+    case next, done, skip
     
     var label: String {
         switch self {
         case .next: return "Next"
         case .done: return "Done"
+        case .skip: return "Skip"
         }
     }
     
@@ -21,6 +22,7 @@ enum PushButtonEnum {
         switch self {
         case .next: return "chevron.right"
         case .done: return "checkmark"
+        case .skip: return "chevron.right.2"
         }
     }
 }
@@ -39,7 +41,7 @@ struct PushButton: View {
             Label(function.label, systemImage: function.icon)
                 .labelStyle(.titleOnly)
         }
-        .buttonStyle(.borderedProminent)
+        .buttonStyle(.automatic)
         .buttonBorderShape(.roundedRectangle)
     }
 }
