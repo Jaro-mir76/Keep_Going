@@ -13,7 +13,7 @@ struct GoalCardView: View {
     
     var body: some View {
         HStack {
-            VStack{
+            VStack(alignment: .leading){
                 HStack(alignment: .bottom) {
                     Text(goal.name)
                         .font(.title2)
@@ -29,10 +29,9 @@ struct GoalCardView: View {
                     Text(goal.total.description)
                         .font(.callout)
                 }
-                TextField(text: $goal.goalDescription, axis: .vertical, label: {})
-                    .lineLimit(descriptionLimit)
+                Text(goal.goalDescription)
                     .font(.footnote)
-                    .disabled(true)
+                    .lineLimit(descriptionLimit)
             }
             .onTapGesture {
                 descriptionLimit = (descriptionLimit == 1 ? 5 : 1)
