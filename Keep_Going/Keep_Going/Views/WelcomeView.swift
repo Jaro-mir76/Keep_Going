@@ -10,12 +10,12 @@ import SwiftUI
 let gradientColors: [Color] = [.gradientTop, .gradientBottom]
 
 struct WelcomeView: View {
-    @Environment(NavigationManager.self) private var navigationManager
+    @Environment(MainEngine.self) private var mainEngine
     
     var body: some View {
-        @Bindable var navigationManager = navigationManager
+        @Bindable var mainEngine = mainEngine
         ZStack {
-            TabView (selection: $navigationManager.welcomeTab) {
+            TabView (selection: $mainEngine.welcomeTab) {
                 WelcomePage()
                     .tag(1)
                 FeaturesPage()
@@ -32,21 +32,21 @@ struct WelcomeView: View {
 
 #Preview {
     WelcomeView()
-        .environment(NavigationManager())
+        .environment(MainEngine())
 }
 
 #Preview("Features") {
     FeaturesPage()
-        .environment(NavigationManager())
+        .environment(MainEngine())
 }
 
 #Preview("HowTo") {
     HowToPage()
-        .environment(NavigationManager())
+        .environment(MainEngine())
 }
 
 struct WelcomePage: View {
-    @Environment(NavigationManager.self) private var navigationManager
+    @Environment(MainEngine.self) private var mainEngine
     
     var body: some View {
         VStack {
@@ -80,7 +80,7 @@ struct WelcomePage: View {
 }
 
 struct FeaturesPage: View {
-    @Environment(NavigationManager.self) private var navigationManager
+    @Environment(MainEngine.self) private var mainEngine
     
     var body: some View {
         VStack {
@@ -104,7 +104,7 @@ struct FeaturesPage: View {
 }
 
 struct HowToPage: View {
-    @Environment(NavigationManager.self) private var navigationManager
+    @Environment(MainEngine.self) private var mainEngine
     
     var body: some View {
         VStack {
@@ -152,15 +152,15 @@ struct FeaturesCard: View {
 }
 
 struct NextSkipDoneButtonsView: View {
-    @Environment(NavigationManager.self) private var navigationManager
+    @Environment(MainEngine.self) private var mainEngine
     
     var body: some View {
         VStack {
             HStack {
                 Spacer()
-                if navigationManager.welcomeTab < 3 {
+                if mainEngine.welcomeTab < 3 {
                     PushButton(function: .skip, execute: {
-                        navigationManager.welcomePageSeen = true
+                        mainEngine.welcomePageSeen = true
                     })
                         .padding(.trailing, 40)
                         .padding(.top, 40)
@@ -169,15 +169,15 @@ struct NextSkipDoneButtonsView: View {
             Spacer()
             HStack {
                 Spacer()
-                if navigationManager.welcomeTab < 3 {
+                if mainEngine.welcomeTab < 3 {
                     PushButton(function: .next, execute: {
-                        navigationManager.welcomeTab += 1
+                        mainEngine.welcomeTab += 1
                     })
                         .padding(.trailing, 40)
                         .padding(.bottom, 40)
-                } else if navigationManager.welcomeTab == 3 {
+                } else if mainEngine.welcomeTab == 3 {
                     PushButton(function: .done, execute: {
-                        navigationManager.welcomePageSeen = true
+                        mainEngine.welcomePageSeen = true
                     })
                     .padding(.trailing, 40)
                     .padding(.bottom, 40)

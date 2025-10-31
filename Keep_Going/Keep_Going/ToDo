@@ -9,7 +9,7 @@
 1. To work on "work in background" to be able to remind user about his goals
 2. Add to Goal "user motivators" - possibility to add frazes, words that motivates user to achieve his target => perform task; That "user motivators" (I guess togather with app motivators) will be used by "reminder"
 3. Improve "isitStrike" function because checking always entire history is not effective - inRowCheckDate have been added, now isItStrike function have to be updated to start from that date
-        
+
         
         
         

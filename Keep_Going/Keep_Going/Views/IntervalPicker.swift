@@ -10,6 +10,7 @@ import SwiftUI
 struct IntervalPicker: View {
     @Binding var interval: Int
     @State private var showWheel: Bool = false
+    var onInteraction: (() -> Void)? = nil
     
     var body: some View {
         VStack {
@@ -21,21 +22,23 @@ struct IntervalPicker: View {
                     
             }
             .onTapGesture {
+                onInteraction?()
                 withAnimation {
                     showWheel.toggle()
                 }
             }
-//            VStack{
-                if showWheel {
-                    Picker("Frequency", selection: $interval) {
-                        ForEach(1..<100) { i in
-                            Text("\(i)")
-                                .tag(i)
-                        }
+            if showWheel {
+                Picker("Interval", selection: $interval) {
+                    ForEach(1..<100) { i in
+                        Text("\(i)")
+                            .tag(i)
                     }
-                    .pickerStyle(.wheel)
                 }
-//            }
+                .pickerStyle(.wheel)
+                .onChange(of: interval) { _, _ in
+                    onInteraction?()
+                }
+            }
         }
     }
 }
@@ -44,3 +47,4 @@ struct IntervalPicker: View {
     @Previewable @State var interval: Int = 2
     IntervalPicker(interval: $interval)
 }
+

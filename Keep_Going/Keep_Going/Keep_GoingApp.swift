@@ -7,23 +7,28 @@
 
 import SwiftUI
 import SwiftData
+import BackgroundTasks
 
 @main
 struct Keep_GoingApp: App {
-    @State private var navigationManager = NavigationManager()
+    @State private var mainEngine = MainEngine()
+    @State private var goalViewModel = GoalViewModel()
+    
+    init() {
+        BackgroundTaskManager.shared.registerGoalReminder()
+        BackgroundTaskManager.shared.scheduleGoalReminder()
+    }
     
     var body: some Scene {
         WindowGroup() {
             ZStack {
                 MainView()
-                    .modelContainer(for: [
-                        Goal.self,
-                        Status.self
-                    ])
-                    .environment(navigationManager)
-                if !navigationManager.welcomePageSeen {
+                    .environment(goalViewModel)
+                    .environment(mainEngine)
+                
+                if !mainEngine.welcomePageSeen {
                     WelcomeView()
-                        .environment(navigationManager)
+                        .environment(mainEngine)
                 }
             } 
         }

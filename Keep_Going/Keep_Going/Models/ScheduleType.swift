@@ -7,7 +7,7 @@
 
 import Foundation
 
-enum Frequency: String, CaseIterable, Identifiable {
+enum ScheduleType: String, CaseIterable, Identifiable {
     case interval
     case weekly
     

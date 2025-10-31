@@ -10,28 +10,30 @@ import SwiftData
 
 @Model
 class Status {
-    var statusCode: StatusCode
+    var scheduleCode: ScheduleCode
+    var done: Bool
     var date: Date
     
-    init(statusCode: StatusCode, date: Date) {
-        self.statusCode = statusCode
+    init(scheduleCode: ScheduleCode, done: Bool, date: Date) {
+        self.scheduleCode = scheduleCode
+        self.done = done
         self.date = date
     }
 }
 
-enum StatusCode: Int, CaseIterable, Codable {
-    case scheduledNotDone = 0
+enum ScheduleCode: Int, CaseIterable, Codable {
+    case training = 0
     case freeDay = 1
-    case done = 2
+//    case done = 2
     
     var rawValue: Int {
         switch self {
-        case .scheduledNotDone:
+        case .training:
             return 0
         case .freeDay:
             return 1
-        case .done:
-            return 2
+//        case .done:
+//            return 2
         }
     }
 }

@@ -9,6 +9,7 @@ import SwiftUI
 
 struct DaysPicker: View {
     @Binding var schedule: [WeekDay]
+    var onInteraction: (() -> Void)? = nil
     
     var body: some View {
         ForEach(WeekDay.allCases) { day in
@@ -24,6 +25,7 @@ struct DaysPicker: View {
             .compositingGroup()
             .shadow(radius: 2)
             .onTapGesture {
+                onInteraction?()
                 if let i = schedule.firstIndex(where: {$0 == day}){
                     schedule.remove(at: i)
                 } else {
@@ -38,3 +40,4 @@ struct DaysPicker: View {
     @Previewable @State var schedule: [WeekDay] = [.monday]
     DaysPicker(schedule: $schedule)
 }
+

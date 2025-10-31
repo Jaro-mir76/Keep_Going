@@ -36,23 +36,17 @@ struct GoalCardView: View {
             .onTapGesture {
                 descriptionLimit = (descriptionLimit == 1 ? 5 : 1)
             }
-            switch goal.goalStatus {
-            case .done:
+            if goal.done == true {
                 Label("Todays status", systemImage: "checkmark.seal")
                     .labelStyle(.iconOnly)
                     .font(.title)
                     .frame(width: 60)
-            case .freeDay:
-                Label("Todays status", systemImage: "sun.max")
-                    .labelStyle(.iconOnly)
-                    .font(.title)
-                    .frame(width: 60)
-            case .scheduledNotDone:
+            } else if goal.schedule == ScheduleCode.training.rawValue {
                 Label("Todays status", systemImage: "seal")
                     .labelStyle(.iconOnly)
                     .font(.title)
                     .frame(width: 60)
-            case .none:
+            } else if goal.schedule == ScheduleCode.freeDay.rawValue {
                 Label("Todays status", systemImage: "sun.max")
                     .labelStyle(.iconOnly)
                     .font(.title)
@@ -63,11 +57,11 @@ struct GoalCardView: View {
 }
 
 #Preview("Goal") {
-    GoalCardView(goal: Goal.exampleGoal()[0])
+    GoalCardView(goal: GoalViewModel.exampleGoal()[0])
 }
 
 #Preview("Goals") {
-    GoalCardView(goal: Goal.exampleGoal()[0])
-    GoalCardView(goal: Goal.exampleGoal()[1])
-    GoalCardView(goal: Goal.exampleGoal()[3])
+    GoalCardView(goal: GoalViewModel.exampleGoal()[0])
+    GoalCardView(goal: GoalViewModel.exampleGoal()[1])
+    GoalCardView(goal: GoalViewModel.exampleGoal()[3])
 }

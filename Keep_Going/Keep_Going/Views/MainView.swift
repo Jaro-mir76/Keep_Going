@@ -7,31 +7,31 @@
 
 import SwiftUI
 import SwiftData
+import BackgroundTasks
 
 struct MainView: View {
-    @Environment(\.modelContext) private var context
-    @Environment(NavigationManager.self) private var navigationManager
-    @Query(sort: [SortDescriptor(\Goal.todaysStatus), SortDescriptor(\Goal.todaysDate, order: .reverse)]) private var goals: [Goal]
+    @Environment(MainEngine.self) private var mainEngine
+    @Environment(GoalViewModel.self) private var goalViewModel
     @State private var showEditing: Bool = false
     
     var body: some View {
         NavigationStack{
             List{
-                ForEach(goals, id: \.id) { goal in
+                ForEach(goalViewModel.goals, id: \.id) { goal in
                     GoalCardView(goal: goal)
                         .swipeActions(edge: .trailing, allowsFullSwipe: false) {
                             Button {
                                 withAnimation {
-                                    goal.toggleTodaysStatus()
+                                    goalViewModel.toggleTodaysStatus(goal: goal)
                                 }
                             } label: {
-                                Label(goal.todaysStatus == StatusCode.done.rawValue ? "Done" : "Not done", systemImage: goal.todaysStatus == StatusCode.done.rawValue ?  "seal.fill" : "checkmark.seal.fill")
+                                Label(goal.done == true ? "Done" : "Not done", systemImage: goal.done == true ? "seal.fill" : "checkmark.seal.fill")
                                     .labelStyle(.iconOnly)
                             }
                         }
                         .swipeActions(edge: .leading, allowsFullSwipe: false) {
                             Button {
-                                navigationManager.selectedGoal = goal
+                                mainEngine.selectedGoal = goal
                                 showEditing = true
                             } label: {
                                 Label("Edit", systemImage: "pencil")
@@ -50,24 +50,18 @@ struct MainView: View {
             }
             .background(Gradient(colors: gradientColors))
             .sheet(isPresented: $showEditing) {
-                EditGoalView(goal: navigationManager.selectedGoal)
+                EditGoalView(goal: mainEngine.selectedGoal)
             }
         }
     }
     
     func addGoal() {
         showEditing = true
-//        part below was used for testing of some functionality
-//        
-//        var tmpGoal = Goal.exampleGoal()[0]
-//        print ("tmpGoal addes \(tmpGoal)")
-//        context.insert(tmpGoal)
-//        context.insert(Goal.exampleGoal()[1])
     }
 }
 
 #Preview {
     MainView()
-        .modelContainer(try! PreviewSamples.makePreviewContext())
-        .environment(NavigationManager())
+        .environment(MainEngine())
+        .environment(GoalViewModel())
 }

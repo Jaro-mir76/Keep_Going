@@ -14,10 +14,10 @@ struct PreviewSamples {
         let config = ModelConfiguration(isStoredInMemoryOnly: true)
         let modelContainer = try ModelContainer(for: Goal.self, Status.self, configurations: config)
         Task { @MainActor in
-            modelContainer.mainContext.insert(Goal.exampleGoal()[0])
-            modelContainer.mainContext.insert(Goal.exampleGoal()[1])
-            modelContainer.mainContext.insert(Goal.exampleGoal()[2])
-            modelContainer.mainContext.insert(Goal.exampleGoal()[3])
+            modelContainer.mainContext.insert(GoalViewModel.exampleGoal()[0])
+            modelContainer.mainContext.insert(GoalViewModel.exampleGoal()[1])
+            modelContainer.mainContext.insert(GoalViewModel.exampleGoal()[2])
+            modelContainer.mainContext.insert(GoalViewModel.exampleGoal()[3])
         }
         return modelContainer
     }

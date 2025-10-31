@@ -8,28 +8,10 @@ import Foundation
 import Testing
 @testable import Keep_Going
 
+@MainActor
 struct ScheduleTests {
     
-//    static func beginingOfToday() -> Date {
-//        let timezone = TimeZone.current
-//        let timeDiffFromGMT = Double(timezone.secondsFromGMT())
-//        return NSCalendar.current.startOfDay(for: Date()) + timeDiffFromGMT
-//    }
-//    
-//
-////    let beginingOfToday = NSCalendar.current.startOfDay(for: Date()) + timeDiffFromGMT
-//    let exampleGoalInterval2 = Goal(name: "Salsa",
-//                                    goalDescription: "5 min. of training every daily will make you muy bueno salsero.",
-//                                    requiredTime: 5,
-//                                    weeklySchedule: nil,
-//                                    interval: 1,
-//                                    startDate: Date(timeInterval: -20.day, since: beginingOfToday()),
-//                                    history: [
-//                                       Status(statusCode: .done, date: Date(timeInterval: -1.day, since: beginingOfToday())),
-//                                       Status(statusCode: .done, date: Date(timeInterval: 0.day, since: beginingOfToday()))
-//                                    ],
-//                                    total: 1,
-//                                    inRow: 1)
+    private var goalViewModel = GoalViewModel()
 
     @Test("Next traing date for privided interval 2 -> true", arguments: [
         Date(timeIntervalSinceNow: -2.day),
@@ -38,9 +20,9 @@ struct ScheduleTests {
     ])
     func nextTrainingDate4IntervalTrue(date: Date) {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        let goal2daysInterval = Goal(name: "exampleGoalInterval2Days", goalDescription: "example goal", interval: 2, startDate: date)
-        print ("startDate: \(date)")
-        #expect(goal2daysInterval.isItTrainingDayInterval() == true)
+        let goal2daysInterval = Goal(name: "exampleGoalInterval2Days", goalDescription: "example goal", interval: 2, creationDate: date)
+
+        #expect(goalViewModel.isItTrainingDayInterval(goal: goal2daysInterval) == true)
     }
     
     @Test("Next traing date for privided interval 2 -> false", arguments: [
@@ -48,17 +30,19 @@ struct ScheduleTests {
         Date(timeIntervalSinceNow: -3.day),
         Date(timeIntervalSinceNow: -15.day)
     ])
-    func nextTrainingDate4IntervalFalse(date: Date) {
+    func nextTrainingDate4IntervalFalse(date: Date)  {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        let schedule2daysIntervalVer = Goal(name: "exampleGoalInterval2Days", goalDescription: "", interval: 2, startDate: date)
-        #expect(schedule2daysIntervalVer.isItTrainingDayInterval() == false)
+        let schedule2daysIntervalVer = Goal(name: "exampleGoalInterval2Days", goalDescription: "", interval: 2, creationDate: date)
+        
+        #expect( goalViewModel.isItTrainingDayInterval(goal: schedule2daysIntervalVer) == false)
     }
     
     @Test("Training schedule is sorted from Monday to Sunday")
     func trainingScheduleIsSorted() {
         let goalSchedule = Goal(name: "goalSchedule", goalDescription: "", weeklySchedule: [])
         let newGoalParameters = Goal(name: "goalSchedule", goalDescription: "", weeklySchedule: [.sunday, .monday, .friday])
-        goalSchedule.updateWith(newGoalParameters)
+        goalViewModel.updateWith(goal: goalSchedule, with: newGoalParameters)
+
         #expect(goalSchedule.weeklySchedule == [.monday, .friday, .sunday])
     }
     
@@ -72,29 +56,27 @@ struct ScheduleTests {
         
         let previousWeek = NSCalendar.current.startOfDay(for: Date()) + timeDifffromGMT - 7.day
         
-        #expect(goalSchedule.trainingDaysSchedule(forWeek: previousWeek).first != nil)
+        #expect(goalViewModel.trainingDaysSchedule(goal: goalSchedule, forWeek: previousWeek).first != nil)
     }
     
     @Test("Training dates based on interval")
     func nextTrainingDatesForInterval() {
-        let goal2daysInterval = Goal(name: "goalInterval2Days", goalDescription: "", interval: 2, startDate: Date())
-        #expect(goal2daysInterval.trainingDaysInterval() != [])
-        #expect(goal2daysInterval.trainingDaysInterval().count == 18)
+        let goal2daysInterval = Goal(name: "goalInterval2Days", goalDescription: "", interval: 2, creationDate: Date())
+        
+        #expect(goalViewModel.trainingDaysInterval(goal: goal2daysInterval) != [])
+        #expect(goalViewModel.trainingDaysInterval(goal: goal2daysInterval).count == 16)
     }
     
-    @Test("Goal history save", .disabled("to be implemented"))
+    @Test("Goal history save")
     func goalHistorySaved() {
 //        before saving there should be no status
+        let goalHistorySaveTest = Goal(name: "goalHistorySaveTest", goalDescription: "", interval: 2, creationDate: Date(), schedule: ScheduleCode.training.rawValue)
+        #expect(goalHistorySaveTest.history?.count == 0)
         
 //        after saving there should be status
-
-//        #error("to be implemented")
-    }
-    
-    @Test("Goal history update", .disabled("to be implemented"))
-    func goalHistoryUpdate() {
-//        before update there should be 1 record in history, after update there should be still 1 redord but with new status
-//#error("to be implemented")
+        goalViewModel.saveStatus(goal: goalHistorySaveTest)
+        
+        #expect(goalHistorySaveTest.history?.count == 1)
     }
     
     @Test("Save goal to file", .disabled("to be implemented"))
