@@ -184,6 +184,7 @@ class GoalViewModel {
         goal.requiredTime = newGoal.requiredTime
         goal.weeklySchedule = newGoal.weeklySchedule?.sorted(by: { $0.rawValue < $1.rawValue })
         goal.interval = newGoal.interval
+        goal.reminderPreference = newGoal.reminderPreference
         if newGoal.done == true {
             goal.date = newGoal.date
             goal.schedule = newGoal.schedule

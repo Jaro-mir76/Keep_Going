@@ -27,6 +27,7 @@ struct EditGoalView: View {
     @State private var scheduleType: ScheduleType = .interval
     @State private var weeklySchedule: [WeekDay] = []
     @State private var interval: Int = 1
+    @State private var reminderTime: Reminder?
     
     @FocusState private var focusedField: FocusedField?
     
@@ -87,6 +88,19 @@ struct EditGoalView: View {
                 .onTapGesture {
                     focusedField = nil
                 }
+                Section() {
+                    HStack{
+                        Picker("Preferred reminder time", selection: $tmpGoal.reminderPreference) {
+                            ForEach(Reminder.allCases) { time in
+                                Text(time.rawValue)
+                                    .tag(time)
+                            }
+                        }
+                    }
+                }
+                .onTapGesture {
+                    focusedField = nil
+                }
                 
                 HStack{
                     Spacer()
@@ -129,11 +143,13 @@ struct EditGoalView: View {
             }
             .onAppear {
                 if let goal {
-                    tmpGoal.name = goal.name
-                    tmpGoal.goalDescription = goal.goalDescription
-                    tmpGoal.requiredTime = goal.requiredTime
-                    tmpGoal.date = goal.date
-                    tmpGoal.schedule = goal.schedule
+                    goalViewModel.updateWith(goal: tmpGoal, with: goal)
+//                    tmpGoal.name = goal.name
+//                    tmpGoal.goalDescription = goal.goalDescription
+//                    tmpGoal.requiredTime = goal.requiredTime
+//                    tmpGoal.date = goal.date
+//                    tmpGoal.schedule = goal.schedule
+//                    tmpGoal.done = goal.done
                     if goal.interval != nil {
                         interval = goal.interval!
                         scheduleType = .interval
@@ -143,13 +159,13 @@ struct EditGoalView: View {
                     }
                 }
             }
-            .onAppear {
-                if let goal = goal, goal.interval != nil {
-                    goalViewModel.trainingDaysInterval(goal: goal)
-                } else if let goal = goal, goal.weeklySchedule != nil {
-                    goalViewModel.trainingDaysSchedule(goal: goal)
-                }
-            }
+//            .onAppear {
+//                if let goal = goal, goal.interval != nil {
+//                    goalViewModel.trainingDaysInterval(goal: goal)
+//                } else if let goal = goal, goal.weeklySchedule != nil {
+//                    goalViewModel.trainingDaysSchedule(goal: goal)
+//                }
+//            }
         }
     }
     private func footer() -> String {

@@ -48,7 +48,7 @@ class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
     }
     
     private func executeGoalReminder() async {
-        print (">>> EXECUTION of executeGoalReminder func <<<")
+//        print (">>> EXECUTION of executeGoalReminder func <<<")
 
 //        Task.detached {
         let contex = ModelContext(PersistentStorage.shared.modelContainer)
@@ -57,9 +57,9 @@ class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
         do {
             let goals = try contex.fetch(goalsFetch)
             for goal in goals {
-                print ("Background - goal: \(goal.name)")
+//                print ("Background - goal: \(goal.name)")
             }
-            await notificationService.scheduleNotification(title: "Keep Going - reminder", message: "Hey, you have still \(goals.count) \(goals.count > 1 ? "goals" : "goal") you planed for today. Maybe you have a minute now?")
+            await notificationService.scheduleNotification(title: "Keep Going - reminder", message: "Hey, you still have \(goals.count) \(goals.count > 1 ? "goals" : "goal") planed for today./nMaybe you have a minute now?")
         } catch {
             print ("Could not fetch goals")
         }
@@ -67,15 +67,14 @@ class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
     }
     
     private func finish() {
-        print ("execution of finish()")
+//        print ("execution of finish()")
 
         _executing = false
         _finished = true
     }
     
     override func cancel() {
-//        Logs.shared.add("execution of cancel()")
-        print ("execution of cancel()")
+//        print ("execution of cancel()")
         super.cancel()
         finish()
     }

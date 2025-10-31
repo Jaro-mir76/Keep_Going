@@ -16,26 +16,10 @@ class Goal {
     var requiredTime: Int?
     var weeklySchedule: [WeekDay]?
     var interval: Int?
+    var reminderPreference: Reminder?
     
 //  For ease of dates comparing I'm using everywhere time of exact beginning to the day in current time zone
     var creationDate: Date?
-//    @Transient
-//    var startDate: Date? {
-//        set {
-//            if newValue != nil {
-//                unifiedStartDate = self.beginningOfDay(of: newValue!)
-//            } else {
-//                unifiedStartDate = nil
-//            }
-//        }
-//        get {
-//            if unifiedStartDate == nil {
-//                return nil
-//            } else {
-//                return self.unifiedStartDate
-//            }
-//        }
-//    }
     @Relationship(deleteRule: .cascade)
     var history: [Status]?
     
@@ -53,33 +37,13 @@ class Goal {
     var date: Date
     var done: Bool
     
-//    computed variable goalStatus ...
-//    @Transient
-//    var goalStatus: Status? {
-//        set {
-//            if newValue != nil {
-////                self.status = Status(statusCode: newValue!, date: Date())
-//                self.status = newValue?.statusCode.rawValue
-//                self.date = beginningOfDay()
-//            } else {
-//                self.status = nil
-//                self.date = nil
-//            }
-//        }
-//        get {
-//            if self.status == nil || date != beginningOfDay() {
-//                whatDoWeHaveToday()
-//            }
-//            return StatusCode(rawValue: self.status!)
-//        }
-//    }
-    
-    init(name: String, goalDescription: String, requiredTime: Int? = nil, weeklySchedule: [WeekDay]? = nil, interval: Int? = nil, creationDate: Date? = Date(), history: [Status]? = [], total: Int = 0, strike: Int = 0, strikeCheckDate: Date = Date(), schedule: ScheduleCode.RawValue? = nil, date: Date = Date(), done: Bool = false) {
+    init(name: String, goalDescription: String, requiredTime: Int? = nil, weeklySchedule: [WeekDay]? = nil, interval: Int? = nil, reminderPreference: Reminder? = .afternoon, creationDate: Date? = Date(), history: [Status]? = [], total: Int = 0, strike: Int = 0, strikeCheckDate: Date = Date(), schedule: ScheduleCode.RawValue? = nil, date: Date = Date(), done: Bool = false) {
         self.name = name
         self.goalDescription = goalDescription
         self.requiredTime = requiredTime
         self.weeklySchedule = weeklySchedule
         self.interval = interval
+        self.reminderPreference = reminderPreference
         self.creationDate = Calendar.current.startOfDay(for: creationDate!)
         self.history = history
         self.total = total

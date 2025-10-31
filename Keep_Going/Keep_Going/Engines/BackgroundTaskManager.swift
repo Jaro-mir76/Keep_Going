@@ -15,9 +15,9 @@ class BackgroundTaskManager {
     private let operationQueue = OperationQueue()
     
     func registerGoalReminder() {
-        print ("execution of registerGoalReminder")
+//        print ("execution of registerGoalReminder")
         BGTaskScheduler.shared.register(forTaskWithIdentifier: backgroundTaskIdentifier, using: nil) { [self] task in
-            print ("executing closure that trigger secheduled task")
+//            print ("executing closure that trigger secheduled task")
 
             handleGoalBackgroundReminderTask(task: task as! BGAppRefreshTask)
         }
@@ -26,10 +26,10 @@ class BackgroundTaskManager {
     func scheduleGoalReminder() {
         let request = BGAppRefreshTaskRequest(identifier: backgroundTaskIdentifier)
         request.earliestBeginDate = Date(timeIntervalSinceNow: 180 * 60)
-        print ("execution of scheduleGoalReminder")
+//        print ("execution of scheduleGoalReminder")
         do {
             try BGTaskScheduler.shared.submit(request)
-            print ("execution of scheduleGoalReminder - request submited")
+//            print ("execution of scheduleGoalReminder - request submited")
             listScheduledRequests()
         } catch {
             print("Could not schedule background task: \(error)")
@@ -37,7 +37,7 @@ class BackgroundTaskManager {
     }
     
     func handleGoalBackgroundReminderTask (task: BGAppRefreshTask){
-        print ("executing - handleGoalBackgroundReminderTask with task: \(task.description)")
+//        print ("executing - handleGoalBackgroundReminderTask with task: \(task.description)")
         scheduleGoalReminder()
         
         let backgroundOperation = BackgroundGoalReminderActions()
@@ -50,7 +50,7 @@ class BackgroundTaskManager {
         backgroundOperation.completionBlock = {
             let success = !backgroundOperation.isCancelled
             task.setTaskCompleted(success: success)
-            print(success ? "Background task successfully finished" : "Background task failed")
+//            print(success ? "Background task successfully finished" : "Background task failed")
         }
         operationQueue.addOperation(backgroundOperation)
     }
