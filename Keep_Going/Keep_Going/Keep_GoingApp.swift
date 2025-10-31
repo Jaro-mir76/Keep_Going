@@ -11,12 +11,17 @@ import BackgroundTasks
 
 @main
 struct Keep_GoingApp: App {
-    @State private var mainEngine = MainEngine()
+    @State private var mainEngine: MainEngine
     @State private var goalViewModel = GoalViewModel()
     
     init() {
         BackgroundTaskManager.shared.registerGoalReminder()
         BackgroundTaskManager.shared.scheduleGoalReminder()
+        self.mainEngine = MainEngine()
+        if self.mainEngine.showWelcomePageDuringAppStart {
+            self.mainEngine.welcomePageVisible = true
+            self.mainEngine.appIconVisible = false
+        }
     }
     
     var body: some Scene {
@@ -25,12 +30,19 @@ struct Keep_GoingApp: App {
                 MainView()
                     .environment(goalViewModel)
                     .environment(mainEngine)
-                
-                if !mainEngine.welcomePageSeen {
+                if mainEngine.welcomePageVisible {
                     WelcomeView()
                         .environment(mainEngine)
+                } else if mainEngine.appIconVisible {
+                    AppIconView()
+                        .task {
+                            try? await Task.sleep(nanoseconds: 500_000_000)
+                            withAnimation(.easeInOut(duration: 0.6)) {
+                                mainEngine.appIconVisible = false
+                            }
+                        }
                 }
-            } 
+            }
         }
     }
 }

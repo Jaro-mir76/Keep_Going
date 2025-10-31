@@ -35,6 +35,11 @@ struct WelcomeView: View {
         .environment(MainEngine())
 }
 
+#Preview("Welcome Page") {
+    WelcomePage()
+        .environment(MainEngine())
+}
+
 #Preview("Features") {
     FeaturesPage()
         .environment(MainEngine())
@@ -160,7 +165,8 @@ struct NextSkipDoneButtonsView: View {
                 Spacer()
                 if mainEngine.welcomeTab < 3 {
                     PushButton(function: .skip, execute: {
-                        mainEngine.welcomePageSeen = true
+                        mainEngine.welcomePageVisible = false
+                        mainEngine.showWelcomePageDuringAppStart = false
                     })
                         .padding(.trailing, 40)
                         .padding(.top, 40)
@@ -177,7 +183,8 @@ struct NextSkipDoneButtonsView: View {
                         .padding(.bottom, 40)
                 } else if mainEngine.welcomeTab == 3 {
                     PushButton(function: .done, execute: {
-                        mainEngine.welcomePageSeen = true
+                        mainEngine.welcomePageVisible = false
+                        mainEngine.showWelcomePageDuringAppStart = false
                     })
                     .padding(.trailing, 40)
                     .padding(.bottom, 40)

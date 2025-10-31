@@ -47,6 +47,14 @@ struct MainView: View {
                         addGoal()
                     }
                 }
+                ToolbarItem(placement: .topBarLeading) {
+                    NavigationLink {
+                        SettingsView()
+                    } label: {
+                        Label("Settings", systemImage: "gear")
+                            .labelStyle(.iconOnly)
+                    }
+                }
             }
             .background(Gradient(colors: gradientColors))
             .sheet(isPresented: $showEditing) {
