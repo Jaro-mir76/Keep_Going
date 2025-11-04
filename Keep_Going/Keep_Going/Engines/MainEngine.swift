@@ -12,6 +12,7 @@ import SwiftUI
 class MainEngine {
     var selectedGoal: Goal?
     var welcomeTab: Int = 1
+    
     private var _showWelcomePageDuringAppStart = UserDefaults.standard.bool(forKey: AppStorageKeys.showWelcomePageDuringAppStart)
     var showWelcomePageDuringAppStart: Bool {
         get{
@@ -22,6 +23,7 @@ class MainEngine {
             _showWelcomePageDuringAppStart = newValue
         }
     }
+    
     var welcomePageVisible = false
     var appIconVisible = true
     

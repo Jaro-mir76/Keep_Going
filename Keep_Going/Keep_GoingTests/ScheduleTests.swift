@@ -12,6 +12,7 @@ import Testing
 struct ScheduleTests {
     
     private var goalViewModel = GoalViewModel()
+    private var mainEngine = MainEngine()
 
     @Test("Next traing date for privided interval 2 -> true", arguments: [
         Date(timeIntervalSinceNow: -2.day),
@@ -77,6 +78,11 @@ struct ScheduleTests {
         goalViewModel.saveStatus(goal: goalHistorySaveTest)
         
         #expect(goalHistorySaveTest.history?.count == 1)
+    }
+    
+    @Test("Latest goal refresh date save/restore check")
+    func latestGoalRefreshDateSaveRestoreCheck() {
+        
     }
     
     @Test("Save goal to file", .disabled("to be implemented"))

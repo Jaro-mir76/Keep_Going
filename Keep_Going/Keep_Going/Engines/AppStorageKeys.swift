@@ -9,4 +9,5 @@ import Foundation
 
 struct AppStorageKeys {
     static let showWelcomePageDuringAppStart = "showWelcomePageDuringAppStart"
+    static let latestGoalsRefreshDate = "latestGoalsRefreshDate"
 }

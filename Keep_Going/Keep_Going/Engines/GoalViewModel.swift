@@ -14,6 +14,8 @@ class GoalViewModel {
     var goals: [Goal] = []
     let modelContainer: ModelContainer
     
+    private var latestGoalsRefreshDate: Date = Date()
+    
     init() {
         modelContainer = PersistentStorage.shared.modelContainer
         fetchGoals()
@@ -31,6 +33,13 @@ class GoalViewModel {
                 saveStatus(goal: goal)
                 whatDoWeHaveToday(goal: goal)
             }
+        }
+        self.latestGoalsRefreshDate = Date()
+    }
+    
+    func refreshIfNecesary(){
+        if !latestGoalsRefreshDate.isSameDay(as: Date()){
+            fetchGoals()
         }
     }
     

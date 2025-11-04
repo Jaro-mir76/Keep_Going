@@ -56,10 +56,10 @@ class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
         let goalsFetch = FetchDescriptor<Goal>(predicate: #Predicate { $0.schedule == 0 } )
         do {
             let goals = try contex.fetch(goalsFetch)
-            for goal in goals {
+//            for goal in goals {
 //                print ("Background - goal: \(goal.name)")
-            }
-            await notificationService.scheduleNotification(title: "Keep Going - reminder", message: "Hey, you still have \(goals.count) \(goals.count > 1 ? "goals" : "goal") planed for today./nMaybe you have a minute now?")
+//            }
+            await notificationService.scheduleNotification(title: "Keep Going - reminder", message: "Hey, you still have \(goals.count) \(goals.count > 1 ? "goals" : "goal") planed for today. Maybe you have a minute now?")
         } catch {
             print ("Could not fetch goals")
         }

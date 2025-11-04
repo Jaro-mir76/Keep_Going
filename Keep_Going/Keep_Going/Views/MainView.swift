@@ -13,6 +13,7 @@ struct MainView: View {
     @Environment(MainEngine.self) private var mainEngine
     @Environment(GoalViewModel.self) private var goalViewModel
     @State private var showEditing: Bool = false
+    @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
         NavigationStack{
@@ -40,6 +41,11 @@ struct MainView: View {
                         .tint(.green)
                 }
             }
+            .onChange(of: scenePhase, { _, newValue in
+                if newValue == .active {
+                    goalViewModel.refreshIfNecesary()
+                }
+            })
             .background(Gradient(colors: gradientColors))
             .toolbar{
                 ToolbarItem(placement: .topBarTrailing) {

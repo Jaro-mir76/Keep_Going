@@ -1,0 +1,69 @@
+{
+  "fill" : {
+    "automatic-gradient" : "extended-srgb:0.00000,0.53333,1.00000,1.00000"
+  },
+  "groups" : [
+    {
+      "blur-material" : null,
+      "layers" : [
+        {
+          "image-name-specializations" : [
+            {
+              "value" : "sun.max.fill.png"
+            },
+            {
+              "appearance" : "dark",
+              "value" : "moon.fill.png"
+            }
+          ],
+          "name" : "moon.fill",
+          "position" : {
+            "scale" : 0.12,
+            "translation-in-points" : [
+              -251.03125,
+              -380.03125
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 0.5
+      },
+      "specular" : true,
+      "translucency" : {
+        "enabled" : false,
+        "value" : 0.15
+      }
+    },
+    {
+      "layers" : [
+        {
+          "image-name" : "figure.stairs.png",
+          "name" : "figure.stairs",
+          "position" : {
+            "scale" : 0.47,
+            "translation-in-points" : [
+              84.625,
+              28.9296875
+            ]
+          }
+        }
+      ],
+      "shadow" : {
+        "kind" : "neutral",
+        "opacity" : 1
+      },
+      "translucency" : {
+        "enabled" : true,
+        "value" : 0.29
+      }
+    }
+  ],
+  "supported-platforms" : {
+    "circles" : [
+      "watchOS"
+    ],
+    "squares" : "shared"
+  }
+}
