@@ -23,6 +23,7 @@ struct EditGoalView: View {
     @Environment(MainEngine.self) private var mainEngine
     @Environment(GoalViewModel.self) private var goalViewModel
     
+    @State private var showDatePicker = false
     @State private var tmpGoal = Goal(name: "", goalDescription: "")
     @State private var scheduleType: ScheduleType = .interval
     @State private var weeklySchedule: [WeekDay] = []
@@ -51,6 +52,34 @@ struct EditGoalView: View {
                                 focusedField = nil
                             }
                         }
+                }
+                Section {
+                    HStack{
+                        Text("Start date")
+                            .font(.footnote)
+                            .textCase(.uppercase)
+                            .foregroundColor(.gray)
+                        Spacer()
+                        Text(tmpGoal.goalStartDate.formatted(date: .numeric , time: .omitted))
+                            .foregroundStyle(showDatePicker ? .red : .blue)
+                            .onTapGesture(perform: {
+                                withAnimation{
+                                    showDatePicker.toggle()
+                                }
+                                focusedField = nil
+                            })
+                    }
+                    .onTapGesture {
+                        focusedField = nil
+                    }
+                    if showDatePicker {
+                        DatePicker(
+                                "Start Date",
+                                selection: $tmpGoal.goalStartDate,
+                                displayedComponents: [.date]
+                            )
+                            .datePickerStyle(.graphical)
+                    }
                 }
                 Section(content: {
                     HStack{
@@ -144,12 +173,6 @@ struct EditGoalView: View {
             .onAppear {
                 if let goal {
                     goalViewModel.updateWith(goal: tmpGoal, with: goal)
-//                    tmpGoal.name = goal.name
-//                    tmpGoal.goalDescription = goal.goalDescription
-//                    tmpGoal.requiredTime = goal.requiredTime
-//                    tmpGoal.date = goal.date
-//                    tmpGoal.schedule = goal.schedule
-//                    tmpGoal.done = goal.done
                     if goal.interval != nil {
                         interval = goal.interval!
                         scheduleType = .interval
@@ -159,13 +182,6 @@ struct EditGoalView: View {
                     }
                 }
             }
-//            .onAppear {
-//                if let goal = goal, goal.interval != nil {
-//                    goalViewModel.trainingDaysInterval(goal: goal)
-//                } else if let goal = goal, goal.weeklySchedule != nil {
-//                    goalViewModel.trainingDaysSchedule(goal: goal)
-//                }
-//            }
         }
     }
     private func footer() -> String {

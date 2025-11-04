@@ -33,7 +33,7 @@ struct ScheduleTests {
     ])
     func nextTrainingDate4IntervalFalse(date: Date)  {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        let schedule2daysIntervalVer = Goal(name: "exampleGoalInterval2Days", goalDescription: "", interval: 2, creationDate: date)
+        let schedule2daysIntervalVer = Goal(name: "exampleGoalInterval2Days", goalDescription: "",goalStartDate: date, interval: 2, creationDate: date)
         
         #expect( goalViewModel.isItTrainingDayInterval(goal: schedule2daysIntervalVer) == false)
     }
@@ -57,7 +57,7 @@ struct ScheduleTests {
         
         let previousWeek = NSCalendar.current.startOfDay(for: Date()) + timeDifffromGMT - 7.day
         
-        #expect(goalViewModel.trainingDaysSchedule(goal: goalSchedule, forWeek: previousWeek).first != nil)
+        #expect(goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: previousWeek).first != nil)
     }
     
     @Test("Training dates based on interval")
@@ -80,9 +80,20 @@ struct ScheduleTests {
         #expect(goalHistorySaveTest.history?.count == 1)
     }
     
-    @Test("Latest goal refresh date save/restore check")
-    func latestGoalRefreshDateSaveRestoreCheck() {
+    @Test("Training days base od schedule")
+    func goalTrainingDaysScheduleTrue() {
+        var goalStartDateComponents = DateComponents()
+        goalStartDateComponents.year = 2025
+        goalStartDateComponents.month = 11
+        goalStartDateComponents.day = 5
+        goalStartDateComponents.hour = 15
+        goalStartDateComponents.minute = 30
+        goalStartDateComponents.timeZone = .current
+        let goalStartDate = Calendar.current.date(from: goalStartDateComponents)!
+        let goalSchedule = Goal(name: "goalScheduleTest", goalDescription: "", goalStartDate: goalStartDate, weeklySchedule: [.tuesday, .friday, .sunday], schedule: nil)
+        let trainingDays = goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: goalStartDate)
         
+        #expect(trainingDays.count == 5)
     }
     
     @Test("Save goal to file", .disabled("to be implemented"))

@@ -13,6 +13,7 @@ class Goal {
     var name: String
     var goalDescription: String
 //    requiredTime is in minutes
+    var goalStartDate: Date
     var requiredTime: Int?
     var weeklySchedule: [WeekDay]?
     var interval: Int?
@@ -37,9 +38,10 @@ class Goal {
     var date: Date
     var done: Bool
     
-    init(name: String, goalDescription: String, requiredTime: Int? = nil, weeklySchedule: [WeekDay]? = nil, interval: Int? = nil, reminderPreference: Reminder? = .afternoon, creationDate: Date? = Date(), history: [Status]? = [], total: Int = 0, strike: Int = 0, strikeCheckDate: Date = Date(), schedule: ScheduleCode.RawValue? = nil, date: Date = Date(), done: Bool = false) {
+    init(name: String, goalDescription: String, goalStartDate: Date = Date(), requiredTime: Int? = nil, weeklySchedule: [WeekDay]? = nil, interval: Int? = nil, reminderPreference: Reminder? = .afternoon, creationDate: Date? = Date(), history: [Status]? = [], total: Int = 0, strike: Int = 0, strikeCheckDate: Date = Date(), schedule: ScheduleCode.RawValue? = nil, date: Date = Date(), done: Bool = false) {
         self.name = name
         self.goalDescription = goalDescription
+        self.goalStartDate = Calendar.current.startOfDay(for: goalStartDate)
         self.requiredTime = requiredTime
         self.weeklySchedule = weeklySchedule
         self.interval = interval

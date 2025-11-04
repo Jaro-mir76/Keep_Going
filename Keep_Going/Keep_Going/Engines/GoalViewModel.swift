@@ -63,20 +63,20 @@ class GoalViewModel {
     }
     
 // function returning dates of trainings for remaing part of the week
-    func trainingDaysSchedule(goal: Goal, forWeek: Date = Date()) -> [Date] {
+    func trainingDaysSchedule(goal: Goal, startingFrom: Date? = Date()) -> [Date] {
         var calendar = Calendar.current
         calendar.firstWeekday = 2
-        let componentsForFirstDayOfWeek = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: forWeek)
+        let goalStartDate = beginningOfDay(of: startingFrom!)
+        let componentsForFirstDayOfWeek = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: goalStartDate)
         let firstDayOfWeek = calendar.date(from: componentsForFirstDayOfWeek)!
         var trainingDays: [Date] = []
         
 //    beginningOfToday is start of the day in current time zome because NSCalendar.current.startOfDay gives start of the day only in GMT time
-        let today = beginningOfDay()
-        for futureWeek in [0, 7, 14, 21, 28, 35]{
+        for futureWeek in [0, 7]{
             guard goal.weeklySchedule != nil else {return []}
             for i in goal.weeklySchedule!{
                 let trainingDate = Date(timeInterval: Double(i.rawValue).day, since: firstDayOfWeek + Double(futureWeek).day)
-                if trainingDate.isLaterDay(than: today) {
+                if trainingDate.isLaterDay(than: goalStartDate) || trainingDate.isSameDay(as: goalStartDate){
                     trainingDays.append(trainingDate)
                 }
             }
@@ -87,11 +87,11 @@ class GoalViewModel {
     // function returning dates of trainings for next 31 days
     func trainingDaysInterval(goal: Goal) -> [Date] {
         guard goal.interval != nil else { return [] }
-        let today = Date.now
+        let startDate = goal.goalStartDate
         var trainingDays: [Date] = []
         let range = 31 / goal.interval!
         for i in 0...range {
-            let trainingDay = today.addingTimeInterval(TimeInterval(Double(goal.interval!) * Double(i).day))
+            let trainingDay = startDate.addingTimeInterval(TimeInterval(Double(goal.interval!) * Double(i).day))
             trainingDays.append(trainingDay)
         }
         return trainingDays
@@ -167,7 +167,7 @@ class GoalViewModel {
 // function returning true if today is training day (based on interval)
     func isItTrainingDayInterval(goal: Goal) -> Bool {
         guard goal.interval != nil else {return false}
-        let hoursFromCreationDate = Calendar.current.dateComponents([.hour], from: goal.creationDate!, to: beginningOfDay()).hour ?? 0
+        let hoursFromCreationDate = Calendar.current.dateComponents([.hour], from: goal.goalStartDate, to: beginningOfDay()).hour ?? 0
         
 //       checking reminder, if it's 23 (it means there was time change Winter > Summer and we have to increase result by 1
         var (daysFromCreationDate, reminder) = hoursFromCreationDate.quotientAndRemainder(dividingBy: 24)
@@ -180,8 +180,8 @@ class GoalViewModel {
         
 // function returning true if today is training day (based on schedule)
     func isItTrainingDaySchedule(goal: Goal) -> Bool {
-        let today = beginningOfDay()
-        if trainingDaysSchedule(goal: goal).first == today {
+        let goalStartDate = beginningOfDay(of: goal.goalStartDate)
+        if trainingDaysSchedule(goal: goal, startingFrom: goal.goalStartDate).first == goalStartDate {
             return true
         }
         return false
@@ -190,6 +190,7 @@ class GoalViewModel {
     func updateWith (goal: Goal, with newGoal: Goal) {
         goal.name = newGoal.name
         goal.goalDescription = newGoal.goalDescription
+        goal.goalStartDate = newGoal.goalStartDate
         goal.requiredTime = newGoal.requiredTime
         goal.weeklySchedule = newGoal.weeklySchedule?.sorted(by: { $0.rawValue < $1.rawValue })
         goal.interval = newGoal.interval
@@ -201,6 +202,7 @@ class GoalViewModel {
         } else {
             whatDoWeHaveToday(goal: goal)
         }
+        self.fetchGoals()
     }
     
     static func exampleGoal() -> [Goal] {
