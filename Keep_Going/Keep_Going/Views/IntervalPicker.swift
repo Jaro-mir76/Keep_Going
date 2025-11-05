@@ -29,7 +29,8 @@ struct IntervalPicker: View {
             }
             if showWheel {
                 Picker("Interval", selection: $interval) {
-                    ForEach(1..<100) { i in
+                    ForEach(1..<15
+) { i in
                         Text("\(i)")
                             .tag(i)
                     }

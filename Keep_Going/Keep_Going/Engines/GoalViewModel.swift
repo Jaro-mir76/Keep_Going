@@ -66,33 +66,19 @@ class GoalViewModel {
     func trainingDaysSchedule(goal: Goal, startingFrom: Date? = Date()) -> [Date] {
         var calendar = Calendar.current
         calendar.firstWeekday = 2
-        let goalStartDate = beginningOfDay(of: startingFrom!)
-        let componentsForFirstDayOfWeek = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: goalStartDate)
+        let scheduleStartDate = beginningOfDay(of: startingFrom!)
+        let componentsForFirstDayOfWeek = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: scheduleStartDate)
         let firstDayOfWeek = calendar.date(from: componentsForFirstDayOfWeek)!
         var trainingDays: [Date] = []
         
-//    beginningOfToday is start of the day in current time zome because NSCalendar.current.startOfDay gives start of the day only in GMT time
         for futureWeek in [0, 7]{
             guard goal.weeklySchedule != nil else {return []}
             for i in goal.weeklySchedule!{
                 let trainingDate = Date(timeInterval: Double(i.rawValue).day, since: firstDayOfWeek + Double(futureWeek).day)
-                if trainingDate.isLaterDay(than: goalStartDate) || trainingDate.isSameDay(as: goalStartDate){
+                if trainingDate.isLaterDay(than: scheduleStartDate) || trainingDate.isSameDay(as: scheduleStartDate){
                     trainingDays.append(trainingDate)
                 }
             }
-        }
-        return trainingDays
-    }
-        
-    // function returning dates of trainings for next 31 days
-    func trainingDaysInterval(goal: Goal) -> [Date] {
-        guard goal.interval != nil else { return [] }
-        let startDate = goal.goalStartDate
-        var trainingDays: [Date] = []
-        let range = 31 / goal.interval!
-        for i in 0...range {
-            let trainingDay = startDate.addingTimeInterval(TimeInterval(Double(goal.interval!) * Double(i).day))
-            trainingDays.append(trainingDay)
         }
         return trainingDays
     }
@@ -180,8 +166,13 @@ class GoalViewModel {
         
 // function returning true if today is training day (based on schedule)
     func isItTrainingDaySchedule(goal: Goal) -> Bool {
-        let goalStartDate = beginningOfDay(of: goal.goalStartDate)
-        if trainingDaysSchedule(goal: goal, startingFrom: goal.goalStartDate).first == goalStartDate {
+        var scheduleStartDate: Date
+        if Date().isLaterDay(than: goal.goalStartDate) {
+            scheduleStartDate = beginningOfDay(of: Date())
+        } else {
+            scheduleStartDate = beginningOfDay(of: goal.goalStartDate)
+        }
+        if trainingDaysSchedule(goal: goal, startingFrom: scheduleStartDate).first == scheduleStartDate {
             return true
         }
         return false

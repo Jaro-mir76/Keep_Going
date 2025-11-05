@@ -59,15 +59,7 @@ struct ScheduleTests {
         
         #expect(goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: previousWeek).first != nil)
     }
-    
-    @Test("Training dates based on interval")
-    func nextTrainingDatesForInterval() {
-        let goal2daysInterval = Goal(name: "goalInterval2Days", goalDescription: "", interval: 2, creationDate: Date())
-        
-        #expect(goalViewModel.trainingDaysInterval(goal: goal2daysInterval) != [])
-        #expect(goalViewModel.trainingDaysInterval(goal: goal2daysInterval).count == 16)
-    }
-    
+       
     @Test("Goal history save")
     func goalHistorySaved() {
 //        before saving there should be no status
