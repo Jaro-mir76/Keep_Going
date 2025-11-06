@@ -17,7 +17,7 @@ enum Reminder: String, CaseIterable, Identifiable, Codable {
     var id: Self { self }
     
     var time: Date {
-        var components = DateComponents()
+        var components = Calendar.current.dateComponents([.day, .month, .year], from: Date())
         
         switch self {
         case .morning:
@@ -33,8 +33,20 @@ enum Reminder: String, CaseIterable, Identifiable, Codable {
             components.hour = 21
             components.minute = 00
         }
-        components.timeZone = .current
-        let time = Calendar.current.date(from: components) ?? Date.now
-        return time
+        let reminderTime = Calendar.current.date(from: components) ?? Date()
+        return reminderTime
+    }
+    
+    var backgroundTaskIdentifier: String {
+        switch self {
+        case .morning:
+            return "com.keepgoing.background.goals.reminder.morning"
+        case .midDay:
+            return "com.keepgoing.background.goals.reminder.midDay"
+        case .afternoon:
+            return "com.keepgoing.background.goals.reminder.afternoon"
+        case .evening:
+            return "com.keepgoing.background.goals.reminder.evening"
+        }
     }
 }

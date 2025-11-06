@@ -10,9 +10,11 @@ import SwiftData
 
 class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
     let notificationService: NotificationService
+    let reminderTimeIdentifier: String
     
-    init(notificationService: NotificationService = NotificationService()) {
+    init(notificationService: NotificationService = NotificationService(), reminderTime: String) {
         self.notificationService = notificationService
+        self.reminderTimeIdentifier = reminderTime
     }
     
     private var _executing = false {
@@ -51,15 +53,13 @@ class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
 //        print (">>> EXECUTION of executeGoalReminder func <<<")
 
 //        Task.detached {
-        let contex = ModelContext(PersistentStorage.shared.modelContainer)
+        let context = ModelContext(PersistentStorage.shared.modelContainer)
 //        }
         let goalsFetch = FetchDescriptor<Goal>(predicate: #Predicate { $0.schedule == 0 } )
         do {
-            let goals = try contex.fetch(goalsFetch)
-//            for goal in goals {
-//                print ("Background - goal: \(goal.name)")
-//            }
-            await notificationService.scheduleNotification(title: "Keep Going - reminder", message: "Hey, you still have \(goals.count) \(goals.count > 1 ? "goals" : "goal") planed for today. Maybe you have a minute now?")
+            let goals = try context.fetch(goalsFetch)
+            let filteredGoals = goals.filter { $0.reminderPreference?.backgroundTaskIdentifier == self.reminderTimeIdentifier && $0.done == false }
+            await notificationService.scheduleNotification(title: "Keep Going", message: "Hey, you have planed \(filteredGoals.count) \(filteredGoals.count > 1 ? "goals" : "goal") for now. Maybe you have a minute?")
         } catch {
             print ("Could not fetch goals")
         }
