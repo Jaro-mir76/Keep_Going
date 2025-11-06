@@ -13,6 +13,7 @@ struct MainView: View {
     @Environment(MainEngine.self) private var mainEngine
     @Environment(GoalViewModel.self) private var goalViewModel
     @State private var showEditing: Bool = false
+    @State private var showSettings: Bool = false
     @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
@@ -42,8 +43,15 @@ struct MainView: View {
                 }
             }
             .onChange(of: scenePhase, { _, newValue in
-                if newValue == .active {
-                    goalViewModel.refreshIfNecesary()
+                switch newValue {
+                    case .active:
+                        goalViewModel.refreshIfNecesary()
+                    case .inactive:
+                        return
+                    case .background:
+                        BackgroundTaskManager.shared.scheduleGoalReminder()
+                    @unknown default:
+                    break
                 }
             })
             .background(Gradient(colors: gradientColors))
@@ -54,17 +62,19 @@ struct MainView: View {
                     }
                 }
                 ToolbarItem(placement: .topBarLeading) {
-                    NavigationLink {
-                        SettingsView()
-                    } label: {
-                        Label("Settings", systemImage: "gear")
-                            .labelStyle(.iconOnly)
+                    Button {
+                        showSettings = true
+                    }label: {
+                        Image(systemName: "gear")
                     }
                 }
             }
             .background(Gradient(colors: gradientColors))
             .sheet(isPresented: $showEditing) {
                 EditGoalView(goal: mainEngine.selectedGoal)
+            }
+            .navigationDestination(isPresented: $showSettings) {
+                SettingsView()
             }
         }
     }

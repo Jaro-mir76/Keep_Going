@@ -23,6 +23,9 @@ class BackgroundTaskManager {
     }
     
     func scheduleGoalReminder() {
+// MARK: cancel already scheduled tasks to ensure only still valid are there
+        cancelScheduledRequests()
+        
         let context = ModelContext(PersistentStorage.shared.modelContainer)
         let goalsFetch = FetchDescriptor<Goal>(predicate: #Predicate { $0.schedule == 0 } )
         do {
@@ -30,13 +33,10 @@ class BackgroundTaskManager {
             for reminderPreference in Reminder.allCases {
                 guard reminderPreference.time > Date() else { continue }
                 let goals = goals.filter { $0.reminderPreference == reminderPreference && $0.done == false }
-//                print ("REminder preference: \(reminderPreference.rawValue) - goals count: \(goals.count)")
                 if goals.count > 0 {
                     let request = BGAppRefreshTaskRequest(identifier: reminderPreference.backgroundTaskIdentifier)
-//                    print ("reminder.time: \(reminderPreference.time)")
                     request.earliestBeginDate = reminderPreference.time
                     do {
-//                        print ("scheduling task for \(reminderPreference.backgroundTaskIdentifier)")
                         try BGTaskScheduler.shared.submit(request)
                     } catch {
                         print("Could not schedule background task: \(error)")
@@ -51,7 +51,6 @@ class BackgroundTaskManager {
     }
     
     func handleGoalBackgroundReminderTask (task: BGAppRefreshTask){
-//        print ("executing - handleGoalBackgroundReminderTask with task: \(task.description)")
         scheduleGoalReminder()
         let backgroundOperation = BackgroundGoalReminderActions(reminderTime: task.identifier)
         
@@ -65,6 +64,14 @@ class BackgroundTaskManager {
             task.setTaskCompleted(success: success)
         }
         operationQueue.addOperation(backgroundOperation)
+    }
+    
+    func cancelScheduledRequests() {
+        BGTaskScheduler.shared.getPendingTaskRequests { tasks in
+            for task in tasks {
+                BGTaskScheduler.shared.cancel(taskRequestWithIdentifier: task.identifier)
+            }
+        }
     }
     
 //    MARK - only for debug pruposes

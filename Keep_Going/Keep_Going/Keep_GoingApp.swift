@@ -16,7 +16,7 @@ struct Keep_GoingApp: App {
     
     init() {
         BackgroundTaskManager.shared.registerGoalReminder()
-        BackgroundTaskManager.shared.scheduleGoalReminder()
+        
         self.mainEngine = MainEngine()
         if self.mainEngine.showWelcomePageDuringAppStart {
             self.mainEngine.welcomePageVisible = true
@@ -25,11 +25,8 @@ struct Keep_GoingApp: App {
     }
     
     var body: some Scene {
-        WindowGroup() {
-            ZStack {
-                MainView()
-                    .environment(goalViewModel)
-                    .environment(mainEngine)
+        WindowGroup {
+            Group {
                 if mainEngine.welcomePageVisible {
                     WelcomeView()
                         .environment(mainEngine)
@@ -41,6 +38,10 @@ struct Keep_GoingApp: App {
                                 mainEngine.appIconVisible = false
                             }
                         }
+                } else {
+                    MainView()
+                        .environment(goalViewModel)
+                        .environment(mainEngine)
                 }
             }
         }

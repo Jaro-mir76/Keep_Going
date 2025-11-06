@@ -52,9 +52,7 @@ class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
     private func executeGoalReminder() async {
 //        print (">>> EXECUTION of executeGoalReminder func <<<")
 
-//        Task.detached {
         let context = ModelContext(PersistentStorage.shared.modelContainer)
-//        }
         let goalsFetch = FetchDescriptor<Goal>(predicate: #Predicate { $0.schedule == 0 } )
         do {
             let goals = try context.fetch(goalsFetch)
