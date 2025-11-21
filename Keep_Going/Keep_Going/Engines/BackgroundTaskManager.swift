@@ -8,13 +8,18 @@
 import Foundation
 import BackgroundTasks
 import SwiftData
+import os
 
 class BackgroundTaskManager {
     static let shared = BackgroundTaskManager()
+    let logger = Logger(subsystem: "Keep_Going", category: "BackgroundTasksMonitoring")
     
     private let operationQueue = OperationQueue()
     
     func registerGoalReminder() {
+        logger.notice(">>> EXECUTING registerGoalReminder <<<")
+        LoggingEngine.shared.appendLog(">>> EXECUTING registerGoalReminder <<<")
+
         for reminderPreference in Reminder.allCases {
             BGTaskScheduler.shared.register(forTaskWithIdentifier: reminderPreference.backgroundTaskIdentifier, using: nil) { [self] task in
                 handleGoalBackgroundReminderTask(task: task as! BGAppRefreshTask)
@@ -23,6 +28,9 @@ class BackgroundTaskManager {
     }
     
     func scheduleGoalReminder() {
+        logger.notice(">>> EXECUTING scheduleGoalReminder <<<")
+        LoggingEngine.shared.appendLog(">>> EXECUTING scheduleGoalReminder <<<")
+
 // MARK: cancel already scheduled tasks to ensure only still valid are there
         cancelScheduledRequests()
         
@@ -34,6 +42,9 @@ class BackgroundTaskManager {
                 guard reminderPreference.time > Date() else { continue }
                 let goals = goals.filter { $0.reminderPreference == reminderPreference && $0.done == false }
                 if goals.count > 0 {
+                    logger.notice("seems there are some goals to be reminded about, count: \(goals.count)")
+                    LoggingEngine.shared.appendLog("seems there are some goals to be reminded about, count: \(goals.count)")
+
                     let request = BGAppRefreshTaskRequest(identifier: reminderPreference.backgroundTaskIdentifier)
                     request.earliestBeginDate = reminderPreference.time
                     do {
@@ -51,8 +62,11 @@ class BackgroundTaskManager {
     }
     
     func handleGoalBackgroundReminderTask (task: BGAppRefreshTask){
+        logger.notice(">>> EXECUTING handleGoalBackgroundReminderTask <<<")
+        LoggingEngine.shared.appendLog(">>> EXECUTING handleGoalBackgroundReminderTask <<<")
+
         scheduleGoalReminder()
-        let backgroundOperation = BackgroundGoalReminderActions(reminderTime: task.identifier)
+        let backgroundOperation = BackgroundGoalReminderActions(reminderTimeId: task.identifier)
         
         task.expirationHandler = {
             print ("iOS is interrupting execution - timeout")

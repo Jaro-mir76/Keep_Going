@@ -8,13 +8,14 @@
 import SwiftUI
 
 struct AppIconView: View {
+    @Environment(\.colorScheme) private var systemColorScheme
     var body: some View {
         VStack {
             Spacer()
             ZStack {
                 RoundedRectangle(cornerRadius: 30, style: .circular)
                     .frame(width: 170, height: 170)
-                    .foregroundStyle(.yellow)
+                    .foregroundStyle(Color.appAccentOrange)
                     .shadow(color: .black, radius: 5, x: 5, y: 5)
                     .opacity(0.9)
                 
@@ -28,7 +29,7 @@ struct AppIconView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity)
-        .background(.white)
+        .background(Color.appBackground)
     }
 }
 

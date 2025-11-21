@@ -21,6 +21,11 @@ class GoalViewModel {
         fetchGoals()
     }
     
+    init(previewOnly: Bool) {
+        modelContainer = PersistentStorage.shared.modelContainer
+        goals = GoalViewModel.exampleGoal()
+    }
+    
     func fetchGoals() {
         let requestAllGoals = FetchDescriptor<Goal>(predicate: nil, sortBy: [.init(\.done, order: .forward), .init(\.schedule, order: .forward), .init(\.name, order: .forward)])
         do {
@@ -31,6 +36,11 @@ class GoalViewModel {
         for goal in goals {
             if !Calendar.current.isDateInToday(goal.date) {
                 saveStatus(goal: goal)
+//              if at that moment (it is already new day) goal is not done then strike is lost
+                if goal.schedule == ScheduleCode.training.rawValue, goal.done == false {
+                    goal.strike = 0
+                    goal.strikeCheckDate = Date()
+                }
                 whatDoWeHaveToday(goal: goal)
             }
         }
@@ -75,7 +85,7 @@ class GoalViewModel {
             guard goal.weeklySchedule != nil else {return []}
             for i in goal.weeklySchedule!{
                 let trainingDate = Date(timeInterval: Double(i.rawValue).day, since: firstDayOfWeek + Double(futureWeek).day)
-                if trainingDate.isLaterDay(than: scheduleStartDate) || trainingDate.isSameDay(as: scheduleStartDate){
+                if trainingDate.isLaterDay(than: goal.goalStartDate) && trainingDate.isLaterDay(than: scheduleStartDate) || trainingDate.isSameDay(as: scheduleStartDate){
                     trainingDays.append(trainingDate)
                 }
             }
@@ -116,7 +126,6 @@ class GoalViewModel {
             } else {
                 goal.strike = 1
             }
-            goal.strikeCheckDate = Date.now
         }else if goal.done == true{
             goal.done = false
             if goal.total > 0 {
@@ -130,7 +139,6 @@ class GoalViewModel {
         fetchGoals()
     }
         
-// I have to improve it because it is alaways checking entire hisotry which is not effective
     func isItStrike(goal: Goal) -> Bool {
         var strike = true
         if let history = goal.history {
@@ -151,7 +159,7 @@ class GoalViewModel {
     }
         
 // function returning true if today is training day (based on interval)
-    func isItTrainingDayInterval(goal: Goal) -> Bool {
+    func isItTrainingDayInterval(goal: Goal, startingFrom: Date = Date.now) -> Bool {
         guard goal.interval != nil else {return false}
         let hoursFromCreationDate = Calendar.current.dateComponents([.hour], from: goal.goalStartDate, to: beginningOfDay()).hour ?? 0
         
@@ -161,7 +169,10 @@ class GoalViewModel {
             daysFromCreationDate += 1
         }
         let (reminderInterval, _) = daysFromCreationDate.remainderReportingOverflow(dividingBy: goal.interval!)
-        return reminderInterval == 0 ? true : false
+        if (startingFrom.isLaterDay(than: goal.goalStartDate) || startingFrom.isSameDay(as: goal.goalStartDate)) && reminderInterval == 0 {
+            return true
+        }
+        return false
     }
         
 // function returning true if today is training day (based on schedule)
@@ -218,7 +229,7 @@ class GoalViewModel {
                  strikeCheckDate: Date(timeInterval: -1.day, since: beginingOfToday),
                  schedule: ScheduleCode.training.rawValue,
                  date: Date(timeInterval: -1.day, since: beginingOfToday),
-                 done: false),
+                 done: true),
             Goal(name: "Read",
                  goalDescription: "Read 10 pages every second day and you'll read.... a lot every year.",
                  requiredTime: nil,
@@ -249,7 +260,7 @@ class GoalViewModel {
                  total: 1,
                  strike: 1,
                  strikeCheckDate: Date(timeInterval: -1.day, since: beginingOfToday),
-                 schedule: ScheduleCode.training.rawValue,
+                 schedule: ScheduleCode.freeDay.rawValue,
                  date: Date(timeInterval: -1.day, since: beginingOfToday),
                  done: false),
             Goal(name: "Japanese",

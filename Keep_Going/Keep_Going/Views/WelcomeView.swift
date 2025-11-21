@@ -7,9 +7,8 @@
 
 import SwiftUI
 
-let gradientColors: [Color] = [.gradientTop, .gradientBottom]
-
 struct WelcomeView: View {
+    @Environment(\.colorScheme) private var systemColorScheme
     @Environment(MainEngine.self) private var mainEngine
     
     var body: some View {
@@ -23,7 +22,7 @@ struct WelcomeView: View {
                 HowToPage()
                     .tag(3)
             }
-            .background(Gradient(colors: gradientColors))
+            .background(Color.appBackground, ignoresSafeAreaEdges: .all)
             .tabViewStyle(.page)
             NextSkipDoneButtonsView()
         }
@@ -37,16 +36,22 @@ struct WelcomeView: View {
 
 #Preview("Welcome Page") {
     WelcomePage()
+        .frame(maxWidth: .infinity)
+        .background(Color.appBackground, ignoresSafeAreaEdges: .all)
         .environment(MainEngine())
 }
 
 #Preview("Features") {
     FeaturesPage()
+        .frame(maxWidth: .infinity)
+        .background(Color.appBackground, ignoresSafeAreaEdges: .all)
         .environment(MainEngine())
 }
 
 #Preview("HowTo") {
     HowToPage()
+        .frame(maxWidth: .infinity)
+        .background(Color.appBackground, ignoresSafeAreaEdges: .all)
         .environment(MainEngine())
 }
 
@@ -59,9 +64,9 @@ struct WelcomePage: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 30, style: .circular)
                     .frame(width: 170, height: 170)
-                    .foregroundStyle(.yellow)
+                    .foregroundStyle(Color.appAccentOrange)
                     .shadow(color: .black, radius: 5, x: 5, y: 5)
-                    .opacity(0.9)
+                    .opacity(1.0)
 
                 Image(systemName: "figure.stairs")
                     .font(.system(size: 100))
@@ -71,12 +76,12 @@ struct WelcomePage: View {
             Text("Welcome to")
                 .font(.title)
                 .padding([.top], 40)
-                .foregroundStyle(.black)
+                .foregroundStyle(Color.appTextPrimary)
             Text("Keep Going")
                 .font(.system(size: 35, design: .rounded))
                 .fontWeight(.semibold)
-                .foregroundStyle(.white)
-                .shadow(color: .black, radius: 5, x: 1, y: 1)
+                .foregroundStyle(Color.appAccentOrange)
+                .shadow(color: .black.opacity(0.1), radius: 5, x: 1, y: 1)
             Spacer()
             Spacer()
         }
@@ -94,7 +99,7 @@ struct FeaturesPage: View {
                     Text("Features")
                         .font(.title)
                         .padding(.top, 80)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Color.appTextPrimary)
 
                     FeaturesCard(icon: "bolt.fill", description: "Transform into the person you've always wanted to be.")
                     FeaturesCard(icon: "sparkles", description: "Master your time. Master your life.")
@@ -118,7 +123,7 @@ struct HowToPage: View {
                     Text("How to do it")
                         .font(.title)
                         .padding(.top, 80)
-                        .foregroundStyle(.black)
+                        .foregroundStyle(Color.appTextPrimary)
 
                     FeaturesCard(icon: "target", description: "Define your goals. What do you want to achieve?")
                     FeaturesCard(icon: "timer", description: "Schedule micro-tasks — quick wins that fit your day.")
@@ -147,12 +152,12 @@ struct FeaturesCard: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: 20)
-                .foregroundStyle(.green)
+                .foregroundStyle(Color.appAccentOrange)
                 .opacity(0.8)
                 .shadow(color: .black, radius: 5, x: 3, y: 3)
 //                .brightness(-0.1)
         }
-        .foregroundStyle(.white)
+        .foregroundStyle(Color.appTextPrimary)
     }
 }
 

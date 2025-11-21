@@ -55,9 +55,9 @@ struct ScheduleTests {
         let timezone = TimeZone.current
         let timeDifffromGMT = Double(timezone.secondsFromGMT())
         
-        let previousWeek = NSCalendar.current.startOfDay(for: Date()) + timeDifffromGMT - 7.day
+        let previousWeek = NSCalendar.current.startOfDay(for: Date()) + timeDifffromGMT - 77.day
         
-        #expect(goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: previousWeek).first != nil)
+        #expect(goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: previousWeek).first == nil)
     }
        
     @Test("Goal history save")
@@ -72,7 +72,7 @@ struct ScheduleTests {
         #expect(goalHistorySaveTest.history?.count == 1)
     }
     
-    @Test("Training days base od schedule")
+    @Test("Training days base on schedule")
     func goalTrainingDaysScheduleTrue() {
         var goalStartDateComponents = DateComponents()
         goalStartDateComponents.year = 2025
@@ -86,6 +86,86 @@ struct ScheduleTests {
         let trainingDays = goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: goalStartDate)
         
         #expect(trainingDays.count == 5)
+    }
+    
+    @Test("Training day base on schedule")
+    func goalTrainingDayScheduleTrue() {
+        var goalStartDateComponents = DateComponents()
+        goalStartDateComponents.year = 2025
+        goalStartDateComponents.month = 11
+        goalStartDateComponents.day = 5
+        goalStartDateComponents.hour = 15
+        goalStartDateComponents.minute = 30
+        goalStartDateComponents.timeZone = .current
+        let goalStartDate = Calendar.current.date(from: goalStartDateComponents)!
+        let goalSchedule = Goal(name: "goalScheduleTest", goalDescription: "", goalStartDate: goalStartDate, weeklySchedule: [.tuesday, .friday, .sunday], schedule: nil)
+        
+//  checking if logic works correctly for old goals
+        var testDateComponents = DateComponents()
+        testDateComponents.year = 2025
+        testDateComponents.month = 12
+        testDateComponents.day = 23
+        testDateComponents.hour = 15
+        testDateComponents.minute = 30
+        testDateComponents.timeZone = .current
+        let testDate = Calendar.current.date(from: testDateComponents)!
+        let beginningOfTestDate = Calendar.current.startOfDay(for: testDate)
+        
+        #expect(goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: beginningOfTestDate).first == beginningOfTestDate)
+
+//  checking if logic works correctly for goals planed in a future
+        var testDate2Components = DateComponents()
+        testDate2Components.year = 2025
+        testDate2Components.month = 10
+        testDate2Components.day = 1
+        testDate2Components.hour = 15
+        testDate2Components.minute = 30
+        testDate2Components.timeZone = .current
+        let testDate2 = Calendar.current.date(from: testDate2Components)!
+        let beginningOfTestDate2 = Calendar.current.startOfDay(for: testDate2)
+        
+//  answer should be nil because function should not return any date if goal start date is more than 2 weeks in a future
+        #expect(goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: beginningOfTestDate2).first == nil)
+    }
+    
+    @Test("Training day base on interval")
+    func goalTrainingDayIntervalTrue() {
+        var goalStartDateComponents = DateComponents()
+        goalStartDateComponents.year = 2025
+        goalStartDateComponents.month = 11
+        goalStartDateComponents.day = 5
+        goalStartDateComponents.hour = 15
+        goalStartDateComponents.minute = 30
+        goalStartDateComponents.timeZone = .current
+        let goalStartDate = Calendar.current.date(from: goalStartDateComponents)!
+        let schedule2daysInterval = Goal(name: "exampleGoalInterval2Days", goalDescription: "",goalStartDate: goalStartDate, interval: 2, creationDate: goalStartDate)
+        
+//  checking if logic works correctly for old goals
+        var testDateComponents = DateComponents()
+        testDateComponents.year = 2025
+        testDateComponents.month = 12
+        testDateComponents.day = 23
+        testDateComponents.hour = 15
+        testDateComponents.minute = 30
+        testDateComponents.timeZone = .current
+        let testDate = Calendar.current.date(from: testDateComponents)!
+        let beginningOfTestDate = Calendar.current.startOfDay(for: testDate)
+        
+        #expect(goalViewModel.isItTrainingDayInterval(goal: schedule2daysInterval, startingFrom: beginningOfTestDate) == true)
+
+//  checking if logic works correctly for goals planed in a future
+        var testDate2Components = DateComponents()
+        testDate2Components.year = 2025
+        testDate2Components.month = 10
+        testDate2Components.day = 1
+        testDate2Components.hour = 15
+        testDate2Components.minute = 30
+        testDate2Components.timeZone = .current
+        let testDate2 = Calendar.current.date(from: testDate2Components)!
+        let beginningOfTestDate2 = Calendar.current.startOfDay(for: testDate2)
+        
+//  answer should be false because date of checking is before goal start date
+        #expect(goalViewModel.isItTrainingDayInterval(goal: schedule2daysInterval, startingFrom: beginningOfTestDate2) == false)
     }
     
     @Test("Save goal to file", .disabled("to be implemented"))

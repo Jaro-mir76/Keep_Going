@@ -7,14 +7,18 @@
 
 import Foundation
 import SwiftData
+import os
 
 class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
     let notificationService: NotificationService
     let reminderTimeIdentifier: String
+    let logger = Logger(subsystem: "Keep_Going", category: "BackgroundTasksMonitoring")
     
-    init(notificationService: NotificationService = NotificationService(), reminderTime: String) {
+    init(notificationService: NotificationService = NotificationService(), reminderTimeId: String) {
         self.notificationService = notificationService
-        self.reminderTimeIdentifier = reminderTime
+        self.reminderTimeIdentifier = reminderTimeId
+        
+        LoggingEngine.shared.appendLog("BackgroundTasksMonitoring")
     }
     
     private var _executing = false {
@@ -50,13 +54,21 @@ class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
     }
     
     private func executeGoalReminder() async {
-//        print (">>> EXECUTION of executeGoalReminder func <<<")
+        print (">>> EXECUTION of executeGoalReminder func <<<")
+        logger.notice(">>> EXECUTION of executeGoalReminder func <<<")
+        logger.notice("time: \(Date())")
+        
+        LoggingEngine.shared.appendLog(">>> EXECUTION of executeGoalReminder func <<<")
+        LoggingEngine.shared.appendLog("time: \(Date())")
 
         let context = ModelContext(PersistentStorage.shared.modelContainer)
         let goalsFetch = FetchDescriptor<Goal>(predicate: #Predicate { $0.schedule == 0 } )
         do {
             let goals = try context.fetch(goalsFetch)
             let filteredGoals = goals.filter { $0.reminderPreference?.backgroundTaskIdentifier == self.reminderTimeIdentifier && $0.done == false }
+            logger.notice("scheduling notification message, goals count: \(filteredGoals.count)")
+            LoggingEngine.shared.appendLog("scheduling notification message, goals count: \(filteredGoals.count)")
+
             await notificationService.scheduleNotification(title: "Keep Going", message: "Hey, you have planed \(filteredGoals.count) \(filteredGoals.count > 1 ? "goals" : "goal") for now. Maybe you have a minute?")
         } catch {
             print ("Could not fetch goals")
@@ -65,14 +77,11 @@ class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
     }
     
     private func finish() {
-//        print ("execution of finish()")
-
         _executing = false
         _finished = true
     }
     
     override func cancel() {
-//        print ("execution of cancel()")
         super.cancel()
         finish()
     }

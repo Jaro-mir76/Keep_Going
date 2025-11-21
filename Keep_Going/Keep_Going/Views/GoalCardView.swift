@@ -36,32 +36,53 @@ struct GoalCardView: View {
             .onTapGesture {
                 descriptionLimit = (descriptionLimit == 1 ? 5 : 1)
             }
-            if goal.done == true {
-                Label("Todays status", systemImage: "checkmark.seal")
-                    .labelStyle(.iconOnly)
-                    .font(.title)
-                    .frame(width: 60)
-            } else if goal.schedule == ScheduleCode.training.rawValue {
-                Label("Todays status", systemImage: "seal")
-                    .labelStyle(.iconOnly)
-                    .font(.title)
-                    .frame(width: 60)
-            } else if goal.schedule == ScheduleCode.freeDay.rawValue {
-                Label("Todays status", systemImage: "sun.max")
-                    .labelStyle(.iconOnly)
-                    .font(.title)
-                    .frame(width: 60)
+            switch (goal.done, goal.schedule) {
+            case (true, _):
+                ZStack {
+                    RoundedRectangle(cornerRadius: 30, style: .circular)
+                        .frame(width: 45, height: 45)
+                        .foregroundStyle(Color.appTaskCompleted)
+                    Label("Todays status", systemImage: "checkmark.seal")
+                        .labelStyle(.iconOnly)
+                        .font(.title)
+                        .foregroundStyle(Color.appTaskCompletedCheck)
+//                        .frame(width: 60)
+                }
+            case (false, ScheduleCode.training.rawValue):
+                ZStack {
+                    RoundedRectangle(cornerRadius: 30, style: .circular)
+                        .frame(width: 45, height: 45)
+                        .foregroundStyle(Color.appTaskActive)
+                    Label("Todays status", systemImage: "seal")
+                        .labelStyle(.iconOnly)
+                        .font(.title)
+                }
+            case (false, _):
+                ZStack {
+                    RoundedRectangle(cornerRadius: 30, style: .circular)
+                        .frame(width: 45, height: 45)
+                        .foregroundStyle(Color.appTaskInactive)
+                    Label("Todays status", systemImage: "sun.max")
+                        .labelStyle(.iconOnly)
+                        .font(.title)
+                }
             }
         }
     }
 }
 
 #Preview("Goal") {
-    GoalCardView(goal: GoalViewModel.exampleGoal()[0])
+    List {
+        GoalCardView(goal: GoalViewModel.exampleGoal()[0])
+        
+    }
 }
 
 #Preview("Goals") {
-    GoalCardView(goal: GoalViewModel.exampleGoal()[0])
-    GoalCardView(goal: GoalViewModel.exampleGoal()[1])
-    GoalCardView(goal: GoalViewModel.exampleGoal()[3])
+    List {
+        GoalCardView(goal: GoalViewModel.exampleGoal()[0])
+        GoalCardView(goal: GoalViewModel.exampleGoal()[1])
+        GoalCardView(goal: GoalViewModel.exampleGoal()[2])
+    }
+    
 }

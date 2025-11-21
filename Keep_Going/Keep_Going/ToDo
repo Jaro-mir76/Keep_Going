@@ -9,10 +9,12 @@
 1. To work on "work in background" to be able to remind user about his goals > DONE
     * reminders are working > DONE
     
-   >>> * implement reminders to be scheduled in preferred reminder time <<< IN PROGRESS
+    * implement reminders to be scheduled in preferred reminder time > DONE
+>>>    * perform test of reminders <<< IN PROGRESS
    
-2. Add to Goal "user motivators" - possibility to add frazes, words that motivates user to achieve his target => perform task; That "user motivators" (I guess togather with app motivators) will be used by "reminder"
-3. Improve "isitStrike" function because checking always entire history is not effective - inRowCheckDate have been added, now isItStrike function have to be updated to start from that date
+2. Improve "isitStrike" function because checking always entire history is not effective - inRowCheckDate have been added, now isItStrike function have to be updated to start from that date > TO BE CORRECTED if app is not oppened it will not notice that some trainings have been missed > DONE
+3. Add to Goal "user motivators" - possibility to add frazes, words that motivates user to achieve his target => perform task; These "user motivators" (I guess togather with app motivators) will be used by "reminder"
+4.
 
         
         

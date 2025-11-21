@@ -21,7 +21,7 @@ struct MainView: View {
             List{
                 ForEach(goalViewModel.goals, id: \.id) { goal in
                     GoalCardView(goal: goal)
-                        .swipeActions(edge: .trailing, allowsFullSwipe: false) {
+                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
                             Button {
                                 withAnimation {
                                     goalViewModel.toggleTodaysStatus(goal: goal)
@@ -37,11 +37,15 @@ struct MainView: View {
                                 showEditing = true
                             } label: {
                                 Label("Edit", systemImage: "pencil")
+                                    .labelStyle(.iconOnly)
                             }
                         }
                         .tint(.green)
+                        .listRowBackground(Color.appTaskActive)
+                        .listRowSeparatorTint(Color.appBorder)
                 }
             }
+            .scrollContentBackground(.hidden)
             .onChange(of: scenePhase, { _, newValue in
                 switch newValue {
                     case .active:
@@ -54,12 +58,20 @@ struct MainView: View {
                     break
                 }
             })
-            .background(Gradient(colors: gradientColors))
             .toolbar{
                 ToolbarItem(placement: .topBarTrailing) {
-                    Button("", systemImage: "plus") {
+                    Button(action: {
                         addGoal()
-                    }
+                    }, label: {
+                        ZStack{
+                            RoundedRectangle(cornerRadius: 45, style: .circular)
+                                .frame(width: 36, height: 36)
+                                .foregroundStyle(Color.appAccentOrange)
+                            Image(systemName: "plus")
+                                .backgroundStyle(.black)
+                        }
+                    })
+                    .buttonStyle(.plain)
                 }
                 ToolbarItem(placement: .topBarLeading) {
                     Button {
@@ -69,7 +81,7 @@ struct MainView: View {
                     }
                 }
             }
-            .background(Gradient(colors: gradientColors))
+            .background(Color.appBackground)
             .sheet(isPresented: $showEditing) {
                 EditGoalView(goal: mainEngine.selectedGoal)
             }
@@ -87,5 +99,5 @@ struct MainView: View {
 #Preview {
     MainView()
         .environment(MainEngine())
-        .environment(GoalViewModel())
+        .environment(GoalViewModel(previewOnly: true))
 }
