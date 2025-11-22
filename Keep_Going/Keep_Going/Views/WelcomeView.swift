@@ -85,7 +85,6 @@ struct WelcomePage: View {
             Spacer()
             Spacer()
         }
-//        .padding(.bottom, 00)
     }
 }
 

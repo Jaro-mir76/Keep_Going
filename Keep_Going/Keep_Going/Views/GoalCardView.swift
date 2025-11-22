@@ -10,6 +10,7 @@ import SwiftUI
 struct GoalCardView: View {
     @Bindable var goal: Goal
     @State private var descriptionLimit: Int = 1
+    @State private var animateCheckmark: Bool = false
     
     var body: some View {
         HStack {
@@ -46,6 +47,13 @@ struct GoalCardView: View {
                         .labelStyle(.iconOnly)
                         .font(.title)
                         .foregroundStyle(Color.appTaskCompletedCheck)
+                        .symbolEffect(.bounce.up.byLayer, options: .nonRepeating, value: animateCheckmark)
+                        .task {
+                            animateCheckmark = true
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                animateCheckmark = false
+                            }
+                        }
 //                        .frame(width: 60)
                 }
             case (false, ScheduleCode.training.rawValue):

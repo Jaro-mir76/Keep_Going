@@ -45,6 +45,10 @@ struct MainView: View {
                         .listRowSeparatorTint(Color.appBorder)
                 }
             }
+//  MARK: I'm switching off some animations because in thie iOS version it is broken, so it looks better without it
+            .transaction({ transaction in
+                transaction.animation = nil
+            })
             .scrollContentBackground(.hidden)
             .onChange(of: scenePhase, { _, newValue in
                 switch newValue {
