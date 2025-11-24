@@ -17,24 +17,32 @@ struct GoalCardView: View {
     var body: some View {
         HStack {
             VStack(alignment: .leading){
-                HStack(alignment: .bottom) {
+                HStack(alignment: .center) {
                     Text(goal.name)
                         .font(.title2)
                     Spacer()
-                    if goal.strike > 1 {
-                        Text("Strike:")
-                            .font(.caption)
-                        Text(goal.strike.description)
-                            .font(.callout)
+                    VStack(alignment: .trailing) {
+                        if goal.strike > 1 {
+                            HStack {
+                                Text("Strike:")
+                                    .font(.caption)
+                                Text(goal.strike.description)
+                                    .font(.callout)
+                            }
+                        }
+                        HStack {
+                            Text("Total:")
+                                .font(.caption)
+                            Text(goal.total.description)
+                                .font(.callout)
+                        }
                     }
-                    Text("Total:")
-                        .font(.caption)
-                    Text(goal.total.description)
-                        .font(.callout)
                 }
-                Text(goal.goalDescription)
-                    .font(.footnote)
-                    .lineLimit(descriptionLimit)
+                if goal.goalDescription != "" {
+                    Text(goal.goalDescription)
+                        .font(.footnote)
+                        .lineLimit(descriptionLimit)
+                }
             }
             .onTapGesture {
                 descriptionLimit = (descriptionLimit == 1 ? 5 : 1)
