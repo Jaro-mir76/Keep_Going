@@ -87,20 +87,20 @@ struct GoalCardView: View {
                     }
                 }
             }
-                .onLongPressGesture(minimumDuration: 1.0) {
-                    withAnimation {
-                        goalViewModel.toggleTodaysStatus(goal: goal)
-                    }
-                    #if os(iOS)
-                        let generator = UIImpactFeedbackGenerator(style: .medium)
-                        generator.impactOccurred()
-                    #endif
-                } onPressingChanged: { active in
-                    active == true ? withAnimation { isPressed.toggle() } :
-                    withAnimation { isPressed.toggle() }
-                }
         }
         .scaleEffect(isPressed ? 1.05 : 1)
+        .onLongPressGesture(minimumDuration: 1.0) {
+            withAnimation {
+                goalViewModel.toggleTodaysStatus(goal: goal)
+            }
+            #if os(iOS)
+                let generator = UIImpactFeedbackGenerator(style: .medium)
+                generator.impactOccurred()
+            #endif
+        } onPressingChanged: { active in
+            active == true ? withAnimation { isPressed.toggle() } :
+            withAnimation { isPressed.toggle() }
+        }
     }
 }
 
