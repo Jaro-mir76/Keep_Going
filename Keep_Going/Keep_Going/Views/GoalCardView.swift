@@ -8,9 +8,11 @@
 import SwiftUI
 
 struct GoalCardView: View {
+    @Environment(GoalViewModel.self) private var goalViewModel
     @Bindable var goal: Goal
     @State private var descriptionLimit: Int = 1
     @State private var animateCheckmark: Bool = false
+    @State private var isPressed: Bool = false
     
     var body: some View {
         HStack {
@@ -37,60 +39,79 @@ struct GoalCardView: View {
             .onTapGesture {
                 descriptionLimit = (descriptionLimit == 1 ? 5 : 1)
             }
-            switch (goal.done, goal.schedule) {
-            case (true, _):
-                ZStack {
-                    RoundedRectangle(cornerRadius: 30, style: .circular)
-                        .frame(width: 45, height: 45)
-                        .foregroundStyle(Color.appTaskCompleted)
-                    Label("Todays status", systemImage: "checkmark.seal")
-                        .labelStyle(.iconOnly)
-                        .font(.title)
-                        .foregroundStyle(Color.appTaskCompletedCheck)
-                        .symbolEffect(.bounce.up.byLayer, options: .nonRepeating, value: animateCheckmark)
-                        .task {
-                            animateCheckmark = true
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                                animateCheckmark = false
+            HStack {
+                switch (goal.done, goal.schedule) {
+                case (true, _):
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 30, style: .circular)
+                            .frame(width: 45, height: 45)
+                            .foregroundStyle(Color.appTaskCompleted)
+                        Label("Todays status", systemImage: "checkmark.seal")
+                            .labelStyle(.iconOnly)
+                            .font(.title)
+                            .foregroundStyle(Color.appTaskCompletedCheck)
+                            .symbolEffect(.bounce.up.byLayer, options: .nonRepeating, value: animateCheckmark)
+                            .task {
+                                animateCheckmark = true
+                                DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                                    animateCheckmark = false
+                                }
                             }
-                        }
-//                        .frame(width: 60)
-                }
-            case (false, ScheduleCode.training.rawValue):
-                ZStack {
-                    RoundedRectangle(cornerRadius: 30, style: .circular)
-                        .frame(width: 45, height: 45)
-                        .foregroundStyle(Color.appTaskActive)
-                    Label("Todays status", systemImage: "seal")
-                        .labelStyle(.iconOnly)
-                        .font(.title)
-                }
-            case (false, _):
-                ZStack {
-                    RoundedRectangle(cornerRadius: 30, style: .circular)
-                        .frame(width: 45, height: 45)
-                        .foregroundStyle(Color.appTaskInactive)
-                    Label("Todays status", systemImage: "sun.max")
-                        .labelStyle(.iconOnly)
-                        .font(.title)
+                        //                        .frame(width: 60)
+                    }
+                case (false, ScheduleCode.training.rawValue):
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 30, style: .circular)
+                            .frame(width: 45, height: 45)
+                            .foregroundStyle(Color.appTaskActive)
+                        Label("Todays status", systemImage: "seal")
+                            .labelStyle(.iconOnly)
+                            .font(.title)
+                    }
+                case (false, _):
+                    ZStack {
+                        RoundedRectangle(cornerRadius: 30, style: .circular)
+                            .frame(width: 45, height: 45)
+                            .foregroundStyle(Color.appTaskInactive)
+                        Label("Todays status", systemImage: "sun.max")
+                            .labelStyle(.iconOnly)
+                            .font(.title)
+                    }
                 }
             }
+                .onLongPressGesture(minimumDuration: 1.0) {
+                    withAnimation {
+                        goalViewModel.toggleTodaysStatus(goal: goal)
+                    }
+                    #if os(iOS)
+                        let generator = UIImpactFeedbackGenerator(style: .medium)
+                        generator.impactOccurred()
+                    #endif
+                } onPressingChanged: { active in
+                    active == true ? withAnimation { isPressed.toggle() } :
+                    withAnimation { isPressed.toggle() }
+                }
         }
+        .scaleEffect(isPressed ? 1.05 : 1)
     }
 }
 
 #Preview("Goal") {
     List {
         GoalCardView(goal: GoalViewModel.exampleGoal()[0])
-        
+            .environment(GoalViewModel())
+
     }
 }
 
 #Preview("Goals") {
     List {
         GoalCardView(goal: GoalViewModel.exampleGoal()[0])
+            .environment(GoalViewModel())
         GoalCardView(goal: GoalViewModel.exampleGoal()[1])
+            .environment(GoalViewModel())
         GoalCardView(goal: GoalViewModel.exampleGoal()[2])
+            .environment(GoalViewModel())
     }
     
 }

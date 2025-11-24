@@ -21,16 +21,6 @@ struct MainView: View {
             List{
                 ForEach(goalViewModel.goals, id: \.id) { goal in
                     GoalCardView(goal: goal)
-                        .swipeActions(edge: .trailing, allowsFullSwipe: true) {
-                            Button {
-                                withAnimation {
-                                    goalViewModel.toggleTodaysStatus(goal: goal)
-                                }
-                            } label: {
-                                Label(goal.done == true ? "Done" : "Not done", systemImage: goal.done == true ? "seal.fill" : "checkmark.seal.fill")
-                                    .labelStyle(.iconOnly)
-                            }
-                        }
                         .swipeActions(edge: .leading, allowsFullSwipe: false) {
                             Button {
                                 mainEngine.selectedGoal = goal
@@ -45,10 +35,6 @@ struct MainView: View {
                         .listRowSeparatorTint(Color.appBorder)
                 }
             }
-//  MARK: I'm switching off some animations because in thie iOS version it is broken, so it looks better without it
-            .transaction({ transaction in
-                transaction.animation = nil
-            })
             .scrollContentBackground(.hidden)
             .onChange(of: scenePhase, { _, newValue in
                 switch newValue {
