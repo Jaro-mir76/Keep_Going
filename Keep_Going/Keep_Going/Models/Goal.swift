@@ -11,7 +11,7 @@ import SwiftData
 @Model
 class Goal {
     var name: String
-    var goalDescription: String
+    var goalMotivation: String
     var goalStartDate: Date
 //    requiredTime is in minutes
     var requiredTime: Int?
@@ -38,9 +38,9 @@ class Goal {
     var date: Date
     var done: Bool
     
-    init(name: String, goalDescription: String, goalStartDate: Date = Date(), requiredTime: Int? = nil, weeklySchedule: [WeekDay]? = nil, interval: Int? = nil, reminderPreference: Reminder? = .afternoon, creationDate: Date = Date(), history: [Status]? = [], total: Int = 0, strike: Int = 0, strikeCheckDate: Date = Date(), schedule: ScheduleCode.RawValue? = nil, date: Date = Date(), done: Bool = false) {
+    init(name: String, goalMotivation: String, goalStartDate: Date = Date(), requiredTime: Int? = nil, weeklySchedule: [WeekDay]? = nil, interval: Int? = nil, reminderPreference: Reminder? = .afternoon, creationDate: Date = Date(), history: [Status]? = [], total: Int = 0, strike: Int = 0, strikeCheckDate: Date = Date(), schedule: ScheduleCode.RawValue? = nil, date: Date = Date(), done: Bool = false) {
         self.name = name
-        self.goalDescription = goalDescription
+        self.goalMotivation = goalMotivation
         self.goalStartDate = Calendar.current.startOfDay(for: goalStartDate)
         self.requiredTime = requiredTime
         self.weeklySchedule = weeklySchedule

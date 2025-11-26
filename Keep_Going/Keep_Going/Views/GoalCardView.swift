@@ -38,8 +38,8 @@ struct GoalCardView: View {
                         }
                     }
                 }
-                if goal.goalDescription != "" {
-                    Text(goal.goalDescription)
+                if goal.goalMotivation != "" {
+                    Text(goal.goalMotivation)
                         .font(.footnote)
                         .lineLimit(descriptionLimit)
                 }

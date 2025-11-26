@@ -24,7 +24,7 @@ struct EditGoalView: View {
     @Environment(GoalViewModel.self) private var goalViewModel
     
     @State private var showDatePicker = false
-    @State private var tmpGoal = Goal(name: "", goalDescription: "")
+    @State private var tmpGoal = Goal(name: "", goalMotivation: "")
     @State private var scheduleType: ScheduleType = .interval
     @State private var weeklySchedule: [WeekDay] = []
     @State private var interval: Int = 1
@@ -42,13 +42,13 @@ struct EditGoalView: View {
                         .onSubmit {
                             focusedField = .description
                         }
-                    TextField("Goal description", text: $tmpGoal.goalDescription, axis: .vertical)
+                    TextField("Your motivation", text: $tmpGoal.goalMotivation, axis: .vertical)
                         .submitLabel(.done)
                         .lineLimit(1...10)
                         .focused($focusedField, equals: .description)
-                        .onChange(of: tmpGoal.goalDescription) { oldValue, newValue in
+                        .onChange(of: tmpGoal.goalMotivation) { oldValue, newValue in
                             if newValue.contains("\n") {
-                                tmpGoal.goalDescription = newValue.replacingOccurrences(of: "\n", with: " ")
+                                tmpGoal.goalMotivation = newValue.replacingOccurrences(of: "\n", with: " ")
                                 focusedField = nil
                             }
                         }

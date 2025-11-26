@@ -191,7 +191,7 @@ class GoalViewModel {
         
     func updateWith (goal: Goal, with newGoal: Goal) {
         goal.name = newGoal.name
-        goal.goalDescription = newGoal.goalDescription
+        goal.goalMotivation = newGoal.goalMotivation
         goal.goalStartDate = newGoal.goalStartDate
         goal.requiredTime = newGoal.requiredTime
         goal.weeklySchedule = newGoal.weeklySchedule?.sorted(by: { $0.rawValue < $1.rawValue })
@@ -213,7 +213,7 @@ class GoalViewModel {
         let beginingOfToday = NSCalendar.current.startOfDay(for: Date()) + timeDiffFromGMT
         return [
             Goal(name: "Salsa",
-                 goalDescription: "5 min. of training every daily will make you muy bueno salsero.",
+                 goalMotivation: "5 min. of training every daily will make you muy bueno salsero.",
                  requiredTime: 5,
                  weeklySchedule: nil,
                  interval: 1,
@@ -231,7 +231,7 @@ class GoalViewModel {
                  date: Date(timeInterval: -1.day, since: beginingOfToday),
                  done: true),
             Goal(name: "Read - goal with long name to test...",
-                 goalDescription: "Read 10 pages every second day and you'll read.... a lot every year.",
+                 goalMotivation: "Read 10 pages every second day and you'll read.... a lot every year.",
                  requiredTime: nil,
                  weeklySchedule: nil,
                  interval: 3,
@@ -249,7 +249,7 @@ class GoalViewModel {
                  date: Date(timeInterval: -1.day, since: beginingOfToday),
                  done: false),
             Goal(name: "Spanish",
-                 goalDescription: "",
+                 goalMotivation: "",
                  requiredTime: 5,
                  weeklySchedule: [.tuesday, .thursday],
                  interval: nil,
@@ -264,7 +264,7 @@ class GoalViewModel {
                  date: Date(timeInterval: -1.day, since: beginingOfToday),
                  done: false),
             Goal(name: "Japanese",
-                 goalDescription: "10 min daily and soon you'll speak like Bruce Lee.",
+                 goalMotivation: "10 min daily and soon you'll speak like Bruce Lee.",
                  requiredTime: 5,
                  weeklySchedule: [.monday, .wednesday, .friday],
                  interval: nil,

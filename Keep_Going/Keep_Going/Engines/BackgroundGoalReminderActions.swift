@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 import os
+import UserNotifications
 
 class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
     let notificationService: NotificationService
