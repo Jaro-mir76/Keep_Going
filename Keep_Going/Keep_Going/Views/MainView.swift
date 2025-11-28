@@ -11,15 +11,18 @@ import BackgroundTasks
 
 struct MainView: View {
     @Environment(MainEngine.self) private var mainEngine
-    @Environment(GoalViewModel.self) private var goalViewModel
+    @State private var viewModel: GoalViewModel?
     @State private var showEditing: Bool = false
     @State private var showSettings: Bool = false
+    @State private var hasPermission = true
+    @State private var isChecking = true
+    let notificationDelegate = NotificationDelegate.shared
     @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
         NavigationStack{
             List{
-                ForEach(goalViewModel.goals, id: \.id) { goal in
+                ForEach(viewModel?.goals ?? [], id: \.id) { goal in
                     GoalCardView(goal: goal)
                         .swipeActions(edge: .leading, allowsFullSwipe: false) {
                             Button {
@@ -36,18 +39,6 @@ struct MainView: View {
                 }
             }
             .scrollContentBackground(.hidden)
-            .onChange(of: scenePhase, { _, newValue in
-                switch newValue {
-                    case .active:
-                        goalViewModel.refreshIfNecesary()
-                    case .inactive:
-                        return
-                    case .background:
-                        BackgroundTaskManager.shared.scheduleGoalReminder()
-                    @unknown default:
-                    break
-                }
-            })
             .toolbar{
                 ToolbarItem(placement: .topBarTrailing) {
                     Button(action: {
@@ -69,6 +60,7 @@ struct MainView: View {
                     }label: {
                         Image(systemName: "gear")
                     }
+                    .badge( viewModel?.showWarningBadge ?? false ? "!" : nil )
                 }
             }
             .background(Color.appBackground)
@@ -78,7 +70,26 @@ struct MainView: View {
             .navigationDestination(isPresented: $showSettings) {
                 SettingsView()
             }
+            .onChange(of: scenePhase, { _, newValue in
+                switch newValue {
+                case .active:
+                    viewModel?.refreshIfNecesary()
+                    Task {
+                        await viewModel?.checkPermissions()
+                    }
+                case .inactive:
+                    return
+                case .background:
+                    BackgroundTaskManager.shared.scheduleGoalReminder()
+                @unknown default:
+                    break
+                }
+            })
         }
+        .environment(viewModel)
+        .onAppear(perform: {
+            viewModel = GoalViewModel(mainEngine: mainEngine)
+        })
     }
     
     func addGoal() {
@@ -87,7 +98,8 @@ struct MainView: View {
 }
 
 #Preview {
+    @Previewable @State var viewModel = GoalViewModel(previewOnly: true)
     MainView()
         .environment(MainEngine())
-        .environment(GoalViewModel(previewOnly: true))
+
 }

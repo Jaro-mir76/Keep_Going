@@ -8,13 +8,15 @@
 import SwiftUI
 import SwiftData
 import BackgroundTasks
+import UserNotifications
 
 @main
 struct Keep_GoingApp: App {
     @State private var mainEngine: MainEngine
-    @State private var goalViewModel = GoalViewModel()
     
     init() {
+        UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
+        NotificationService.registerNotificationCategories()
         BackgroundTaskManager.shared.registerGoalReminder()
         
         self.mainEngine = MainEngine()
@@ -40,7 +42,6 @@ struct Keep_GoingApp: App {
                         }
                 } else {
                     MainView()
-                        .environment(goalViewModel)
                         .environment(mainEngine)
                 }
             }

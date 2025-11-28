@@ -29,6 +29,7 @@ struct EditGoalView: View {
     @State private var weeklySchedule: [WeekDay] = []
     @State private var interval: Int = 1
     @State private var reminderTime: Reminder?
+    let notificationDelegate = NotificationDelegate.shared
     
     @FocusState private var focusedField: FocusedField?
     
@@ -220,21 +221,23 @@ struct EditGoalView: View {
             goalViewModel.whatDoWeHaveToday(goal: tmpGoal)
             goalViewModel.addGoal(goal: tmpGoal)
         }
-        if !mainEngine.requestedNotificationPermission {
+        if await notificationDelegate.checkNotificationPermission() == .notDetermined {
             await mainEngine.requestNotificationPermission()
         }
     }
 }
 
 #Preview("Edit Goal") {
+    var mainEngine = MainEngine()
     EditGoalView(goal: GoalViewModel.exampleGoal()[2])
         .environment(MainEngine())
-        .environment(GoalViewModel())
+        .environment(GoalViewModel(mainEngine: mainEngine))
 }
 
 #Preview("Add Goal") {
+    var mainEngine = MainEngine()
     EditGoalView(goal: nil)
         .environment(MainEngine())
-        .environment(GoalViewModel())
+        .environment(GoalViewModel(mainEngine: mainEngine))
 }
 

@@ -21,8 +21,8 @@ struct ConfettiView: View {
                     .animation(.easeOut(duration: 0.8), value: particles)
             }
         }
-        .onChange(of: trigger) { value in
-            if value { launchConfetti() }
+        .onChange(of: trigger) { oldvalue, newValue in
+            if newValue { launchConfetti() }
         }
     }
 

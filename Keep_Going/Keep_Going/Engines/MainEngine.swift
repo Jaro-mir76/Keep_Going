@@ -24,10 +24,23 @@ class MainEngine {
         }
     }
     
+    var _userWantsNotifications = UserDefaults.standard.bool(forKey: AppStorageKeys.userWantsNotifications)
+    var userWantsNotifications: Bool {
+        get {
+            return _userWantsNotifications
+        }
+        set {
+            UserDefaults.standard.set(newValue, forKey: AppStorageKeys.userWantsNotifications)
+            _userWantsNotifications = newValue
+        }
+    }
+
+    
     var welcomePageVisible = false
     var appIconVisible = true
     
-    var requestedNotificationPermission: Bool = false
+//    var hasNotificationPermission: Bool = false
+    var doNotAskAgainForNotificationPermission: Bool = false
     let notificationService: NotificationService
     
     init(selectedGoal: Goal? = nil, notificationService: NotificationService = NotificationService()) {
@@ -36,7 +49,9 @@ class MainEngine {
     }
     
     func requestNotificationPermission() async {
-        await notificationService.requestNotificationPermission()
-        self.requestedNotificationPermission = true
+        let grant = await notificationService.requestNotificationPermission()
+//        if grant {
+//
+//        }
     }
 }

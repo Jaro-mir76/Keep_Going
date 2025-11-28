@@ -7,23 +7,40 @@
 
 import Foundation
 import SwiftData
+import UserNotifications
 
 @MainActor
 @Observable
 class GoalViewModel {
+    var mainEngine: MainEngine
+    var notificationDelegate: NotificationDelegate
     var goals: [Goal] = []
     let modelContainer: ModelContainer
-    
     private var latestGoalsRefreshDate: Date = Date()
+    var permissionStatus: UNAuthorizationStatus = .notDetermined
+    var showWarningBadge: Bool = false
     
-    init() {
+    init(mainEngine: MainEngine, notificationDelegate: NotificationDelegate = .shared) {
+        self.mainEngine = mainEngine
+        self.notificationDelegate = notificationDelegate
         modelContainer = PersistentStorage.shared.modelContainer
         fetchGoals()
     }
     
-    init(previewOnly: Bool) {
+    init(previewOnly: Bool, notificationDelegate: NotificationDelegate = .shared) {
+        self.mainEngine = MainEngine()
+        self.notificationDelegate = notificationDelegate
         modelContainer = PersistentStorage.shared.modelContainer
         goals = GoalViewModel.exampleGoal()
+    }
+    
+    func checkPermissions() async {
+        permissionStatus = await notificationDelegate.checkNotificationPermission()
+        if permissionStatus == .denied && mainEngine.userWantsNotifications {
+            showWarningBadge = true
+        } else {
+            showWarningBadge = false
+        }
     }
     
     func fetchGoals() {

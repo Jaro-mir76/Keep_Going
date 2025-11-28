@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct GoalCardView: View {
-    @Environment(GoalViewModel.self) private var goalViewModel
+    @Environment(GoalViewModel.self) private var viewModel
     @Bindable var goal: Goal
     @State private var descriptionLimit: Int = 1
     @State private var animateCheckmark: Bool = false
@@ -91,7 +91,7 @@ struct GoalCardView: View {
         .scaleEffect(isPressed ? 1.05 : 1)
         .onLongPressGesture(minimumDuration: 1.0) {
             withAnimation {
-                goalViewModel.toggleTodaysStatus(goal: goal)
+                viewModel.toggleTodaysStatus(goal: goal)
             }
             #if os(iOS)
                 let generator = UIImpactFeedbackGenerator(style: .medium)
@@ -105,21 +105,23 @@ struct GoalCardView: View {
 }
 
 #Preview("Goal") {
+    var mainEngine = MainEngine()
     List {
         GoalCardView(goal: GoalViewModel.exampleGoal()[0])
-            .environment(GoalViewModel())
+            .environment(GoalViewModel(mainEngine: mainEngine))
 
     }
 }
 
 #Preview("Goals") {
+    var mainEngine = MainEngine()
     List {
         GoalCardView(goal: GoalViewModel.exampleGoal()[0])
-            .environment(GoalViewModel())
+            .environment(GoalViewModel(mainEngine: mainEngine))
         GoalCardView(goal: GoalViewModel.exampleGoal()[1])
-            .environment(GoalViewModel())
+            .environment(GoalViewModel(mainEngine: mainEngine))
         GoalCardView(goal: GoalViewModel.exampleGoal()[2])
-            .environment(GoalViewModel())
+            .environment(GoalViewModel(mainEngine: mainEngine))
     }
     
 }

@@ -66,11 +66,15 @@ class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
         let goalsFetch = FetchDescriptor<Goal>(predicate: #Predicate { $0.schedule == 0 } )
         do {
             let goals = try context.fetch(goalsFetch)
-            let filteredGoals = goals.filter { $0.reminderPreference?.backgroundTaskIdentifier == self.reminderTimeIdentifier && $0.done == false }
+            let filteredGoals = goals.filter { $0.reminderPreference?.backgroundTaskIdentifier == self.reminderTimeIdentifier && $0.done == false
+            }
             logger.notice("scheduling notification message, goals count: \(filteredGoals.count)")
             LoggingEngine.shared.appendLog("scheduling notification message, goals count: \(filteredGoals.count)")
 
-            await notificationService.scheduleNotification(title: "Keep Going", message: "Hey, you have planed \(filteredGoals.count) \(filteredGoals.count > 1 ? "goals" : "goal") for now. Maybe you have a minute?")
+//            await notificationService.scheduleNotification(title: "Keep Going", message: "Hey, you have planed \(filteredGoals.count) \(filteredGoals.count > 1 ? "goals" : "goal") for now. Maybe you have a minute?")
+            if !filteredGoals.isEmpty {
+                await notificationService.scheduleGoalReminder(for: filteredGoals)
+            }
         } catch {
             print ("Could not fetch goals")
         }
