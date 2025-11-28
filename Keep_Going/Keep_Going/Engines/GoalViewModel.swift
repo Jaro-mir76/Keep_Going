@@ -70,7 +70,7 @@ class GoalViewModel {
         }
     }
     
-    private func beginningOfDay(of date: Date = Date()) -> Date {
+    private func beginningOfDay(_ date: Date = Date()) -> Date {
         return Calendar.current.startOfDay(for: date)
     }
     
@@ -93,7 +93,7 @@ class GoalViewModel {
     func trainingDaysSchedule(goal: Goal, startingFrom: Date? = Date()) -> [Date] {
         var calendar = Calendar.current
         calendar.firstWeekday = 2
-        let scheduleStartDate = beginningOfDay(of: startingFrom!)
+        let scheduleStartDate = beginningOfDay(startingFrom!)
         let componentsForFirstDayOfWeek = calendar.dateComponents([.yearForWeekOfYear, .weekOfYear], from: scheduleStartDate)
         let firstDayOfWeek = calendar.date(from: componentsForFirstDayOfWeek)!
         var trainingDays: [Date] = []
@@ -178,15 +178,17 @@ class GoalViewModel {
 // function returning true if today is training day (based on interval)
     func isItTrainingDayInterval(goal: Goal, startingFrom: Date = Date.now) -> Bool {
         guard goal.interval != nil else {return false}
-        let hoursFromCreationDate = Calendar.current.dateComponents([.hour], from: goal.goalStartDate, to: beginningOfDay()).hour ?? 0
+        guard (startingFrom.isLaterDay(than: goal.goalStartDate) || startingFrom.isSameDay(as: goal.goalStartDate)) else {return false}
+        let hoursFromCreationDate = Calendar.current.dateComponents([.hour], from: goal.goalStartDate, to: beginningOfDay(startingFrom)).hour ?? 0
         
 //       checking reminder, if it's 23 (it means there was time change Winter > Summer and we have to increase result by 1
+        
         var (daysFromCreationDate, reminder) = hoursFromCreationDate.quotientAndRemainder(dividingBy: 24)
         if reminder == 23 {
             daysFromCreationDate += 1
         }
         let (reminderInterval, _) = daysFromCreationDate.remainderReportingOverflow(dividingBy: goal.interval!)
-        if (startingFrom.isLaterDay(than: goal.goalStartDate) || startingFrom.isSameDay(as: goal.goalStartDate)) && reminderInterval == 0 {
+        if reminderInterval == 0 {
             return true
         }
         return false
@@ -196,9 +198,9 @@ class GoalViewModel {
     func isItTrainingDaySchedule(goal: Goal) -> Bool {
         var scheduleStartDate: Date
         if Date().isLaterDay(than: goal.goalStartDate) {
-            scheduleStartDate = beginningOfDay(of: Date())
+            scheduleStartDate = beginningOfDay(Date())
         } else {
-            scheduleStartDate = beginningOfDay(of: goal.goalStartDate)
+            scheduleStartDate = beginningOfDay(goal.goalStartDate)
         }
         if trainingDaysSchedule(goal: goal, startingFrom: scheduleStartDate).first == scheduleStartDate {
             return true
