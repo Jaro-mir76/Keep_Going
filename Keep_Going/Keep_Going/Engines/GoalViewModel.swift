@@ -62,6 +62,12 @@ class GoalViewModel {
                 whatDoWeHaveToday(goal: goal)
             }
         }
+//  I fetch goals again because at that moment - goals status have been updated - and they are not sorted in desired way, and I think sort of this level is the most efficient
+        do {
+            self.goals = try modelContainer.mainContext.fetch(requestAllGoals)
+        } catch {
+            print ("Could not fetch goals, error: \(error)")
+        }
         self.latestGoalsRefreshDate = Date()
     }
     
@@ -133,7 +139,12 @@ class GoalViewModel {
     }
         
     func saveStatus(goal: Goal) {
-        let goalStatus = Status(scheduleCode: ScheduleCode(rawValue: goal.schedule!)!, done: goal.done, date: goal.date)
+        let goalStatus = Status(scheduleCode: ScheduleCode(rawValue: goal.schedule!)!, done: goal.done, date: Calendar.current.startOfDay(for: goal.date))
+        let goalDateStart = Calendar.current.startOfDay(for: goal.date)
+        if let firstFromSameDayIndex = goal.history?.firstIndex(where: { $0.date == goalDateStart
+        }) {
+            goal.history?.remove(at: firstFromSameDayIndex)
+        }
         goal.history?.append(goalStatus)
     }
         

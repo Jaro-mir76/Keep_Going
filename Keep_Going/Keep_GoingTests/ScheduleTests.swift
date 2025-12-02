@@ -63,14 +63,35 @@ struct ScheduleTests {
        
     @Test("Goal history save")
     mutating func goalHistorySaved() {
-//        before saving there should be no status
-        let goalHistorySaveTest = Goal(name: "goalHistorySaveTest", goalMotivation: "", interval: 2, creationDate: Date(), schedule: ScheduleCode.training.rawValue)
+        //        before saving there should be no status
+        let goalHistorySaveTest = Goal(name: "goalHistorySaveTest", goalMotivation: "", interval: 2, creationDate: Date(), schedule: ScheduleCode.training.rawValue, done: false)
         #expect(goalHistorySaveTest.history?.count == 0)
         
-//        after saving there should be status
+        //        after saving there should be status
         goalViewModel.saveStatus(goal: goalHistorySaveTest)
         
         #expect(goalHistorySaveTest.history?.count == 1)
+        #expect(goalHistorySaveTest.history?.first?.scheduleCode.rawValue == ScheduleCode.training.rawValue)
+        #expect(goalHistorySaveTest.history?.first?.done == false)
+        
+        // in case the same date old save should be replaced
+        goalHistorySaveTest.done = true
+        goalViewModel.saveStatus(goal: goalHistorySaveTest)
+        #expect(goalHistorySaveTest.history?.first?.done == true)
+        
+        let yesterday = Calendar.current.startOfDay(for: Date(timeInterval: Double(-1).day, since: Date()))
+        
+        goalHistorySaveTest.done = false
+        goalHistorySaveTest.date = yesterday
+        goalViewModel.saveStatus(goal: goalHistorySaveTest)
+        #expect(goalHistorySaveTest.history?.count == 2)
+        #expect(goalHistorySaveTest.history?.first(where: {$0.date == yesterday})?.done == false)
+        
+        goalHistorySaveTest.done = true
+        goalHistorySaveTest.date = yesterday
+        goalViewModel.saveStatus(goal: goalHistorySaveTest)
+        #expect(goalHistorySaveTest.history?.count == 2)
+        #expect(goalHistorySaveTest.history?.first(where: {$0.date == yesterday})?.done == true)
     }
     
     @Test("Training days base on schedule")
