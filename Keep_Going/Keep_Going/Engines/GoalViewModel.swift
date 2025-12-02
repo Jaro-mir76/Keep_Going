@@ -44,6 +44,7 @@ class GoalViewModel {
     }
     
     func fetchGoals() {
+        LoggingEngine.shared.appendLog("\(Date()) > func -> fetchGoals <")
         let requestAllGoals = FetchDescriptor<Goal>(predicate: nil, sortBy: [.init(\.done, order: .forward), .init(\.schedule, order: .forward), .init(\.name, order: .forward)])
         do {
             self.goals = try modelContainer.mainContext.fetch(requestAllGoals)
@@ -65,8 +66,10 @@ class GoalViewModel {
     }
     
     func refreshIfNecesary(){
+        LoggingEngine.shared.appendLog("\(Date()) > func -> refreshIfNecesary <")
         if !latestGoalsRefreshDate.isSameDay(as: Date()){
             fetchGoals()
+            LoggingEngine.shared.appendLog("\(Date()) > func - refreshIfNecesary -> fetchGoals <")
         }
     }
     

@@ -43,7 +43,7 @@ class BackgroundTaskManager {
                 let goals = goals.filter { $0.reminderPreference == reminderPreference && $0.done == false }
                 if goals.count > 0 {
                     logger.notice("seems there are some goals to be reminded about, count: \(goals.count)")
-                    LoggingEngine.shared.appendLog("seems there are some goals to be reminded about, count: \(goals.count)")
+                    LoggingEngine.shared.appendLog("seems there are some goals to be reminded about, count: \(goals.count) for \(reminderPreference.rawValue)")
 
                     let request = BGAppRefreshTaskRequest(identifier: reminderPreference.backgroundTaskIdentifier)
                     request.earliestBeginDate = reminderPreference.time

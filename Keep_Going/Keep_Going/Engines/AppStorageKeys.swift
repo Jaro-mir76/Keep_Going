@@ -11,4 +11,6 @@ struct AppStorageKeys {
     static let showWelcomePageDuringAppStart = "showWelcomePageDuringAppStart"
     static let userWantsNotifications = "userWantsNotifications"
     static let latestGoalsRefreshDate = "latestGoalsRefreshDate"
+    static let reminderIdentifier = "com.keepgoing.background.goals.reminder"
+    static let reminderSummaryIdentifier = "com.keepgoing.background.goals.reminder.summary"
 }
