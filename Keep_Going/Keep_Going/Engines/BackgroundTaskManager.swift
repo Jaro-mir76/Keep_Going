@@ -20,10 +20,8 @@ class BackgroundTaskManager {
         logger.notice(">>> EXECUTING registerGoalReminder <<<")
         LoggingEngine.shared.appendLog(">>> EXECUTING registerGoalReminder <<<")
 
-        for reminderPreference in Reminder.allCases {
-            BGTaskScheduler.shared.register(forTaskWithIdentifier: reminderPreference.backgroundTaskIdentifier, using: nil) { [self] task in
+        BGTaskScheduler.shared.register(forTaskWithIdentifier: AppStorageKeys.reminderIdentifier, using: nil) { [self] task in
                 handleGoalBackgroundReminderTask(task: task as! BGAppRefreshTask)
-            }
         }
     }
     
@@ -35,25 +33,38 @@ class BackgroundTaskManager {
         cancelScheduledRequests()
         
         let context = ModelContext(PersistentStorage.shared.modelContainer)
-        let goalsFetch = FetchDescriptor<Goal>(predicate: #Predicate { $0.schedule == 0 } )
+        let goalsFetch = FetchDescriptor<Goal>(predicate: #Predicate { $0.schedule == 0 && $0.done == false } )
         do {
             let goals = try context.fetch(goalsFetch)
-            for reminderPreference in Reminder.allCases {
-                guard reminderPreference.time > Date() else { continue }
-                let goals = goals.filter { $0.reminderPreference == reminderPreference && $0.done == false }
-                if goals.count > 0 {
-                    logger.notice("seems there are some goals to be reminded about, count: \(goals.count)")
-                    LoggingEngine.shared.appendLog("seems there are some goals to be reminded about, count: \(goals.count) for \(reminderPreference.rawValue)")
-
-                    let request = BGAppRefreshTaskRequest(identifier: reminderPreference.backgroundTaskIdentifier)
-                    request.earliestBeginDate = reminderPreference.time
-                    do {
-                        try BGTaskScheduler.shared.submit(request)
-                    } catch {
-                        print("Could not schedule background task: \(error)")
+            var filteredGoals: [Goal] = []
+            for hour in Reminder.Hours.allCases {
+                guard hour.time.isItSameHourOrLater else { continue }
+                
+                for minutes in Reminder.Minutes.allCases {
+                    var components = Calendar.current.dateComponents([.day, .month, .year, .second], from: Date())
+                    components.hour = hour.rawValue
+                    components.minute = minutes.rawValue
+                    
+                    let time = Calendar.current.date(from: components) ?? Date()
+                    guard time.isItInFuture else {continue}
+                    filteredGoals = goals.filter { $0.reminderPreference.hours == hour && $0.reminderPreference.minutes == minutes}
+                    if filteredGoals.count > 0 {
+//                        logger.notice("seems there are some goals to be reminded about, count: \(filteredGoals.count)")
+                        LoggingEngine.shared.appendLog("seems there are some goals to be reminded about, count: \(filteredGoals.count) for \(hour.rawValue):\(minutes.rawValue)")
+                    
+                        let request = BGAppRefreshTaskRequest(identifier: AppStorageKeys.reminderIdentifier)
+                        request.earliestBeginDate = time
+                        do {
+                            try BGTaskScheduler.shared.submit(request)
+                        } catch {
+                            print("Could not schedule background task: \(error)")
+                        }
+                        break
                     }
                 }
+                guard filteredGoals.count == 0 else { break }
             }
+            
         } catch {
             print ("Could not fetch goals")
         }
@@ -62,7 +73,7 @@ class BackgroundTaskManager {
     }
     
     func handleGoalBackgroundReminderTask (task: BGAppRefreshTask){
-        logger.notice(">>> EXECUTING handleGoalBackgroundReminderTask <<<")
+//        logger.notice(">>> EXECUTING handleGoalBackgroundReminderTask <<<")
         LoggingEngine.shared.appendLog(">>> EXECUTING handleGoalBackgroundReminderTask <<<")
 
         scheduleGoalReminder()
@@ -91,12 +102,17 @@ class BackgroundTaskManager {
 //    MARK - only for debug pruposes
     func listScheduledRequests() {
         print ("executing - listScheduledRequests")
+        LoggingEngine.shared.appendLog("executing - listScheduledRequests")
         BGTaskScheduler.shared.getPendingTaskRequests { tasks in
-            print ("tasks scheduled at that time: \(Date.now)")
-            print ("tasks no. \(tasks.count)")
+            print ("tasks scheduled at: \(Date.now)")
+            print ("number of tasks: \(tasks.count)")
+            LoggingEngine.shared.appendLog("tasks scheduled at: \(Date.now)")
+            LoggingEngine.shared.appendLog("number of tasks: \(tasks.count)")
             for task in tasks {
                 print ("task \(task)")
                 print ("task identifier \(task.identifier)")
+                LoggingEngine.shared.appendLog("task \(task)")
+                LoggingEngine.shared.appendLog("task identifier \(task.identifier)")
             }
         }
     }

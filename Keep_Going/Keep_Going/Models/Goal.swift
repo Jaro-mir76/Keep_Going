@@ -17,7 +17,8 @@ class Goal {
     var requiredTime: Int?
     var weeklySchedule: [WeekDay]?
     var interval: Int?
-    var reminderPreference: Reminder?
+    @Relationship(deleteRule: .cascade)
+    var reminderPreference: Reminder
     
 //  For ease of dates comparing I'm using everywhere time of exact beginning to the day in current time zone
     var creationDate: Date
@@ -38,7 +39,7 @@ class Goal {
     var date: Date
     var done: Bool
     
-    init(name: String, goalMotivation: String, goalStartDate: Date = Date(), requiredTime: Int? = nil, weeklySchedule: [WeekDay]? = nil, interval: Int? = nil, reminderPreference: Reminder? = .afternoon, creationDate: Date = Date(), history: [Status]? = [], total: Int = 0, strike: Int = 0, strikeCheckDate: Date = Date(), schedule: ScheduleCode.RawValue? = nil, date: Date = Date(), done: Bool = false) {
+    init(name: String, goalMotivation: String, goalStartDate: Date = Date(), requiredTime: Int? = nil, weeklySchedule: [WeekDay]? = nil, interval: Int? = nil, reminderPreference: Reminder = Reminder(hours: .eight, minutes: .zero), creationDate: Date = Date(), history: [Status]? = [], total: Int = 0, strike: Int = 0, strikeCheckDate: Date = Date(), schedule: ScheduleCode.RawValue? = nil, date: Date = Date(), done: Bool = false) {
         self.name = name
         self.goalMotivation = goalMotivation
         self.goalStartDate = Calendar.current.startOfDay(for: goalStartDate)

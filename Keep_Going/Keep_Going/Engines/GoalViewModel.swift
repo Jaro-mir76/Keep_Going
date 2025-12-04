@@ -93,9 +93,18 @@ class GoalViewModel {
         fetchGoals()
     }
     
+    func cancelChanges() {
+        modelContainer.mainContext.rollback()
+    }
+    
     func deleteGoal(goal: Goal) {
         modelContainer.mainContext.delete(goal)
         fetchGoals()
+    }
+    
+    func updateAppBadge() {
+        let overdueGoals = goals.filter { $0.done == false && $0.reminderPreference.time.isItInPast }
+        notificationDelegate.notificationService.updateAppBadge(goals: overdueGoals)
     }
     
 // function returning dates of trainings for remaing part of the week
@@ -222,18 +231,19 @@ class GoalViewModel {
         return false
     }
         
-    func updateWith (goal: Goal, with newGoal: Goal) {
-        goal.name = newGoal.name
-        goal.goalMotivation = newGoal.goalMotivation
-        goal.goalStartDate = newGoal.goalStartDate
-        goal.requiredTime = newGoal.requiredTime
-        goal.weeklySchedule = newGoal.weeklySchedule?.sorted(by: { $0.rawValue < $1.rawValue })
-        goal.interval = newGoal.interval
-        goal.reminderPreference = newGoal.reminderPreference
-        if newGoal.done == true {
-            goal.date = newGoal.date
-            goal.schedule = newGoal.schedule
-            goal.done = newGoal.done
+    func update (goal: Goal, with otherGoal: Goal) {
+        goal.name = otherGoal.name
+        goal.goalMotivation = otherGoal.goalMotivation
+        goal.goalStartDate = otherGoal.goalStartDate
+        goal.requiredTime = otherGoal.requiredTime
+        goal.weeklySchedule = otherGoal.weeklySchedule?.sorted(by: { $0.rawValue < $1.rawValue })
+        goal.interval = otherGoal.interval
+        goal.reminderPreference.hours = otherGoal.reminderPreference.hours
+        goal.reminderPreference.minutes = otherGoal.reminderPreference.minutes
+        if otherGoal.done == true {
+            goal.date = otherGoal.date
+            goal.schedule = otherGoal.schedule
+            goal.done = otherGoal.done
         } else {
             whatDoWeHaveToday(goal: goal)
         }

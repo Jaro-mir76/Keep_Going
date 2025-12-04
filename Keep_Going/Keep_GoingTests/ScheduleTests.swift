@@ -43,7 +43,7 @@ struct ScheduleTests {
     mutating func trainingScheduleIsSorted() {
         let goalSchedule = Goal(name: "goalSchedule", goalMotivation: "", weeklySchedule: [])
         let newGoalParameters = Goal(name: "goalSchedule", goalMotivation: "", weeklySchedule: [.sunday, .monday, .friday])
-        goalViewModel.updateWith(goal: goalSchedule, with: newGoalParameters)
+        goalViewModel.update(goal: goalSchedule, with: newGoalParameters)
 
         #expect(goalSchedule.weeklySchedule == [.monday, .friday, .sunday])
     }

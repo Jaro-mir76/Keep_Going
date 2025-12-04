@@ -17,4 +17,20 @@ extension Date {
         let otherDateStart = Calendar.current.startOfDay(for: otherDate)
         return selfStart > otherDateStart
     }
+    
+    var isItSameHourOrLater: Bool {
+        let dateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: self)
+        guard let dateHour = dateComponents.hour else {return false}
+        let todaysDateComponents = Calendar.current.dateComponents([.year, .month, .day, .hour, .minute], from: Date())
+        guard let currentHour = todaysDateComponents.hour else {return false}
+        return dateHour >= currentHour
+    }
+    
+    var isItInFuture: Bool {
+        return self >= Date()
+    }
+    
+    var isItInPast: Bool {
+        return self < Date()
+    }
 }

@@ -98,43 +98,6 @@ struct NotificationService {
         return (title, body)
     }
     
-    //    func scheduleNotification(title: String, message: String) async {
-    //        let center = UNUserNotificationCenter.current()
-    //        let content = UNMutableNotificationContent()
-    //        content.title = title
-    //        content.body = message
-    //        let notification = UNNotificationRequest(identifier: "com.keepgoing.notification", content: content, trigger: nil)
-    //        do {
-    //            try await center.add(notification)
-    //        } catch{
-    //            print ("Could not schedule notification, error: \(error)")
-    //        }
-    //    }
-    
-    //    func scheduleNotification(title: String, message: String, delayInSeconds: TimeInterval = 0, playSound: Bool = true) async {
-    //        let center = UNUserNotificationCenter.current()
-    //        let content = UNMutableNotificationContent()
-    //        content.title = title
-    //        content.body = message
-    //        content.categoryIdentifier = NotificationIndentifier.goalReminderCategory.rawValue
-    //
-    //        if playSound {
-    //            content.sound = .default
-    //        }
-    //
-    //// MARK: check how to put correct badge insted of static :
-    //        content.badge = 1
-    //
-    //        let trigger: UNNotificationTrigger? = delayInSeconds > 0 ? UNTimeIntervalNotificationTrigger(timeInterval: delayInSeconds, repeats: false) : nil
-    //        let notification = UNNotificationRequest(identifier: NotificationIndentifier.goalNotificationIdentifier.rawValue, content: content, trigger: trigger)
-    //
-    //        do {
-    //            try await center.add(notification)
-    //        } catch {
-    //            print("scheduleNotification - Could not schedule notification, error: \(error)")
-    //        }
-    //    }
-    
     func scheduleGoalReminder(for goals: [Goal], delayInSeconds: TimeInterval = 0, playSound: Bool = true) async {
 //        let identifier: String = NotificationIndentifier.goalNotificationIdentifier.rawValue
         let message = createNotificationMessage(for: goals)
@@ -173,5 +136,9 @@ struct NotificationService {
     
     func clearBadge() {
         UNUserNotificationCenter.current().setBadgeCount(0)
+    }
+    
+    func updateAppBadge(goals: [Goal]) {
+        UNUserNotificationCenter.current().setBadgeCount(goals.count)
     }
 }

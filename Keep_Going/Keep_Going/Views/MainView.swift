@@ -80,6 +80,7 @@ struct MainView: View {
                 case .inactive:
                     return
                 case .background:
+                    viewModel?.updateAppBadge()
                     BackgroundTaskManager.shared.scheduleGoalReminder()
                 @unknown default:
                     break

@@ -121,25 +121,25 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     
     private func fetchPendingGoals() -> [Goal] {
         let context = ModelContext(PersistentStorage.shared.modelContainer)
-        guard let reminderPreference = getCurrentReminderPreference() else {return []}
+//        guard let reminderPreference = getCurrentReminderPreference() else {return []}
         
         let goalsFetch = FetchDescriptor<Goal>(
             predicate: #Predicate { $0.schedule == 0 && $0.done == false }
         )
         do {
             let goals = try context.fetch(goalsFetch)
-            return goals.filter { $0.reminderPreference == reminderPreference }
+            return goals.filter { $0.reminderPreference.time.isItInPast }
         } catch {
             logger.error("Could not fetch goals: \(error.localizedDescription)")
             return []
         }
     }
     
-    private func getCurrentReminderPreference() -> Reminder? {
-        let now = Date()
-        
-        return Reminder.allCases.first { reminder in
-            return reminder.time > Date(timeInterval: -900, since: now)
-        }
-    }
+//    private func getCurrentReminderPreference() -> Reminder? {
+//        let now = Date()
+//        
+//        return Reminder.allCases.first { reminder in
+//            return reminder.time > Date(timeInterval: -900, since: now)
+//        }
+//    }
 }

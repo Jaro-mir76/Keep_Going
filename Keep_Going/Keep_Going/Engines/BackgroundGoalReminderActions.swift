@@ -66,7 +66,9 @@ class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
         let goalsFetch = FetchDescriptor<Goal>(predicate: #Predicate { $0.schedule == 0 } )
         do {
             let goals = try context.fetch(goalsFetch)
-            let filteredGoals = goals.filter { $0.reminderPreference?.backgroundTaskIdentifier == self.reminderTimeIdentifier && $0.done == false
+//            let filteredGoals = goals.filter { $0.reminderPreference.backgroundTaskIdentifier == self.reminderTimeIdentifier && $0.done == false
+            let filteredGoals = goals.filter {
+                $0.done == false && $0.reminderPreference.time.isItInFuture
             }
             logger.notice("scheduling notification message, goals count: \(filteredGoals.count)")
             LoggingEngine.shared.appendLog("scheduling notification message, goals count: \(filteredGoals.count)")

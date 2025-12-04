@@ -119,14 +119,7 @@ struct EditGoalView: View {
                     focusedField = nil
                 }
                 Section() {
-                    HStack{
-                        Picker("Preferred reminder time", selection: $tmpGoal.reminderPreference) {
-                            ForEach(Reminder.allCases) { time in
-                                Text(time.rawValue)
-                                    .tag(time)
-                            }
-                        }
-                    }
+                    ReminderTimePickerView(goal: $tmpGoal)
                 }
                 .onTapGesture {
                     focusedField = nil
@@ -154,26 +147,12 @@ struct EditGoalView: View {
                 ToolbarItem(placement: .principal) {
                     Text(windowTitle)
                 }
-                ToolbarItem(placement: .confirmationAction) {
-                    Button("Save") {
-                        Task{
-                            await save()
-                            dismiss()
-                            mainEngine.selectedGoal = nil
-                        }
-                    }
-                    .disabled(tmpGoal.name == "" ? true : false)
-                }
-                ToolbarItem(placement: .cancellationAction) {
-                    Button("Calcel") {
-                        dismiss()
-                        mainEngine.selectedGoal = nil
-                    }
-                }
+                toolBarSaveButton
+                toolBarCancelButton
             }
             .onAppear {
                 if let goal {
-                    goalViewModel.updateWith(goal: tmpGoal, with: goal)
+                    goalViewModel.update(goal: tmpGoal, with: goal)
                     if goal.interval != nil {
                         interval = goal.interval!
                         scheduleType = .interval
@@ -209,7 +188,7 @@ struct EditGoalView: View {
                 tmpGoal.weeklySchedule = weeklySchedule
                 tmpGoal.interval = nil
             }
-            goalViewModel.updateWith(goal: goal, with: tmpGoal)
+            goalViewModel.update(goal: goal, with: tmpGoal)
         }else {
             if scheduleType == .interval {
                 tmpGoal.weeklySchedule = nil
@@ -225,11 +204,36 @@ struct EditGoalView: View {
             await mainEngine.requestNotificationPermission()
         }
     }
+    
+    @ToolbarContentBuilder
+    private var toolBarSaveButton: some ToolbarContent {
+        ToolbarItem(placement: .confirmationAction) {
+            Button("Save") {
+                Task{
+                    await save()
+                    dismiss()
+                    mainEngine.selectedGoal = nil
+                }
+            }
+            .disabled(tmpGoal.name == "" ? true : false)
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var toolBarCancelButton: some ToolbarContent {
+        ToolbarItem(placement: .cancellationAction) {
+            Button("Calcel") {
+                dismiss()
+                goalViewModel.cancelChanges()
+                mainEngine.selectedGoal = nil
+            }
+        }
+    }
 }
 
 #Preview("Edit Goal") {
     var mainEngine = MainEngine()
-    EditGoalView(goal: GoalViewModel.exampleGoal()[2])
+    EditGoalView(goal: GoalViewModel.exampleGoal()[1])
         .environment(MainEngine())
         .environment(GoalViewModel(mainEngine: mainEngine))
 }
