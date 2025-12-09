@@ -16,6 +16,11 @@ struct MainView: View {
     @State private var showSettings: Bool = false
     @State private var hasPermission = true
     @State private var isChecking = true
+    
+    private let addGoalTip = AddGoalTip()
+    private let markAsDoneTip = MarkAsDoneTip()
+    private let editGoalTip = EditGoalTip()
+    
     let notificationDelegate = NotificationDelegate.shared
     @Environment(\.scenePhase) private var scenePhase
     
@@ -27,6 +32,7 @@ struct MainView: View {
                         .swipeActions(edge: .leading, allowsFullSwipe: false) {
                             Button {
                                 mainEngine.selectedGoal = goal
+                                mainEngine.userIsEditingGoal = true
                                 showEditing = true
                             } label: {
                                 Label("Edit", systemImage: "pencil")
@@ -40,36 +46,35 @@ struct MainView: View {
             }
             .scrollContentBackground(.hidden)
             .toolbar{
-                ToolbarItem(placement: .topBarTrailing) {
-                    Button(action: {
-                        addGoal()
-                    }, label: {
-                        ZStack{
-                            RoundedRectangle(cornerRadius: 45, style: .circular)
-                                .frame(width: 36, height: 36)
-                                .foregroundStyle(Color.appAccentOrange)
-                            Image(systemName: "plus")
-                                .backgroundStyle(.black)
-                        }
-                    })
-                    .buttonStyle(.plain)
-                }
-                ToolbarItem(placement: .topBarLeading) {
-                    Button {
-                        showSettings = true
-                    }label: {
-                        Image(systemName: "gear")
-                    }
-                    .badge( viewModel?.showWarningBadge ?? false ? "!" : nil )
-                }
+                toolBarAddGoalButton
+                toolBarSettingsButton
             }
             .background(Color.appBackground)
-            .sheet(isPresented: $showEditing) {
+            .sheet(isPresented: $showEditing, onDismiss: {
+                if mainEngine.userIsEditingGoal == true && !mainEngine.hasEditedGoal {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
+                        mainEngine.markGoalEdited()
+                    }
+                }
+                mainEngine.userIsEditingGoal = false
+            }, content: {
                 EditGoalView(goal: mainEngine.selectedGoal)
-            }
+            })
             .navigationDestination(isPresented: $showSettings) {
                 SettingsView()
             }
+            .overlay(content: {
+                if viewModel?.goals.count == 0 {
+                    VStack(spacing: 20) {
+                        Text("You don't have any goals yet.")
+                            .font(.title2)
+                            .multilineTextAlignment(.center)
+                        Text("Tap the + button to add one!")
+                            .font(.title2)
+                    }
+                    .padding(30)
+                }
+            })
             .onChange(of: scenePhase, { _, newValue in
                 switch newValue {
                 case .active:
@@ -95,6 +100,37 @@ struct MainView: View {
     
     func addGoal() {
         showEditing = true
+    }
+    
+    @ToolbarContentBuilder
+    private var toolBarAddGoalButton: some ToolbarContent {
+        ToolbarItem(placement: .topBarTrailing) {
+            Button(action: {
+                addGoal()
+            }, label: {
+                ZStack{
+                    RoundedRectangle(cornerRadius: 45, style: .circular)
+                        .frame(width: 36, height: 36)
+                        .foregroundStyle(Color.appAccentOrange)
+                    Image(systemName: "plus")
+                        .backgroundStyle(.black)
+                }
+            })
+            .buttonStyle(.plain)
+            .popoverTip(addGoalTip)
+        }
+    }
+    
+    @ToolbarContentBuilder
+    private var toolBarSettingsButton: some ToolbarContent {
+        ToolbarItem(placement: .topBarLeading) {
+            Button {
+                showSettings = true
+            }label: {
+                Image(systemName: "gear")
+            }
+            .badge( viewModel?.showWarningBadge ?? false ? "!" : nil )
+        }
     }
 }
 

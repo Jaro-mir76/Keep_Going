@@ -64,3 +64,7 @@ fastlane/test_output
 #Excluding MacOS files
 **/.DS_Store
 
+#Claude Code related files
+.claudeignore
+CLAUDE.md
+

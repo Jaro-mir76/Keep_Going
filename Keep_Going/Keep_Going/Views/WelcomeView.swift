@@ -170,7 +170,7 @@ struct NextSkipDoneButtonsView: View {
                 if mainEngine.welcomeTab < 3 {
                     PushButton(function: .skip, execute: {
                         mainEngine.welcomePageVisible = false
-                        mainEngine.showWelcomePageDuringAppStart = false
+//                        mainEngine.showAppIntroduction = false
                     })
                         .padding(.trailing, 40)
                         .padding(.top, 40)
@@ -188,7 +188,7 @@ struct NextSkipDoneButtonsView: View {
                 } else if mainEngine.welcomeTab == 3 {
                     PushButton(function: .done, execute: {
                         mainEngine.welcomePageVisible = false
-                        mainEngine.showWelcomePageDuringAppStart = false
+//                        mainEngine.showAppIntroduction = false
                     })
                     .padding(.trailing, 40)
                     .padding(.bottom, 40)

@@ -16,7 +16,7 @@ struct SettingsView: View {
         @Bindable var mainEngine = mainEngine
         List {
             Section {
-                Toggle("Show Welcome Page during next application start", isOn: $mainEngine.showWelcomePageDuringAppStart)
+                Toggle("Show introduction again", isOn: $mainEngine.showAppIntroduction)
             }
             Section {
                 if let viewModel = viewModel {

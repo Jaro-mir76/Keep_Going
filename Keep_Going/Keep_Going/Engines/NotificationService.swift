@@ -18,13 +18,13 @@ struct NotificationService {
     enum SnoozeOption: String, CaseIterable {
         case tenMinutes = "Snooze_10_min"
         case thirtyMinutes = "Snooze_30_min"
-        case oneHour = "Snooze_1_hr"
+        case oneHour = "Snooze_60_min"
         
         var title: String {
             switch self {
             case .tenMinutes: return "Snooze for 10 minutes"
             case .thirtyMinutes: return "Snooze for 30 minutes"
-            case .oneHour: return "Snooze for 1 hour"
+            case .oneHour: return "Snooze for 60 minutes"
             }
         }
         

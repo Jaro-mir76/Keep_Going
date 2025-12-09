@@ -20,8 +20,8 @@ struct DaysPicker: View {
             }
             .padding(4)
             .frame(height: 30)
-            .background(Color.gray.opacity(0.1))
-            .background(in: RoundedRectangle(cornerRadius: 5, style: .continuous))
+//            .background(Color.gray.opacity(0.1))
+//            .background(in: RoundedRectangle(cornerRadius: 5, style: .continuous))
             .compositingGroup()
             .shadow(radius: 2)
             .onTapGesture {

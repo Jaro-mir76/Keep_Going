@@ -6,6 +6,7 @@
 //
 
 import SwiftUI
+import TipKit
 
 struct EditGoalView: View {
     
@@ -18,6 +19,12 @@ struct EditGoalView: View {
     private var windowTitle: String {
         goal == nil ? "New goal" : "Editing: \(goal!.name)"
     }
+    
+    private let goalNameTip = GoalNameTip()
+    private let goalMotivationTip = GoalMotivationTip()
+    private let scheduleTypeTip = ScheduleTypeTip()
+    private let reminderTimeTip = ReminderTimeTip()
+    private let firstGoalCompleteTip = FirstGoalSavedTip()
     
     @Environment(\.dismiss) private var dismiss
     @Environment(MainEngine.self) private var mainEngine
@@ -32,133 +39,175 @@ struct EditGoalView: View {
     let notificationDelegate = NotificationDelegate.shared
     
     @FocusState private var focusedField: FocusedField?
-    
+    @State private var shouldShowReminderTip = false
+    @Namespace private var reminderSection
+
     var body: some View {
         NavigationStack {
-            Form {
-                Section(){
-                    TextField("Goal name", text: $tmpGoal.name)
-                        .focused($focusedField, equals: .name)
-                        .submitLabel(.next)
-                        .onSubmit {
-                            focusedField = .description
-                        }
-                    TextField("Your motivation", text: $tmpGoal.goalMotivation, axis: .vertical)
-                        .submitLabel(.done)
-                        .lineLimit(1...10)
-                        .focused($focusedField, equals: .description)
-                        .onChange(of: tmpGoal.goalMotivation) { oldValue, newValue in
-                            if newValue.contains("\n") {
-                                tmpGoal.goalMotivation = newValue.replacingOccurrences(of: "\n", with: " ")
-                                focusedField = nil
-                            }
-                        }
-                }
-                Section {
-                    HStack{
-                        Text("Start date")
-                            .font(.footnote)
-                            .textCase(.uppercase)
-                            .foregroundColor(.gray)
-                        Spacer()
-                        Text(tmpGoal.goalStartDate.formatted(date: .numeric , time: .omitted))
-                            .foregroundStyle(showDatePicker ? .red : .blue)
-                            .onTapGesture(perform: {
-                                withAnimation{
-                                    showDatePicker.toggle()
+            ScrollViewReader { proxy in
+                
+                Form {
+                    Section(){
+                        TextField("Goal name", text: $tmpGoal.name)
+                            .popoverTip(goalNameTip)
+                            .focused($focusedField, equals: .name)
+                            .submitLabel(.next)
+                            .onSubmit {
+                                focusedField = .description
+                                if !tmpGoal.name.isEmpty && !mainEngine.hasEnteredGoalName {
+                                    mainEngine.markGoalNameEntered()
                                 }
-                                focusedField = nil
-                            })
+                            }
+                        TextField("Your motivation", text: $tmpGoal.goalMotivation, axis: .vertical)
+                            .popoverTip(goalMotivationTip)
+                            .submitLabel(.done)
+                            .lineLimit(1...10)
+                            .focused($focusedField, equals: .description)
+                            .onChange(of: tmpGoal.goalMotivation) { oldValue, newValue in
+                                if newValue.contains("\n") {
+                                    tmpGoal.goalMotivation = newValue.replacingOccurrences(of: "\n", with: "")
+                                    focusedField = nil
+                                    if !mainEngine.hasEnteredMotivation {
+                                        mainEngine.markMotivationEntered()
+                                    }
+                                }
+                            }
                     }
-                    .onTapGesture {
-                        focusedField = nil
-                    }
-                    if showDatePicker {
-                        DatePicker(
+                    Section {
+                        HStack{
+                            Text("Start date")
+                                .font(.footnote)
+                                .textCase(.uppercase)
+                                .foregroundColor(.gray)
+                            Spacer()
+                            Text(tmpGoal.goalStartDate.formatted(date: .numeric , time: .omitted))
+                                .foregroundStyle(showDatePicker ? .red : .blue)
+                                .onTapGesture(perform: {
+                                    withAnimation{
+                                        showDatePicker.toggle()
+                                    }
+                                    focusedField = nil
+                                })
+                        }
+                        .onTapGesture {
+                            focusedField = nil
+                        }
+                        if showDatePicker {
+                            DatePicker(
                                 "Start Date",
                                 selection: $tmpGoal.goalStartDate,
                                 displayedComponents: [.date]
                             )
                             .datePickerStyle(.graphical)
+                        }
                     }
-                }
-                Section(content: {
-                    HStack{
-                        Picker("Schedule type", selection: $scheduleType) {
-                            ForEach(ScheduleType.allCases) { frequency in
-                                Text(frequency.rawValue)
-                                    .tag(frequency)
+                    Section(content: {
+                        HStack{
+                            Picker("Schedule type", selection: $scheduleType) {
+                                ForEach(ScheduleType.allCases) { frequency in
+                                    Text(frequency.rawValue)
+                                        .tag(frequency)
+                                }
+                            }
+                            .onChange(of: scheduleType) { _, _ in
+                                if !mainEngine.hasSelectedSchedule {
+                                    mainEngine.markScheduleSelected()
+                                }
+                            }
+                        }
+                        .popoverTip(scheduleTypeTip)
+                        .onTapGesture {
+                            focusedField = nil
+                        }
+                    }, footer: {
+                        if scheduleType == .interval {
+                            Text("Task will repeat every: \(interval) \(interval == 1 ? "day" : "days")")
+                        } else if scheduleType == .weekly {
+                            Text("Task will repeat every: \(footer())")
+                        }
+                    })
+                    .onTapGesture {
+                        focusedField = nil
+                    }
+                    Section() {
+                        if scheduleType == .interval {
+                            IntervalPicker(interval: $interval, onInteraction: {
+                                focusedField = nil
+                            })
+                        } else if scheduleType == .weekly {
+                            DaysPicker(schedule: $weeklySchedule, onInteraction: {
+                                focusedField = nil
+                            })
+                        }
+                    }
+                    .onChange(of: scheduleType) { _, _ in
+                        if !mainEngine.hasSelectedSchedule {
+                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                withAnimation {
+                                    proxy.scrollTo(reminderSection, anchor: .top)
+                                    shouldShowReminderTip = true
+                                }
                             }
                         }
                     }
                     .onTapGesture {
                         focusedField = nil
                     }
-                }, footer: {
-                    if scheduleType == .interval {
-                        Text("Task will repeat every: \(interval) \(interval == 1 ? "day" : "days")")
-                    } else if scheduleType == .weekly {
-                        Text("Task will repeat every: \(footer())")
+                    Section() {
+                        ReminderTimePickerView(goal: $tmpGoal)
+                            .id(reminderSection)
+                            .popoverTip(shouldShowReminderTip ? reminderTimeTip : nil)
+                            .onChange(of: tmpGoal.reminderPreference.hours) { _, _ in
+                                if !mainEngine.hasSetReminder {
+                                    mainEngine.markReminderSet()
+                                }
+                            }
+                            .onChange(of: tmpGoal.reminderPreference.minutes) { _, _ in
+                                if !mainEngine.hasSetReminder {
+                                    mainEngine.markReminderSet()
+                                }
+                            }
                     }
-                })
-                .onTapGesture {
-                    focusedField = nil
-                }
-                Section() {
-                    if scheduleType == .interval {
-                        IntervalPicker(interval: $interval, onInteraction: {
-                            focusedField = nil
-                        })
-                    } else if scheduleType == .weekly {
-                        DaysPicker(schedule: $weeklySchedule, onInteraction: {
-                            focusedField = nil
-                        })
+                    .onTapGesture {
+                        focusedField = nil
                     }
-                }
-                .onTapGesture {
-                    focusedField = nil
-                }
-                Section() {
-                    ReminderTimePickerView(goal: $tmpGoal)
-                }
-                .onTapGesture {
-                    focusedField = nil
-                }
-                
-                HStack{
-                    Spacer()
-                    Button {
-                        if let goal {
-                            mainEngine.selectedGoal = nil
-                            goalViewModel.deleteGoal(goal: goal)
-                            dismiss()
-                        } else {
-                            dismiss()
+                    
+                    HStack{
+                        Spacer()
+                        Button {
+                            if let goal {
+                                mainEngine.selectedGoal = nil
+                                goalViewModel.deleteGoal(goal: goal)
+                                dismiss()
+                            } else {
+                                dismiss()
+                            }
+                        } label: {
+                            Label("Delete goal", systemImage: "x.circle")
+                                .labelStyle(.titleOnly)
+                                .tint(.red)
                         }
-                    } label: {
-                        Label("Delete goal", systemImage: "x.circle")
-                            .labelStyle(.titleOnly)
-                            .tint(.red)
+                        Spacer()
                     }
-                    Spacer()
                 }
-            }
-            .toolbar{
-                ToolbarItem(placement: .principal) {
-                    Text(windowTitle)
+                .scrollDismissesKeyboard(.immediately)
+                .toolbar{
+                    ToolbarItem(placement: .principal) {
+                        Text(windowTitle)
+                    }
+                    toolBarSaveButton
+                    toolBarCancelButton
                 }
-                toolBarSaveButton
-                toolBarCancelButton
-            }
-            .onAppear {
-                if let goal {
-                    goalViewModel.update(goal: tmpGoal, with: goal)
-                    if goal.interval != nil {
-                        interval = goal.interval!
-                        scheduleType = .interval
-                    }else if goal.weeklySchedule != nil {
-                        scheduleType = .weekly
-                        weeklySchedule = goal.weeklySchedule!
+                .onAppear {
+                    if let goal {
+                        goalViewModel.update(goal: tmpGoal, with: goal)
+                        if goal.interval != nil {
+                            interval = goal.interval!
+                            scheduleType = .interval
+                        }else if goal.weeklySchedule != nil {
+                            scheduleType = .weekly
+                            weeklySchedule = goal.weeklySchedule!
+                        }
                     }
                 }
             }
@@ -200,9 +249,16 @@ struct EditGoalView: View {
             goalViewModel.whatDoWeHaveToday(goal: tmpGoal)
             goalViewModel.addGoal(goal: tmpGoal)
         }
+        
         if await notificationDelegate.checkNotificationPermission() == .notDetermined {
             await mainEngine.requestNotificationPermission()
         }
+        
+        if goal == nil && !mainEngine.hasAddedFirstGoal {
+            mainEngine.markFirstGoalAdded()
+        }
+        dismiss()
+        mainEngine.selectedGoal = nil
     }
     
     @ToolbarContentBuilder
@@ -211,18 +267,17 @@ struct EditGoalView: View {
             Button("Save") {
                 Task{
                     await save()
-                    dismiss()
-                    mainEngine.selectedGoal = nil
                 }
             }
             .disabled(tmpGoal.name == "" ? true : false)
+            .popoverTip(firstGoalCompleteTip)
         }
     }
     
     @ToolbarContentBuilder
     private var toolBarCancelButton: some ToolbarContent {
         ToolbarItem(placement: .cancellationAction) {
-            Button("Calcel") {
+            Button("Cancel") {
                 dismiss()
                 goalViewModel.cancelChanges()
                 mainEngine.selectedGoal = nil
@@ -244,4 +299,3 @@ struct EditGoalView: View {
         .environment(MainEngine())
         .environment(GoalViewModel(mainEngine: mainEngine))
 }
-

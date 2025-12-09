@@ -14,8 +14,14 @@ struct GoalCardView: View {
     @State private var animateCheckmark: Bool = false
     @State private var isPressed: Bool = false
     
+    private let markAsDoneTip = MarkAsDoneTip()
+    private let editGoalTip = EditGoalTip()
+
+    
     var body: some View {
         HStack {
+            VStack{}
+            .popoverTip(editGoalTip, arrowEdge: .leading)
             VStack(alignment: .leading){
                 HStack(alignment: .center) {
                     Text(goal.name)
@@ -38,6 +44,7 @@ struct GoalCardView: View {
                         }
                     }
                 }
+                
                 if goal.goalMotivation != "" {
                     Text(goal.goalMotivation)
                         .font(.footnote)
@@ -67,6 +74,7 @@ struct GoalCardView: View {
                             }
                         //                        .frame(width: 60)
                     }
+
                 case (false, ScheduleCode.training.rawValue):
                     ZStack {
                         RoundedRectangle(cornerRadius: 30, style: .circular)
@@ -76,6 +84,7 @@ struct GoalCardView: View {
                             .labelStyle(.iconOnly)
                             .font(.title)
                     }
+                    .popoverTip(markAsDoneTip, arrowEdge: .trailing)
                 case (false, _):
                     ZStack {
                         RoundedRectangle(cornerRadius: 30, style: .circular)
@@ -85,13 +94,21 @@ struct GoalCardView: View {
                             .labelStyle(.iconOnly)
                             .font(.title)
                     }
+                    .popoverTip(markAsDoneTip, arrowEdge: .trailing)
                 }
+                
             }
         }
+
         .scaleEffect(isPressed ? 1.05 : 1)
         .onLongPressGesture(minimumDuration: 1.0) {
             withAnimation {
                 viewModel.toggleTodaysStatus(goal: goal)
+                if !viewModel.mainEngine.hasMarkedGoalDone {
+                    viewModel.mainEngine.markMarkGoalDone()
+                    viewModel.mainEngine.markOnboardingCompleted()
+                    viewModel.mainEngine.showAppIntroduction = false
+                }
             }
             #if os(iOS)
                 let generator = UIImpactFeedbackGenerator(style: .medium)

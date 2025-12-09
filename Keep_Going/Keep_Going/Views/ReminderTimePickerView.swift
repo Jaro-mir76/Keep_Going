@@ -19,7 +19,7 @@ struct ReminderTimePickerView: View {
                 .foregroundColor(.gray)
             Spacer()
             Text ("\(goal.reminderPreference.hours.rawValue < 10 ? "0": "")\(goal.reminderPreference.hours.rawValue):\(goal.reminderPreference.minutes.rawValue < 10 ? "0": "" )\(goal.reminderPreference.minutes.rawValue)")
-                .foregroundStyle(showTimeWheel ? .red : .black)
+                .foregroundStyle(showTimeWheel ? .red : .blue)
                 .onTapGesture {
                     withAnimation{
                         showTimeWheel.toggle()

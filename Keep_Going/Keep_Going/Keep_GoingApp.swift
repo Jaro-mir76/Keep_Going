@@ -9,20 +9,27 @@ import SwiftUI
 import SwiftData
 import BackgroundTasks
 import UserNotifications
+import TipKit
 
 @main
 struct Keep_GoingApp: App {
     @State private var mainEngine: MainEngine
     
     init() {
+        self.mainEngine = MainEngine()
+        if self.mainEngine.showAppIntroduction {
+            self.mainEngine.welcomePageVisible = true
+            self.mainEngine.appIconVisible = false
+        }
+        
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
         NotificationService.registerNotificationCategories()
         BackgroundTaskManager.shared.registerGoalReminder()
         
-        self.mainEngine = MainEngine()
-        if self.mainEngine.showWelcomePageDuringAppStart {
-            self.mainEngine.welcomePageVisible = true
-            self.mainEngine.appIconVisible = false
+        do {
+            try configureTipKit()
+        } catch {
+            print ("Couldn't configure tips center! \(error)")
         }
     }
     
@@ -46,5 +53,11 @@ struct Keep_GoingApp: App {
                 }
             }
         }
+    }
+    
+    private func configureTipKit() throws {
+        try Tips.resetDatastore()
+        
+        try Tips.configure()
     }
 }

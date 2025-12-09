@@ -8,7 +8,7 @@
 import Foundation
 
 struct AppStorageKeys {
-    static let showWelcomePageDuringAppStart = "showWelcomePageDuringAppStart"
+    static let showAppIntroduction = "showAppIntroduction"
     static let userWantsNotifications = "userWantsNotifications"
     static let latestGoalsRefreshDate = "latestGoalsRefreshDate"
     static let reminderIdentifier = "com.keepgoing.background.goals.reminder"
