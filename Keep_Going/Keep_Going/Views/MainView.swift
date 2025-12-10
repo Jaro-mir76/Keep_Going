@@ -53,7 +53,7 @@ struct MainView: View {
             .sheet(isPresented: $showEditing, onDismiss: {
                 if mainEngine.userIsEditingGoal == true && !mainEngine.hasEditedGoal {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
-                        mainEngine.markGoalEdited()
+                        mainEngine.tipsMarkGoalEdited()
                     }
                 }
                 mainEngine.userIsEditingGoal = false

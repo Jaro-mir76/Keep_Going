@@ -55,7 +55,7 @@ struct EditGoalView: View {
                             .onSubmit {
                                 focusedField = .description
                                 if !tmpGoal.name.isEmpty && !mainEngine.hasEnteredGoalName {
-                                    mainEngine.markGoalNameEntered()
+                                    mainEngine.tipsMarkGoalNameEntered()
                                 }
                             }
                         TextField("Your motivation", text: $tmpGoal.goalMotivation, axis: .vertical)
@@ -68,7 +68,7 @@ struct EditGoalView: View {
                                     tmpGoal.goalMotivation = newValue.replacingOccurrences(of: "\n", with: "")
                                     focusedField = nil
                                     if !mainEngine.hasEnteredMotivation {
-                                        mainEngine.markMotivationEntered()
+                                        mainEngine.tipsMarkMotivationEntered()
                                     }
                                 }
                             }
@@ -111,7 +111,7 @@ struct EditGoalView: View {
                             }
                             .onChange(of: scheduleType) { _, _ in
                                 if !mainEngine.hasSelectedSchedule {
-                                    mainEngine.markScheduleSelected()
+                                    mainEngine.tipsMarkScheduleSelected()
                                 }
                             }
                         }
@@ -159,12 +159,12 @@ struct EditGoalView: View {
                             .popoverTip(shouldShowReminderTip ? reminderTimeTip : nil)
                             .onChange(of: tmpGoal.reminderPreference.hours) { _, _ in
                                 if !mainEngine.hasSetReminder {
-                                    mainEngine.markReminderSet()
+                                    mainEngine.tipsMarkReminderSet()
                                 }
                             }
                             .onChange(of: tmpGoal.reminderPreference.minutes) { _, _ in
                                 if !mainEngine.hasSetReminder {
-                                    mainEngine.markReminderSet()
+                                    mainEngine.tipsMarkReminderSet()
                                 }
                             }
                     }
@@ -255,7 +255,7 @@ struct EditGoalView: View {
         }
         
         if goal == nil && !mainEngine.hasAddedFirstGoal {
-            mainEngine.markFirstGoalAdded()
+            mainEngine.tipsMarkFirstGoalAdded()
         }
         dismiss()
         mainEngine.selectedGoal = nil

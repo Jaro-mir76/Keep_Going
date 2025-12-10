@@ -99,16 +99,11 @@ struct GoalCardView: View {
                 
             }
         }
-
         .scaleEffect(isPressed ? 1.05 : 1)
-        .onLongPressGesture(minimumDuration: 1.0) {
+        .onLongPressGesture(minimumDuration: 0.7) {
             withAnimation {
                 viewModel.toggleTodaysStatus(goal: goal)
-                if !viewModel.mainEngine.hasMarkedGoalDone {
-                    viewModel.mainEngine.markMarkGoalDone()
-                    viewModel.mainEngine.markOnboardingCompleted()
-                    viewModel.mainEngine.showAppIntroduction = false
-                }
+                viewModel.mainEngine.tipsMarkMarkGoalDone()
             }
             #if os(iOS)
                 let generator = UIImpactFeedbackGenerator(style: .medium)

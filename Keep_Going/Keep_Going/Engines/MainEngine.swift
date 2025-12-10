@@ -84,31 +84,35 @@ class MainEngine {
         set { OnboardingProgress.hasCompletedOnboarding = newValue }
     }
     
-    func markFirstGoalAdded() {
+    func tipsMarkFirstGoalAdded() {
         hasAddedFirstGoal = true
     }
-    func markGoalNameEntered() {
+    func tipsMarkGoalNameEntered() {
         hasEnteredGoalName = true
     }
-    func markMotivationEntered() {
+    func tipsMarkMotivationEntered() {
         hasEnteredMotivation = true
     }
-    func markScheduleSelected() {
+    func tipsMarkScheduleSelected() {
         hasSelectedSchedule = true
     }
-    func markReminderSet() {
+    func tipsMarkReminderSet() {
         hasSetReminder = true
     }
-    func markFirstGoalSaved() {
+    func tipsMarkFirstGoalSaved() {
         hasSavedFirstGoal = true
     }
-    func markGoalEdited() {
+    func tipsMarkGoalEdited() {
         hasEditedGoal = true
     }
-    func markMarkGoalDone() {
-        hasMarkedGoalDone = true
+    func tipsMarkMarkGoalDone() {
+        if !hasMarkedGoalDone {
+            hasMarkedGoalDone = true
+            tipsMarkOnboardingCompleted()
+            showAppIntroduction = false
+        }
     }
-    func markOnboardingCompleted() {
+    func tipsMarkOnboardingCompleted() {
         hasCompletedOnboarding = true
     }
     
