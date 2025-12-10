@@ -76,20 +76,7 @@ struct MainView: View {
                 }
             })
             .onChange(of: scenePhase, { _, newValue in
-                switch newValue {
-                case .active:
-                    viewModel?.refreshIfNecesary()
-                    Task {
-                        await viewModel?.checkPermissions()
-                    }
-                case .inactive:
-                    return
-                case .background:
-                    viewModel?.updateAppBadge()
-                    BackgroundTaskManager.shared.scheduleGoalReminder()
-                @unknown default:
-                    break
-                }
+                viewModel?.followScenePhaseChange(scenePhase: newValue)
             })
         }
         .environment(viewModel)

@@ -8,6 +8,7 @@
 import Foundation
 import SwiftData
 import UserNotifications
+import SwiftUI
 
 @MainActor
 @Observable
@@ -248,6 +249,23 @@ class GoalViewModel {
             whatDoWeHaveToday(goal: goal)
         }
         self.fetchGoals()
+    }
+    
+    func followScenePhaseChange(scenePhase: ScenePhase) {
+        switch scenePhase {
+        case .active:
+            refreshIfNecesary()
+            Task {
+                await checkPermissions()
+            }
+        case .inactive:
+            return
+        case .background:
+            updateAppBadge()
+            BackgroundTaskManager.shared.scheduleGoalReminder()
+        @unknown default:
+            break
+        }
     }
     
     static func exampleGoal() -> [Goal] {
