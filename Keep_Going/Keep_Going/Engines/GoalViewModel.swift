@@ -98,6 +98,29 @@ class GoalViewModel {
         modelContainer.mainContext.rollback()
     }
     
+    func saveGoal(goal: Goal, scheduleType: ScheduleType) {
+        
+    }
+    
+    func update (goal: Goal, with otherGoal: Goal) {
+        goal.name = otherGoal.name
+        goal.goalMotivation = otherGoal.goalMotivation
+        goal.goalStartDate = otherGoal.goalStartDate
+        goal.requiredTime = otherGoal.requiredTime
+        goal.weeklySchedule = otherGoal.weeklySchedule?.sorted(by: { $0.rawValue < $1.rawValue })
+        goal.interval = otherGoal.interval
+        goal.reminderPreference.hours = otherGoal.reminderPreference.hours
+        goal.reminderPreference.minutes = otherGoal.reminderPreference.minutes
+        if otherGoal.done == true {
+            goal.date = otherGoal.date
+            goal.schedule = otherGoal.schedule
+            goal.done = otherGoal.done
+        } else {
+            whatDoWeHaveToday(goal: goal)
+        }
+        self.fetchGoals()
+    }
+    
     func deleteGoal(goal: Goal) {
         modelContainer.mainContext.delete(goal)
         fetchGoals()
@@ -230,25 +253,6 @@ class GoalViewModel {
             return true
         }
         return false
-    }
-        
-    func update (goal: Goal, with otherGoal: Goal) {
-        goal.name = otherGoal.name
-        goal.goalMotivation = otherGoal.goalMotivation
-        goal.goalStartDate = otherGoal.goalStartDate
-        goal.requiredTime = otherGoal.requiredTime
-        goal.weeklySchedule = otherGoal.weeklySchedule?.sorted(by: { $0.rawValue < $1.rawValue })
-        goal.interval = otherGoal.interval
-        goal.reminderPreference.hours = otherGoal.reminderPreference.hours
-        goal.reminderPreference.minutes = otherGoal.reminderPreference.minutes
-        if otherGoal.done == true {
-            goal.date = otherGoal.date
-            goal.schedule = otherGoal.schedule
-            goal.done = otherGoal.done
-        } else {
-            whatDoWeHaveToday(goal: goal)
-        }
-        self.fetchGoals()
     }
     
     func followScenePhaseChange(scenePhase: ScenePhase) {

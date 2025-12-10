@@ -234,14 +234,14 @@ struct EditGoalView: View {
                 tmpGoal.interval = interval
                 tmpGoal.weeklySchedule = nil
             } else if scheduleType == .weekly {
-                tmpGoal.weeklySchedule = weeklySchedule
                 tmpGoal.interval = nil
+                tmpGoal.weeklySchedule = weeklySchedule.sorted{$0.rawValue < $1.rawValue}
             }
             goalViewModel.update(goal: goal, with: tmpGoal)
         }else {
             if scheduleType == .interval {
-                tmpGoal.weeklySchedule = nil
                 tmpGoal.interval = interval
+                tmpGoal.weeklySchedule = nil
             } else if scheduleType == .weekly {
                 tmpGoal.interval = nil
                 tmpGoal.weeklySchedule = weeklySchedule.sorted{$0.rawValue < $1.rawValue}
