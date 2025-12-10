@@ -26,14 +26,14 @@ enum ScheduleCode: Int, CaseIterable, Codable {
     case freeDay = 1
 //    case done = 2
     
-    var rawValue: Int {
-        switch self {
-        case .training:
-            return 0
-        case .freeDay:
-            return 1
-//        case .done:
-//            return 2
-        }
-    }
+//    var rawValue: Int {
+//        switch self {
+//        case .training:
+//            return 0
+//        case .freeDay:
+//            return 1
+////        case .done:
+////            return 2
+//        }
+//    }
 }
