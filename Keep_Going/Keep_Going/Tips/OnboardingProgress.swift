@@ -10,33 +10,29 @@ import TipKit
 
 enum OnboardingProgress {
     @Parameter
-    static var hasAddedFirstGoal: Bool = false
+    static var hasAddedFirstGoal: Bool = true
     
     @Parameter
-    static var hasEnteredGoalName: Bool = false
+    static var hasEnteredGoalName: Bool = true
     
     @Parameter
-    static var hasEnteredMotivation: Bool = false
+    static var hasEnteredMotivation: Bool = true
     
     @Parameter
-    static var hasSelectedSchedule: Bool = false
+    static var hasSelectedSchedule: Bool = true
     
     @Parameter
-    static var hasSetReminder: Bool = false
+    static var hasSetReminder: Bool = true
     
     @Parameter
-    static var hasSavedFirstGoal: Bool = false
+    static var hasSavedFirstGoal: Bool = true
     
     @Parameter
-    static var hasEditedGoal: Bool = false
+    static var hasEditedGoal: Bool = true
     
     @Parameter
-    static var hasMarkedGoalDone: Bool = false
+    static var hasMarkedGoalDone: Bool = true
     
     @Parameter
-    static var hasCompletedOnboarding: Bool = false
-    
-    static func wasItDone(_ variable: Bool) -> Bool {
-        hasCompletedOnboarding == true ? true : variable
-    }
+    static var hasCompletedOnboarding: Bool = true
 }

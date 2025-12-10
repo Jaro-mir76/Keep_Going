@@ -29,16 +29,6 @@ class MainEngine {
             OnboardingProgress.hasEditedGoal = false
             OnboardingProgress.hasMarkedGoalDone = false
             OnboardingProgress.hasCompletedOnboarding = false
-        } else {
-            OnboardingProgress.hasAddedFirstGoal = true
-            OnboardingProgress.hasEnteredGoalName = true
-            OnboardingProgress.hasEnteredMotivation = true
-            OnboardingProgress.hasSelectedSchedule = true
-            OnboardingProgress.hasSetReminder = true
-            OnboardingProgress.hasSavedFirstGoal = true
-            OnboardingProgress.hasEditedGoal = true
-            OnboardingProgress.hasMarkedGoalDone = true
-            OnboardingProgress.hasCompletedOnboarding = true
         }
     }
     
@@ -57,55 +47,69 @@ class MainEngine {
         }
     }
     
-    private(set) var hasAddedFirstGoal: Bool = OnboardingProgress.wasItDone(OnboardingProgress.hasAddedFirstGoal)
-    private(set) var hasEnteredGoalName: Bool = OnboardingProgress.wasItDone(OnboardingProgress.hasEnteredGoalName)
-    private(set) var hasEnteredMotivation: Bool = OnboardingProgress.wasItDone(OnboardingProgress.hasEnteredMotivation)
-    private(set) var hasSelectedSchedule: Bool = OnboardingProgress.wasItDone(OnboardingProgress.hasSelectedSchedule)
-    private(set) var hasSetReminder: Bool = OnboardingProgress.wasItDone(OnboardingProgress.hasSetReminder)
-    private(set) var hasSavedFirstGoal: Bool = OnboardingProgress.wasItDone(OnboardingProgress.hasSavedFirstGoal)
-    private(set) var hasEditedGoal: Bool = OnboardingProgress.wasItDone(OnboardingProgress.hasEditedGoal)
-    private(set) var hasMarkedGoalDone: Bool = OnboardingProgress.wasItDone(OnboardingProgress.hasMarkedGoalDone)
-    private(set) var hasCompletedOnboarding: Bool = OnboardingProgress.wasItDone(OnboardingProgress.hasCompletedOnboarding)
-
+    private(set) var hasAddedFirstGoal: Bool {
+        get { OnboardingProgress.hasAddedFirstGoal }
+        set { OnboardingProgress.hasAddedFirstGoal = newValue }
+    }
+    private(set) var hasEnteredGoalName: Bool {
+        get { OnboardingProgress.hasEnteredGoalName }
+        set { OnboardingProgress.hasEnteredGoalName = newValue }
+    }
+    private(set) var hasEnteredMotivation: Bool {
+        get { OnboardingProgress.hasEnteredMotivation }
+        set { OnboardingProgress.hasEnteredMotivation = newValue }
+    }
+    private(set) var hasSelectedSchedule: Bool {
+        get { OnboardingProgress.hasSelectedSchedule }
+        set { OnboardingProgress.hasSelectedSchedule = newValue }
+    }
+    private(set) var hasSetReminder: Bool {
+        get { OnboardingProgress.hasSetReminder }
+        set { OnboardingProgress.hasSetReminder = newValue }
+    }
+    private(set) var hasSavedFirstGoal: Bool {
+        get { OnboardingProgress.hasSavedFirstGoal }
+        set { OnboardingProgress.hasSavedFirstGoal = newValue }
+    }
+    private(set) var hasEditedGoal: Bool {
+        get { OnboardingProgress.hasEditedGoal }
+        set { OnboardingProgress.hasEditedGoal = newValue }
+    }
+    private(set) var hasMarkedGoalDone: Bool {
+        get { OnboardingProgress.hasMarkedGoalDone }
+        set { OnboardingProgress.hasMarkedGoalDone = newValue }
+    }
+    private(set) var hasCompletedOnboarding: Bool {
+        get { OnboardingProgress.hasCompletedOnboarding }
+        set { OnboardingProgress.hasCompletedOnboarding = newValue }
+    }
+    
     func markFirstGoalAdded() {
         hasAddedFirstGoal = true
-        OnboardingProgress.hasAddedFirstGoal = true
     }
     func markGoalNameEntered() {
         hasEnteredGoalName = true
-        OnboardingProgress.hasEnteredGoalName = true
     }
     func markMotivationEntered() {
         hasEnteredMotivation = true
-        OnboardingProgress.hasEnteredMotivation = true
     }
     func markScheduleSelected() {
         hasSelectedSchedule = true
-        OnboardingProgress.hasSelectedSchedule = true
     }
     func markReminderSet() {
         hasSetReminder = true
-        OnboardingProgress.hasSetReminder = true
     }
     func markFirstGoalSaved() {
         hasSavedFirstGoal = true
-        OnboardingProgress.hasSavedFirstGoal = true
     }
     func markGoalEdited() {
         hasEditedGoal = true
-        OnboardingProgress.hasEditedGoal = true
     }
     func markMarkGoalDone() {
         hasMarkedGoalDone = true
-        OnboardingProgress.hasMarkedGoalDone = true
     }
     func markOnboardingCompleted() {
         hasCompletedOnboarding = true
-        OnboardingProgress.hasCompletedOnboarding = true
-    }
-
-    func conditionFulfilledFor(_ condition: Bool) -> Bool {
-        return !condition && !hasCompletedOnboarding
     }
     
     var _userWantsNotifications = UserDefaults.standard.bool(forKey: AppStorageKeys.userWantsNotifications)
