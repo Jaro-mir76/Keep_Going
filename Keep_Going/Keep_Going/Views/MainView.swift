@@ -58,7 +58,7 @@ struct MainView: View {
                 }
                 mainEngine.userIsEditingGoal = false
             }, content: {
-                EditGoalView(goal: mainEngine.selectedGoal)
+                EditGoalView()
             })
             .navigationDestination(isPresented: $showSettings) {
                 SettingsView()

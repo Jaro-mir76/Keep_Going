@@ -22,7 +22,7 @@ struct ScheduleTests {
     ])
     mutating func nextTrainingDate4IntervalTrue(date: Date) {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        let goal2daysInterval = Goal(name: "exampleGoalInterval2Days", goalMotivation: "example goal", interval: 2, creationDate: date)
+        let goal2daysInterval = Goal(name: "exampleGoalInterval2Days", goalMotivation: "example goal", scheduleType: ScheduleType(type: .interval, interval: 2), creationDate: date)
 
         #expect(goalViewModel.isItTrainingDayInterval(goal: goal2daysInterval) == true)
     }
@@ -34,24 +34,24 @@ struct ScheduleTests {
     ])
     mutating func nextTrainingDate4IntervalFalse(date: Date)  {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
-        let schedule2daysIntervalVer = Goal(name: "exampleGoalInterval2Days", goalMotivation: "", goalStartDate: date, interval: 2, creationDate: date)
+        let schedule2daysIntervalVer = Goal(name: "exampleGoalInterval2Days", goalMotivation: "", goalStartDate: date, scheduleType: ScheduleType(type: .interval, interval: 2), creationDate: date)
         
         #expect( goalViewModel.isItTrainingDayInterval(goal: schedule2daysIntervalVer) == false)
     }
     
     @Test("Training schedule is sorted from Monday to Sunday")
     mutating func trainingScheduleIsSorted() {
-        let goalSchedule = Goal(name: "goalSchedule", goalMotivation: "", weeklySchedule: [])
-        let newGoalParameters = Goal(name: "goalSchedule", goalMotivation: "", weeklySchedule: [.sunday, .monday, .friday])
+        let goalSchedule = Goal(name: "goalSchedule", goalMotivation: "", scheduleType: ScheduleType(type: .weekly, weeklySchedule: []))
+        let newGoalParameters = Goal(name: "goalSchedule", goalMotivation: "", scheduleType: ScheduleType(type: .weekly, weeklySchedule: [.sunday, .monday, .friday]))
         goalViewModel.update(goal: goalSchedule, with: newGoalParameters)
 
-        #expect(goalSchedule.weeklySchedule == [.monday, .friday, .sunday])
+        #expect(goalSchedule.scheduleType.weeklySchedule == [.monday, .friday, .sunday])
     }
     
     @Test("Next training dates for provided schedule [.monday] answer is not empty") mutating func nextTrainingDateforSchedule() {
 //        Aim of this test is to ensure that we get dates even if in current week the is not more trainings according to pattern
         let pattern: [WeekDay] = [.monday]
-        let goalSchedule = Goal(name: "goalSchedule", goalMotivation: "", weeklySchedule: pattern)
+        let goalSchedule = Goal(name: "goalSchedule", goalMotivation: "", scheduleType: ScheduleType(type: .weekly, weeklySchedule: pattern))
         
         let timezone = TimeZone.current
         let timeDifffromGMT = Double(timezone.secondsFromGMT())
@@ -64,7 +64,7 @@ struct ScheduleTests {
     @Test("Goal history save")
     mutating func goalHistorySaved() {
         //        before saving there should be no status
-        let goalHistorySaveTest = Goal(name: "goalHistorySaveTest", goalMotivation: "", interval: 2, creationDate: Date(), schedule: ScheduleCode.training.rawValue, done: false)
+        let goalHistorySaveTest = Goal(name: "goalHistorySaveTest", goalMotivation: "", scheduleType: ScheduleType(type: .interval, interval: 2), creationDate: Date(), schedule: ScheduleCode.training.rawValue, done: false)
         #expect(goalHistorySaveTest.history?.count == 0)
         
         //        after saving there should be status
@@ -104,7 +104,7 @@ struct ScheduleTests {
         goalStartDateComponents.minute = 30
         goalStartDateComponents.timeZone = .current
         let goalStartDate = Calendar.current.date(from: goalStartDateComponents)!
-        let goalSchedule = Goal(name: "goalScheduleTest", goalMotivation: "", goalStartDate: goalStartDate, weeklySchedule: [.tuesday, .friday, .sunday], schedule: nil)
+        let goalSchedule = Goal(name: "goalScheduleTest", goalMotivation: "", goalStartDate: goalStartDate, scheduleType: ScheduleType(type: .weekly, weeklySchedule: [.tuesday, .friday, .sunday]), schedule: nil)
         let trainingDays = goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: goalStartDate)
         
         #expect(trainingDays.count == 5)
@@ -120,7 +120,7 @@ struct ScheduleTests {
         goalStartDateComponents.minute = 30
         goalStartDateComponents.timeZone = .current
         let goalStartDate = Calendar.current.date(from: goalStartDateComponents)!
-        let goalSchedule = Goal(name: "goalScheduleTest", goalMotivation: "", goalStartDate: goalStartDate, weeklySchedule: [.tuesday, .friday, .sunday], schedule: nil)
+        let goalSchedule = Goal(name: "goalScheduleTest", goalMotivation: "", goalStartDate: goalStartDate, scheduleType: ScheduleType(type: .weekly, weeklySchedule: [.tuesday, .friday, .sunday]), schedule: nil)
         
 //  checking if logic works correctly for old goals
         var testDateComponents = DateComponents()
@@ -160,7 +160,7 @@ struct ScheduleTests {
         goalStartDateComponents.minute = 30
         goalStartDateComponents.timeZone = .current
         let goalStartDate = Calendar.current.date(from: goalStartDateComponents)!
-        let schedule2daysInterval = Goal(name: "exampleGoalInterval2Days", goalMotivation: "", goalStartDate: goalStartDate, interval: 2, creationDate: goalStartDate)
+        let schedule2daysInterval = Goal(name: "exampleGoalInterval2Days", goalMotivation: "", goalStartDate: goalStartDate, scheduleType: ScheduleType(type: .interval, interval: 2), creationDate: goalStartDate)
         
 //  checking if logic works correctly for old goals
         var testDateComponents = DateComponents()

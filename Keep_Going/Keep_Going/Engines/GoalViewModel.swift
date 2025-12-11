@@ -91,15 +91,29 @@ class GoalViewModel {
     
     func addGoal(goal: Goal) {
         modelContainer.mainContext.insert(goal)
+        whatDoWeHaveToday(goal: goal)
         fetchGoals()
     }
     
     func cancelChanges() {
-        modelContainer.mainContext.rollback()
+        mainEngine.selectedGoal = nil
     }
     
-    func saveGoal(goal: Goal, scheduleType: ScheduleType) {
+    func saveGoal(goal: Goal) async {
+        if let editedGoal = mainEngine.selectedGoal {
+            update(goal: editedGoal, with: goal)
+        } else {
+            addGoal(goal: goal)
+        }
         
+        if await notificationDelegate.checkNotificationPermission() == .notDetermined {
+            await mainEngine.requestNotificationPermission()
+        }
+        
+        if mainEngine.selectedGoal == nil && !mainEngine.hasAddedFirstGoal {
+            mainEngine.tipsMarkFirstGoalAdded()
+        }
+        mainEngine.selectedGoal = nil
     }
     
     func update (goal: Goal, with otherGoal: Goal) {
@@ -107,16 +121,16 @@ class GoalViewModel {
         goal.goalMotivation = otherGoal.goalMotivation
         goal.goalStartDate = otherGoal.goalStartDate
         goal.requiredTime = otherGoal.requiredTime
-        goal.weeklySchedule = otherGoal.weeklySchedule?.sorted(by: { $0.rawValue < $1.rawValue })
-        goal.interval = otherGoal.interval
+        goal.scheduleType.type = otherGoal.scheduleType.type
+        goal.scheduleType.interval = otherGoal.scheduleType.interval
+        goal.scheduleType.weeklySchedule = otherGoal.scheduleType.weeklySchedule.sorted(by: { $0.rawValue < $1.rawValue })
         goal.reminderPreference.hours = otherGoal.reminderPreference.hours
         goal.reminderPreference.minutes = otherGoal.reminderPreference.minutes
+        
+        whatDoWeHaveToday(goal: goal)
         if otherGoal.done == true {
             goal.date = otherGoal.date
-            goal.schedule = otherGoal.schedule
             goal.done = otherGoal.done
-        } else {
-            whatDoWeHaveToday(goal: goal)
         }
         self.fetchGoals()
     }
@@ -141,8 +155,7 @@ class GoalViewModel {
         var trainingDays: [Date] = []
         
         for futureWeek in [0, 7]{
-            guard goal.weeklySchedule != nil else {return []}
-            for i in goal.weeklySchedule!{
+            for i in goal.scheduleType.weeklySchedule{
                 let trainingDate = Date(timeInterval: Double(i.rawValue).day, since: firstDayOfWeek + Double(futureWeek).day)
                 if trainingDate.isLaterDay(than: goal.goalStartDate) && trainingDate.isLaterDay(than: scheduleStartDate) || trainingDate.isSameDay(as: scheduleStartDate){
                     trainingDays.append(trainingDate)
@@ -154,7 +167,7 @@ class GoalViewModel {
         
     //    function is setting goal status to default value base on interval/schedule
     func whatDoWeHaveToday(goal: Goal) {
-        if let _ = goal.interval {
+        if goal.scheduleType.type == .interval {
             if isItTrainingDayInterval(goal: goal) {
                 goal.schedule = ScheduleCode.training.rawValue
             }else {
@@ -224,7 +237,6 @@ class GoalViewModel {
         
 // function returning true if today is training day (based on interval)
     func isItTrainingDayInterval(goal: Goal, startingFrom: Date = Date.now) -> Bool {
-        guard goal.interval != nil else {return false}
         guard (startingFrom.isLaterDay(than: goal.goalStartDate) || startingFrom.isSameDay(as: goal.goalStartDate)) else {return false}
         let hoursFromCreationDate = Calendar.current.dateComponents([.hour], from: goal.goalStartDate, to: beginningOfDay(startingFrom)).hour ?? 0
         
@@ -234,7 +246,7 @@ class GoalViewModel {
         if reminder == 23 {
             daysFromCreationDate += 1
         }
-        let (reminderInterval, _) = daysFromCreationDate.remainderReportingOverflow(dividingBy: goal.interval!)
+        let (reminderInterval, _) = daysFromCreationDate.remainderReportingOverflow(dividingBy: goal.scheduleType.interval)
         if reminderInterval == 0 {
             return true
         }
@@ -280,8 +292,7 @@ class GoalViewModel {
             Goal(name: "Salsa",
                  goalMotivation: "5 min. of training every daily will make you muy bueno salsero.",
                  requiredTime: 5,
-                 weeklySchedule: nil,
-                 interval: 1,
+                 scheduleType: ScheduleType(type: .interval, interval: 1),
                  creationDate: Date(timeInterval: -20.day, since: Date.now),
                  history: [
                     Status(scheduleCode: .freeDay, done: false, date: Date(timeInterval: -1.day, since: beginingOfToday)),
@@ -298,8 +309,7 @@ class GoalViewModel {
             Goal(name: "Read - goal with long name to test...",
                  goalMotivation: "Read 10 pages every second day and you'll read.... a lot every year.",
                  requiredTime: nil,
-                 weeklySchedule: nil,
-                 interval: 3,
+                 scheduleType: ScheduleType(type: .interval, interval: 3),
                  creationDate: Date(timeInterval: -20.day, since: Date.now),
                  history: [
                     Status(scheduleCode: .freeDay, done: false, date: Date(timeInterval: -1.day, since: beginingOfToday)),
@@ -316,8 +326,7 @@ class GoalViewModel {
             Goal(name: "Spanish",
                  goalMotivation: "",
                  requiredTime: 5,
-                 weeklySchedule: [.tuesday, .thursday],
-                 interval: nil,
+                 scheduleType: ScheduleType(type: .weekly, weeklySchedule: [.tuesday, .thursday]),
                  creationDate: Date(timeInterval: -20.day, since: Date.now),
                  history: [
                     Status(scheduleCode: .training, done: true, date: Date(timeInterval: -1.day, since: beginingOfToday))
@@ -331,8 +340,7 @@ class GoalViewModel {
             Goal(name: "Japanese",
                  goalMotivation: "10 min daily and soon you'll speak like Bruce Lee.",
                  requiredTime: 5,
-                 weeklySchedule: [.monday, .wednesday, .friday],
-                 interval: nil,
+                 scheduleType: ScheduleType(type: .weekly, weeklySchedule: [.monday, .wednesday, .friday]),
                  creationDate: Date(timeInterval: -20.day, since: Date.now),
                  history: [
                     Status(scheduleCode: .training, done: true, date: Date(timeInterval: 0.day, since: beginingOfToday))

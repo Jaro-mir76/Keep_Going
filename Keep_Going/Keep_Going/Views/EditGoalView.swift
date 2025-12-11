@@ -15,9 +15,9 @@ struct EditGoalView: View {
         case description
     }
     
-    let goal: Goal?
+//    let goal: Goal?
     private var windowTitle: String {
-        goal == nil ? "New goal" : "Editing: \(goal!.name)"
+        mainEngine.selectedGoal == nil ? "New goal" : "Editing: \(mainEngine.selectedGoal!.name)"
     }
     
     private let goalNameTip = GoalNameTip()
@@ -28,13 +28,10 @@ struct EditGoalView: View {
     
     @Environment(\.dismiss) private var dismiss
     @Environment(MainEngine.self) private var mainEngine
-    @Environment(GoalViewModel.self) private var goalViewModel
+    @Environment(GoalViewModel.self) private var viewModel
     
     @State private var showDatePicker = false
-    @State private var tmpGoal = Goal(name: "", goalMotivation: "")
-    @State private var scheduleType: ScheduleType = .interval
-    @State private var weeklySchedule: [WeekDay] = []
-    @State private var interval: Int = 1
+    @State private var tmpGoal = Goal(name: "", goalMotivation: "", scheduleType: ScheduleType(type: .interval, interval: 1))
     @State private var reminderTime: Reminder?
     let notificationDelegate = NotificationDelegate.shared
     
@@ -103,13 +100,13 @@ struct EditGoalView: View {
                     }
                     Section(content: {
                         HStack{
-                            Picker("Schedule type", selection: $scheduleType) {
-                                ForEach(ScheduleType.allCases) { frequency in
+                            Picker("Schedule type", selection: $tmpGoal.scheduleType.type) {
+                                ForEach(ScheduleType.ScheduleTypes.allCases) { frequency in
                                     Text(frequency.rawValue)
                                         .tag(frequency)
                                 }
                             }
-                            .onChange(of: scheduleType) { _, _ in
+                            .onChange(of: tmpGoal.scheduleType.type) { _, _ in
                                 if !mainEngine.hasSelectedSchedule {
                                     mainEngine.tipsMarkScheduleSelected()
                                 }
@@ -120,27 +117,23 @@ struct EditGoalView: View {
                             focusedField = nil
                         }
                     }, footer: {
-                        if scheduleType == .interval {
-                            Text("Task will repeat every: \(interval) \(interval == 1 ? "day" : "days")")
-                        } else if scheduleType == .weekly {
-                            Text("Task will repeat every: \(footer())")
-                        }
+                        Text(footer())
                     })
                     .onTapGesture {
                         focusedField = nil
                     }
                     Section() {
-                        if scheduleType == .interval {
-                            IntervalPicker(interval: $interval, onInteraction: {
+                        if tmpGoal.scheduleType.type == .interval {
+                            IntervalPicker(interval: $tmpGoal.scheduleType.interval, onInteraction: {
                                 focusedField = nil
                             })
-                        } else if scheduleType == .weekly {
-                            DaysPicker(schedule: $weeklySchedule, onInteraction: {
+                        } else if tmpGoal.scheduleType.type == .weekly {
+                            DaysPicker(schedule: $tmpGoal.scheduleType.weeklySchedule, onInteraction: {
                                 focusedField = nil
                             })
                         }
                     }
-                    .onChange(of: scheduleType) { _, _ in
+                    .onChange(of: tmpGoal.scheduleType.type) { _, _ in
                         if !mainEngine.hasSelectedSchedule {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 withAnimation {
@@ -175,9 +168,9 @@ struct EditGoalView: View {
                     HStack{
                         Spacer()
                         Button {
-                            if let goal {
+                            if let goal = mainEngine.selectedGoal {
                                 mainEngine.selectedGoal = nil
-                                goalViewModel.deleteGoal(goal: goal)
+                                viewModel.deleteGoal(goal: goal)
                                 dismiss()
                             } else {
                                 dismiss()
@@ -199,15 +192,8 @@ struct EditGoalView: View {
                     toolBarCancelButton
                 }
                 .onAppear {
-                    if let goal {
-                        goalViewModel.update(goal: tmpGoal, with: goal)
-                        if goal.interval != nil {
-                            interval = goal.interval!
-                            scheduleType = .interval
-                        }else if goal.weeklySchedule != nil {
-                            scheduleType = .weekly
-                            weeklySchedule = goal.weeklySchedule!
-                        }
+                    if let goal = mainEngine.selectedGoal {
+                        viewModel.update(goal: tmpGoal, with: goal)
                     }
                 }
             }
@@ -216,12 +202,18 @@ struct EditGoalView: View {
     private func footer() -> String {
         var str: String = ""
         var counter: Int = 0
-        for day in WeekDay.allCases {
-            if weeklySchedule.contains(day) {
-                str.append(day.name)
-                counter += 1
-                if counter < weeklySchedule.count {
-                    str.append(", ")
+
+        if tmpGoal.scheduleType.type == .interval {
+            str = "Task will repeat every: \(tmpGoal.scheduleType.interval) \(tmpGoal.scheduleType.interval == 1 ? "day" : "days")"
+        } else if tmpGoal.scheduleType.type == .weekly {
+            str = "Task will repeat every: "
+            for day in WeekDay.allCases {
+                if tmpGoal.scheduleType.weeklySchedule.contains(day) {
+                    str.append(day.name)
+                    counter += 1
+                    if counter < tmpGoal.scheduleType.weeklySchedule.count {
+                        str.append(", ")
+                    }
                 }
             }
         }
@@ -229,36 +221,8 @@ struct EditGoalView: View {
     }
     
     private func save() async {
-        if let goal {
-            if scheduleType == .interval {
-                tmpGoal.interval = interval
-                tmpGoal.weeklySchedule = nil
-            } else if scheduleType == .weekly {
-                tmpGoal.interval = nil
-                tmpGoal.weeklySchedule = weeklySchedule.sorted{$0.rawValue < $1.rawValue}
-            }
-            goalViewModel.update(goal: goal, with: tmpGoal)
-        }else {
-            if scheduleType == .interval {
-                tmpGoal.interval = interval
-                tmpGoal.weeklySchedule = nil
-            } else if scheduleType == .weekly {
-                tmpGoal.interval = nil
-                tmpGoal.weeklySchedule = weeklySchedule.sorted{$0.rawValue < $1.rawValue}
-            }
-            goalViewModel.whatDoWeHaveToday(goal: tmpGoal)
-            goalViewModel.addGoal(goal: tmpGoal)
-        }
-        
-        if await notificationDelegate.checkNotificationPermission() == .notDetermined {
-            await mainEngine.requestNotificationPermission()
-        }
-        
-        if goal == nil && !mainEngine.hasAddedFirstGoal {
-            mainEngine.tipsMarkFirstGoalAdded()
-        }
+        await viewModel.saveGoal(goal: tmpGoal)
         dismiss()
-        mainEngine.selectedGoal = nil
     }
     
     @ToolbarContentBuilder
@@ -279,23 +243,27 @@ struct EditGoalView: View {
         ToolbarItem(placement: .cancellationAction) {
             Button("Cancel") {
                 dismiss()
-                goalViewModel.cancelChanges()
-                mainEngine.selectedGoal = nil
+                viewModel.cancelChanges()
+                
             }
         }
     }
 }
 
 #Preview("Edit Goal") {
-    var mainEngine = MainEngine()
-    EditGoalView(goal: GoalViewModel.exampleGoal()[1])
+    @Previewable @State var mainEngine: MainEngine = {
+        let engine = MainEngine()
+        engine.selectedGoal = GoalViewModel.exampleGoal()[1]
+        return engine
+    }()
+    EditGoalView()
         .environment(MainEngine())
         .environment(GoalViewModel(mainEngine: mainEngine))
 }
 
 #Preview("Add Goal") {
     var mainEngine = MainEngine()
-    EditGoalView(goal: nil)
+    EditGoalView()
         .environment(MainEngine())
         .environment(GoalViewModel(mainEngine: mainEngine))
 }

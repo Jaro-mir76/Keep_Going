@@ -15,8 +15,8 @@ class Goal {
     var goalStartDate: Date
 //    requiredTime is in minutes
     var requiredTime: Int?
-    var weeklySchedule: [WeekDay]?
-    var interval: Int?
+    @Relationship(deleteRule: .cascade)
+    var scheduleType: ScheduleType
     @Relationship(deleteRule: .cascade)
     var reminderPreference: Reminder
     
@@ -39,13 +39,12 @@ class Goal {
     var date: Date
     var done: Bool
     
-    init(name: String, goalMotivation: String, goalStartDate: Date = Date(), requiredTime: Int? = nil, weeklySchedule: [WeekDay]? = nil, interval: Int? = nil, reminderPreference: Reminder = Reminder(hours: .eight, minutes: .zero), creationDate: Date = Date(), history: [Status]? = [], total: Int = 0, strike: Int = 0, strikeCheckDate: Date = Date(), schedule: ScheduleCode.RawValue? = nil, date: Date = Date(), done: Bool = false) {
+    init(name: String, goalMotivation: String, goalStartDate: Date = Date(), requiredTime: Int? = nil, scheduleType: ScheduleType = ScheduleType(type: .interval, interval: 1), reminderPreference: Reminder = Reminder(hours: .eight, minutes: .zero), creationDate: Date = Date(), history: [Status]? = [], total: Int = 0, strike: Int = 0, strikeCheckDate: Date = Date(), schedule: ScheduleCode.RawValue? = nil, date: Date = Date(), done: Bool = false) {
         self.name = name
         self.goalMotivation = goalMotivation
         self.goalStartDate = Calendar.current.startOfDay(for: goalStartDate)
         self.requiredTime = requiredTime
-        self.weeklySchedule = weeklySchedule
-        self.interval = interval
+        self.scheduleType = scheduleType
         self.reminderPreference = reminderPreference
         self.creationDate = Calendar.current.startOfDay(for: creationDate)
         self.history = history
