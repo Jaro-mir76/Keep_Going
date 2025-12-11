@@ -51,7 +51,7 @@ struct MainView: View {
             }
             .background(Color.appBackground)
             .sheet(isPresented: $showEditing, onDismiss: {
-                if mainEngine.userIsEditingGoal == true && !mainEngine.hasEditedGoal {
+                if mainEngine.userIsEditingGoal == true && !mainEngine.hasEditedGoalTip {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         mainEngine.tipsMarkGoalEdited()
                     }

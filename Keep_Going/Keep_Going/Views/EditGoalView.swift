@@ -51,7 +51,7 @@ struct EditGoalView: View {
                             .submitLabel(.next)
                             .onSubmit {
                                 focusedField = .description
-                                if !tmpGoal.name.isEmpty && !mainEngine.hasEnteredGoalName {
+                                if !tmpGoal.name.isEmpty && !mainEngine.hasEnteredGoalNameTip {
                                     mainEngine.tipsMarkGoalNameEntered()
                                 }
                             }
@@ -64,7 +64,7 @@ struct EditGoalView: View {
                                 if newValue.contains("\n") {
                                     tmpGoal.goalMotivation = newValue.replacingOccurrences(of: "\n", with: "")
                                     focusedField = nil
-                                    if !mainEngine.hasEnteredMotivation {
+                                    if !mainEngine.hasEnteredMotivationTip {
                                         mainEngine.tipsMarkMotivationEntered()
                                     }
                                 }
@@ -107,7 +107,7 @@ struct EditGoalView: View {
                                 }
                             }
                             .onChange(of: tmpGoal.scheduleType.type) { _, _ in
-                                if !mainEngine.hasSelectedSchedule {
+                                if !mainEngine.hasSelectedScheduleTip {
                                     mainEngine.tipsMarkScheduleSelected()
                                 }
                             }
@@ -134,7 +134,7 @@ struct EditGoalView: View {
                         }
                     }
                     .onChange(of: tmpGoal.scheduleType.type) { _, _ in
-                        if !mainEngine.hasSelectedSchedule {
+                        if !mainEngine.hasSelectedScheduleTip {
                             DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
                                 withAnimation {
                                     proxy.scrollTo(reminderSection, anchor: .top)
@@ -151,12 +151,12 @@ struct EditGoalView: View {
                             .id(reminderSection)
                             .popoverTip(shouldShowReminderTip ? reminderTimeTip : nil)
                             .onChange(of: tmpGoal.reminderPreference.hours) { _, _ in
-                                if !mainEngine.hasSetReminder {
+                                if !mainEngine.hasSetReminderTip {
                                     mainEngine.tipsMarkReminderSet()
                                 }
                             }
                             .onChange(of: tmpGoal.reminderPreference.minutes) { _, _ in
-                                if !mainEngine.hasSetReminder {
+                                if !mainEngine.hasSetReminderTip {
                                     mainEngine.tipsMarkReminderSet()
                                 }
                             }

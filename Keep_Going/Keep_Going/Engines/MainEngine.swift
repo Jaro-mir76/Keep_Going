@@ -47,73 +47,73 @@ class MainEngine {
         }
     }
     
-    private(set) var hasAddedFirstGoal: Bool {
+    private(set) var hasAddedFirstGoalTip: Bool {
         get { OnboardingProgress.hasAddedFirstGoal }
         set { OnboardingProgress.hasAddedFirstGoal = newValue }
     }
-    private(set) var hasEnteredGoalName: Bool {
+    private(set) var hasEnteredGoalNameTip: Bool {
         get { OnboardingProgress.hasEnteredGoalName }
         set { OnboardingProgress.hasEnteredGoalName = newValue }
     }
-    private(set) var hasEnteredMotivation: Bool {
+    private(set) var hasEnteredMotivationTip: Bool {
         get { OnboardingProgress.hasEnteredMotivation }
         set { OnboardingProgress.hasEnteredMotivation = newValue }
     }
-    private(set) var hasSelectedSchedule: Bool {
+    private(set) var hasSelectedScheduleTip: Bool {
         get { OnboardingProgress.hasSelectedSchedule }
         set { OnboardingProgress.hasSelectedSchedule = newValue }
     }
-    private(set) var hasSetReminder: Bool {
+    private(set) var hasSetReminderTip: Bool {
         get { OnboardingProgress.hasSetReminder }
         set { OnboardingProgress.hasSetReminder = newValue }
     }
-    private(set) var hasSavedFirstGoal: Bool {
+    private(set) var hasSavedFirstGoalTip: Bool {
         get { OnboardingProgress.hasSavedFirstGoal }
         set { OnboardingProgress.hasSavedFirstGoal = newValue }
     }
-    private(set) var hasEditedGoal: Bool {
+    private(set) var hasEditedGoalTip: Bool {
         get { OnboardingProgress.hasEditedGoal }
         set { OnboardingProgress.hasEditedGoal = newValue }
     }
-    private(set) var hasMarkedGoalDone: Bool {
+    private(set) var hasMarkedGoalDoneTip: Bool {
         get { OnboardingProgress.hasMarkedGoalDone }
         set { OnboardingProgress.hasMarkedGoalDone = newValue }
     }
-    private(set) var hasCompletedOnboarding: Bool {
+    private(set) var hasCompletedOnboardingTip: Bool {
         get { OnboardingProgress.hasCompletedOnboarding }
         set { OnboardingProgress.hasCompletedOnboarding = newValue }
     }
     
     func tipsMarkFirstGoalAdded() {
-        hasAddedFirstGoal = true
+        hasAddedFirstGoalTip = true
     }
     func tipsMarkGoalNameEntered() {
-        hasEnteredGoalName = true
+        hasEnteredGoalNameTip = true
     }
     func tipsMarkMotivationEntered() {
-        hasEnteredMotivation = true
+        hasEnteredMotivationTip = true
     }
     func tipsMarkScheduleSelected() {
-        hasSelectedSchedule = true
+        hasSelectedScheduleTip = true
     }
     func tipsMarkReminderSet() {
-        hasSetReminder = true
+        hasSetReminderTip = true
     }
     func tipsMarkFirstGoalSaved() {
-        hasSavedFirstGoal = true
+        hasSavedFirstGoalTip = true
     }
     func tipsMarkGoalEdited() {
-        hasEditedGoal = true
+        hasEditedGoalTip = true
     }
     func tipsMarkMarkGoalDone() {
-        if !hasMarkedGoalDone {
-            hasMarkedGoalDone = true
+        if !hasMarkedGoalDoneTip {
+            hasMarkedGoalDoneTip = true
             tipsMarkOnboardingCompleted()
             showAppIntroduction = false
         }
     }
     func tipsMarkOnboardingCompleted() {
-        hasCompletedOnboarding = true
+        hasCompletedOnboardingTip = true
     }
     
     var _userWantsNotifications = UserDefaults.standard.bool(forKey: AppStorageKeys.userWantsNotifications)

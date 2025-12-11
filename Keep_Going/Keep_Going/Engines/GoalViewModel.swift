@@ -110,7 +110,7 @@ class GoalViewModel {
             await mainEngine.requestNotificationPermission()
         }
         
-        if mainEngine.selectedGoal == nil && !mainEngine.hasAddedFirstGoal {
+        if mainEngine.selectedGoal == nil && !mainEngine.hasAddedFirstGoalTip {
             mainEngine.tipsMarkFirstGoalAdded()
         }
         mainEngine.selectedGoal = nil
