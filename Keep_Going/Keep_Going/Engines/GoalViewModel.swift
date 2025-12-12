@@ -14,11 +14,15 @@ import SwiftUI
 @Observable
 class GoalViewModel {
     var mainEngine: MainEngine
-    var notificationDelegate: NotificationDelegate
-    var goals: [Goal] = []
     let modelContainer: ModelContainer
-    private var latestGoalsRefreshDate: Date = Date()
+    
+    var notificationDelegate: NotificationDelegate
     var permissionStatus: UNAuthorizationStatus = .notDetermined
+    
+    var goals: [Goal] = []
+    private var latestGoalsRefreshDate: Date = Date()
+    var deletionConfirmationVisible: Bool = false
+    
     var showWarningBadge: Bool = false
     
     init(mainEngine: MainEngine, notificationDelegate: NotificationDelegate = .shared) {

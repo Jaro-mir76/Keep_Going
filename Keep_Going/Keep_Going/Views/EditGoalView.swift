@@ -40,9 +40,9 @@ struct EditGoalView: View {
     @Namespace private var reminderSection
 
     var body: some View {
+        @Bindable var viewModel = viewModel
         NavigationStack {
             ScrollViewReader { proxy in
-                
                 Form {
                     Section(){
                         TextField("Goal name", text: $tmpGoal.name)
@@ -164,23 +164,38 @@ struct EditGoalView: View {
                     .onTapGesture {
                         focusedField = nil
                     }
-                    
-                    HStack{
-                        Spacer()
-                        Button {
-                            if let goal = mainEngine.selectedGoal {
-                                mainEngine.selectedGoal = nil
-                                viewModel.deleteGoal(goal: goal)
-                                dismiss()
-                            } else {
-                                dismiss()
+                    if let goal = mainEngine.selectedGoal {
+                        HStack{
+                            Spacer()
+                            Button {
+                                viewModel.deletionConfirmationVisible = true
+                            } label: {
+                                Label("Delete goal", systemImage: "x.circle")
+                                    .labelStyle(.titleOnly)
+                                    .tint(.red)
                             }
-                        } label: {
-                            Label("Delete goal", systemImage: "x.circle")
-                                .labelStyle(.titleOnly)
-                                .tint(.red)
+                            Spacer()
                         }
-                        Spacer()
+                        .confirmationDialog("Are you sure you want to delete \(goal.name)?", isPresented: $viewModel.deletionConfirmationVisible, titleVisibility: .visible, actions: { MyEqualWidthHstack {
+                                Spacer()
+                                Button("Delete") {
+                                    mainEngine.selectedGoal = nil
+                                    viewModel.deletionConfirmationVisible = false
+                                    viewModel.deleteGoal(goal: goal)
+                                    dismiss()
+                                }
+                                .buttonStyle(.bordered)
+                                .tint(.red)
+                                Spacer()
+                                Button("Cancel") {
+                                    viewModel.deletionConfirmationVisible = false
+                                }
+                                .buttonStyle(.borderedProminent)
+                                Spacer()
+                            }
+                        }, message: {
+                            Text("Deleting \(goal.name) will remove it permanently!")
+                        })
                     }
                 }
                 .scrollDismissesKeyboard(.immediately)
@@ -253,11 +268,11 @@ struct EditGoalView: View {
 #Preview("Edit Goal") {
     @Previewable @State var mainEngine: MainEngine = {
         let engine = MainEngine()
-        engine.selectedGoal = GoalViewModel.exampleGoal()[1]
+        engine.selectedGoal = GoalViewModel.exampleGoal()[0]
         return engine
     }()
     EditGoalView()
-        .environment(MainEngine())
+        .environment(mainEngine)
         .environment(GoalViewModel(mainEngine: mainEngine))
 }
 
