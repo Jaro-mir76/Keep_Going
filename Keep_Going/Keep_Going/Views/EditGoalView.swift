@@ -232,6 +232,10 @@ struct EditGoalView: View {
                         })
                     }
                 }
+                .background(content: {
+                    MyBackgroundView()
+                })
+                .scrollContentBackground(.hidden)
                 .scrollDismissesKeyboard(.immediately)
                 .toolbar{
                     ToolbarItem(placement: .principal) {

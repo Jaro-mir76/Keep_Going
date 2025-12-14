@@ -44,6 +44,9 @@ struct MainView: View {
                         .listRowSeparatorTint(Color.appBorder)
                 }
             }
+            .background(content: {
+                MyBackgroundView()
+            })
             .scrollContentBackground(.hidden)
             .toolbar{
                 toolBarAddGoalButton

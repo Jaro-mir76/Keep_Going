@@ -22,7 +22,10 @@ struct WelcomeView: View {
                 HowToPage()
                     .tag(3)
             }
-            .background(Color.appBackground, ignoresSafeAreaEdges: .all)
+//            .background(Color.appBackground, ignoresSafeAreaEdges: .all)
+            .background(content: {
+                MyBackgroundView()
+            })
             .tabViewStyle(.page)
             NextSkipDoneButtonsView()
         }

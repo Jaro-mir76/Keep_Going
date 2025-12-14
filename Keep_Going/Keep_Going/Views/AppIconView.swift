@@ -29,7 +29,10 @@ struct AppIconView: View {
             Spacer()
         }
         .frame(maxWidth: .infinity)
-        .background(Color.appBackground)
+        .background(content: {
+            MyBackgroundView()
+        })
+//        .background(Color.appBackground)
     }
 }
 
