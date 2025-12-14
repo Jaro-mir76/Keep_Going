@@ -310,7 +310,7 @@ class GoalViewModel {
                  schedule: ScheduleCode.training.rawValue,
                  date: Date(timeInterval: -1.day, since: beginingOfToday),
                  done: true),
-            Goal(name: "Read - goal with long name to test...",
+            Goal(name: "Read - goal with long name to test.",
                  goalMotivation: "Read 10 pages every second day and you'll read.... a lot every year.",
                  requiredTime: nil,
                  scheduleType: ScheduleType(type: .interval, interval: 3),
