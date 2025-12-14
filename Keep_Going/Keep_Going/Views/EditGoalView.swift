@@ -176,31 +176,11 @@ struct EditGoalView: View {
                             }
                             Spacer()
                         }
-//                        .confirmationDialog ("Are you sure you want to delete \(goal.name)?", isPresented: $viewModel.deletionConfirmationVisible, titleVisibility: .visible, actions: { MyEqualWidthHstack {
-//                                Spacer()
-//                                Button("Delete") {
-//                                    mainEngine.selectedGoal = nil
-//                                    viewModel.deletionConfirmationVisible = false
-//                                    viewModel.deleteGoal(goal: goal)
-//                                    dismiss()
-//                                }
-//                                .buttonStyle(.bordered)
-//                                .tint(.red)
-//                                Spacer()
-//                                Button("Cancel") {
-//                                    viewModel.deletionConfirmationVisible = false
-//                                }
-//                                .buttonStyle(.borderedProminent)
-//                                Spacer()
-//                            }
-//                        }, message: {
-//                            Text("Deleting \(goal.name) will remove it permanently!")
-//                        })
                         .sheet(isPresented: $viewModel.deletionConfirmationVisible, content: {
                             VStack {
-                                Text("Are you sure you want to delete \(goal.name)?")
+                                Text("Do you really want to delete \(goal.name)?")
                                     .font(.title3)
-                                Text("Deleting \(goal.name) will remove it permanently!")
+//                                Text("Deleting \(goal.name) will remove it permanently!")
                                 MyEqualWidthHstack {
                                     Button(action: {
                                         mainEngine.selectedGoal = nil
@@ -228,6 +208,7 @@ struct EditGoalView: View {
                                 .padding(10)
                             }
                             .padding(.top, 10)
+                            .padding(.horizontal, 20)
                             .presentationDetents([.height(170)])
                         })
                     }
@@ -306,7 +287,7 @@ struct EditGoalView: View {
 #Preview("Edit Goal") {
     @Previewable @State var mainEngine: MainEngine = {
         let engine = MainEngine()
-        engine.selectedGoal = GoalViewModel.exampleGoal()[0]
+        engine.selectedGoal = GoalViewModel.exampleGoal()[1]
         return engine
     }()
     EditGoalView()
