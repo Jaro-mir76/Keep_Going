@@ -52,7 +52,7 @@ struct MainView: View {
                 toolBarAddGoalButton
                 toolBarSettingsButton
             }
-            .background(Color.appBackground)
+//            .background(Color.appBackground)
             .sheet(isPresented: $showEditing, onDismiss: {
                 if mainEngine.userIsEditingGoal == true && !mainEngine.hasEditedGoalTip {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
