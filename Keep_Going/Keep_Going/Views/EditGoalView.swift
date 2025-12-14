@@ -176,25 +176,59 @@ struct EditGoalView: View {
                             }
                             Spacer()
                         }
-                        .confirmationDialog("Are you sure you want to delete \(goal.name)?", isPresented: $viewModel.deletionConfirmationVisible, titleVisibility: .visible, actions: { MyEqualWidthHstack {
-                                Spacer()
-                                Button("Delete") {
-                                    mainEngine.selectedGoal = nil
-                                    viewModel.deletionConfirmationVisible = false
-                                    viewModel.deleteGoal(goal: goal)
-                                    dismiss()
+//                        .confirmationDialog ("Are you sure you want to delete \(goal.name)?", isPresented: $viewModel.deletionConfirmationVisible, titleVisibility: .visible, actions: { MyEqualWidthHstack {
+//                                Spacer()
+//                                Button("Delete") {
+//                                    mainEngine.selectedGoal = nil
+//                                    viewModel.deletionConfirmationVisible = false
+//                                    viewModel.deleteGoal(goal: goal)
+//                                    dismiss()
+//                                }
+//                                .buttonStyle(.bordered)
+//                                .tint(.red)
+//                                Spacer()
+//                                Button("Cancel") {
+//                                    viewModel.deletionConfirmationVisible = false
+//                                }
+//                                .buttonStyle(.borderedProminent)
+//                                Spacer()
+//                            }
+//                        }, message: {
+//                            Text("Deleting \(goal.name) will remove it permanently!")
+//                        })
+                        .sheet(isPresented: $viewModel.deletionConfirmationVisible, content: {
+                            VStack {
+                                Text("Are you sure you want to delete \(goal.name)?")
+                                    .font(.title3)
+                                Text("Deleting \(goal.name) will remove it permanently!")
+                                MyEqualWidthHstack {
+                                    Button(action: {
+                                        mainEngine.selectedGoal = nil
+                                        viewModel.deletionConfirmationVisible = false
+                                        viewModel.deleteGoal(goal: goal)
+                                        dismiss()
+                                    }, label: {
+                                        Text("Delete")
+                                            .frame(maxWidth: .infinity)
+                                            .padding(5)
+                                            .padding(.horizontal, 10)
+                                    })
+                                        .buttonStyle(.bordered)
+                                        .tint(.red)
+                                    Button(action: {
+                                        viewModel.deletionConfirmationVisible = false
+                                    }, label: {
+                                        Text("Cancel")
+                                            .frame(maxWidth: .infinity)
+                                            .padding(.vertical, 5)
+                                            .padding(.horizontal, 10)
+                                    })
+                                        .buttonStyle(.borderedProminent)
                                 }
-                                .buttonStyle(.bordered)
-                                .tint(.red)
-                                Spacer()
-                                Button("Cancel") {
-                                    viewModel.deletionConfirmationVisible = false
-                                }
-                                .buttonStyle(.borderedProminent)
-                                Spacer()
+                                .padding(10)
                             }
-                        }, message: {
-                            Text("Deleting \(goal.name) will remove it permanently!")
+                            .padding(.top, 10)
+                            .presentationDetents([.height(170)])
                         })
                     }
                 }
