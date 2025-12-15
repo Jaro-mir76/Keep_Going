@@ -77,15 +77,25 @@ struct WelcomePage: View {
                     .foregroundStyle(.white)
                     .shadow(color: .black, radius: 5, x: 1, y: 1)
             }
-            Text("Welcome to")
-                .font(.title)
-                .padding([.top], 40)
-                .foregroundStyle(Color.appTextPrimary)
-            Text("Keep Going")
-                .font(.system(size: 35, design: .rounded))
-                .fontWeight(.semibold)
-                .foregroundStyle(Color.appAccentOrange)
-                .shadow(color: .black.opacity(0.1), radius: 5, x: 1, y: 1)
+            VStack {
+                Text("Welcome to")
+                    .font(.title)
+                    .foregroundStyle(Color.appTextPrimary)
+                Text("Keep Going")
+                    .font(.system(size: 35, design: .rounded))
+                    .fontWeight(.semibold)
+                    .foregroundStyle(Color.appAccentOrange)
+                    .shadow(color: .black.opacity(0.1), radius: 5, x: 1, y: 1)
+            }
+            .padding(.vertical, 25)
+            .padding(.horizontal, 45)
+            .background(content: {
+                RoundedRectangle(cornerRadius: 25, style: .circular)
+                    .foregroundStyle(Color.background)
+                    .opacity(0.8)
+            })
+            .padding([.top], 40)
+
             Spacer()
             Spacer()
         }
@@ -101,8 +111,15 @@ struct FeaturesPage: View {
                 VStack(spacing: 30) {
                     Text("Features")
                         .font(.title)
-                        .padding(.top, 80)
                         .foregroundStyle(Color.appTextPrimary)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(content: {
+                            RoundedRectangle(cornerRadius: 25, style: .circular)
+                                .foregroundStyle(Color.background)
+                                .opacity(0.8)
+                        })
+                        .padding(.top, 70)
 
                     FeaturesCard(icon: "bolt.fill", description: "Transform into the person you've always wanted to be.")
                     FeaturesCard(icon: "sparkles", description: "Master your time. Master your life.")
@@ -125,8 +142,15 @@ struct HowToPage: View {
                 VStack(spacing: 30) {
                     Text("How to do it")
                         .font(.title)
-                        .padding(.top, 80)
                         .foregroundStyle(Color.appTextPrimary)
+                        .padding(.horizontal, 20)
+                        .padding(.vertical, 10)
+                        .background(content: {
+                            RoundedRectangle(cornerRadius: 25, style: .circular)
+                                .foregroundStyle(Color.background)
+                                .opacity(0.8)
+                        })
+                        .padding(.top, 70)
 
                     FeaturesCard(icon: "target", description: "Define your goals. What do you want to achieve?")
                     FeaturesCard(icon: "timer", description: "Schedule micro-tasks — quick wins that fit your day.")
