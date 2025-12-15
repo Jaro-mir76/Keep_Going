@@ -142,6 +142,7 @@ struct MainView: View {
         .background(content: {
             RoundedRectangle(cornerRadius: 25, style: .circular)
                 .foregroundStyle(Color.background)
+                .opacity(0.8)
         })
     }
 }
