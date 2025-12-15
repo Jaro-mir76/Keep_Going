@@ -26,7 +26,7 @@ struct MainView: View {
     
     var body: some View {
         NavigationStack{
-            List{
+            ScrollView {
                 ForEach(viewModel.goals, id: \.id) { goal in
                     GoalCardView(goal: goal)
                         .swipeActions(edge: .leading, allowsFullSwipe: false) {
@@ -40,15 +40,13 @@ struct MainView: View {
                             }
                         }
                         .tint(.green)
-                        .listRowBackground(Color.appTaskActive)
-                        .listRowSeparatorTint(Color.appBorder)
                 }
             }
+            .padding(.horizontal, 15)
             .background(content: {
                 MyBackgroundView()
                     .ignoresSafeArea()
             })
-            .scrollContentBackground(.hidden)
             .toolbar{
                 toolBarAddGoalButton
                 toolBarSettingsButton

@@ -14,9 +14,29 @@ struct GoalCardView: View {
     @State private var animateCheckmark: Bool = false
     @State private var isPressed: Bool = false
     
+    private var backgroundColor: Color {
+        switch (goal.done, goal.schedule) {
+        case (true, _):
+            return Color.taskCompleted
+        case (false, ScheduleCode.training.rawValue):
+            return Color.taskActive
+        case (false, _):
+            return Color.taskInactive
+        }
+    }
+    private var backgroundBorder: Color {
+        switch (goal.done, goal.schedule) {
+        case (true, _):
+            return Color.taskCompletedCheck
+        case (false, ScheduleCode.training.rawValue):
+            return Color.taskActiveBorder
+        case (false, _):
+            return Color.taskInactiveBorder
+        }
+    }
+    
     private let markAsDoneTip = MarkAsDoneTip()
     private let editGoalTip = EditGoalTip()
-
     
     var body: some View {
         HStack {
@@ -58,8 +78,7 @@ struct GoalCardView: View {
                 switch (goal.done, goal.schedule) {
                 case (true, _):
                     ZStack {
-                        RoundedRectangle(cornerRadius: 30, style: .circular)
-                            .frame(width: 45, height: 45)
+                        statusIconBackground
                             .foregroundStyle(Color.appTaskCompleted)
                         Label("Todays status", systemImage: "checkmark.seal")
                             .labelStyle(.iconOnly)
@@ -72,13 +91,10 @@ struct GoalCardView: View {
                                     animateCheckmark = false
                                 }
                             }
-                        //                        .frame(width: 60)
                     }
-
                 case (false, ScheduleCode.training.rawValue):
                     ZStack {
-                        RoundedRectangle(cornerRadius: 30, style: .circular)
-                            .frame(width: 45, height: 45)
+                        statusIconBackground
                             .foregroundStyle(Color.appTaskActive)
                         Label("Todays status", systemImage: "seal")
                             .labelStyle(.iconOnly)
@@ -87,8 +103,7 @@ struct GoalCardView: View {
                     .popoverTip(markAsDoneTip, arrowEdge: .trailing)
                 case (false, _):
                     ZStack {
-                        RoundedRectangle(cornerRadius: 30, style: .circular)
-                            .frame(width: 45, height: 45)
+                        statusIconBackground
                             .foregroundStyle(Color.appTaskInactive)
                         Label("Todays status", systemImage: "sun.max")
                             .labelStyle(.iconOnly)
@@ -96,10 +111,20 @@ struct GoalCardView: View {
                     }
                     .popoverTip(markAsDoneTip, arrowEdge: .trailing)
                 }
-                
             }
+            .scaleEffect(isPressed ? 1.3 : 1)
         }
-        .scaleEffect(isPressed ? 1.05 : 1)
+        .padding(10)
+        .background(content: {
+            ZStack {
+                UnevenRoundedRectangle(cornerRadii: .init(topLeading: 10, bottomLeading: 10, bottomTrailing: 40, topTrailing: 40))
+                    .stroke(backgroundBorder, lineWidth: 2)
+                    .fill(backgroundColor)
+                    .opacity(0.8)
+                    
+            }
+            .padding(2)
+        })
         .onLongPressGesture(minimumDuration: 0.7) {
             withAnimation {
                 viewModel.toggleTodaysStatus(goal: goal)
@@ -114,26 +139,26 @@ struct GoalCardView: View {
             withAnimation { isPressed.toggle() }
         }
     }
+    
+    private var statusIconBackground: some View {
+        Circle()
+            .frame(width: 45, height: 45)
+    }
 }
 
 #Preview("Goal") {
     var mainEngine = MainEngine()
-    List {
-        GoalCardView(goal: GoalViewModel.exampleGoal()[0])
-            .environment(GoalViewModel(mainEngine: mainEngine))
-
-    }
+    GoalCardView(goal: GoalViewModel.exampleGoal()[0])
+        .environment(GoalViewModel(mainEngine: mainEngine))
 }
 
 #Preview("Goals") {
     var mainEngine = MainEngine()
-    List {
         GoalCardView(goal: GoalViewModel.exampleGoal()[0])
             .environment(GoalViewModel(mainEngine: mainEngine))
         GoalCardView(goal: GoalViewModel.exampleGoal()[1])
             .environment(GoalViewModel(mainEngine: mainEngine))
         GoalCardView(goal: GoalViewModel.exampleGoal()[2])
             .environment(GoalViewModel(mainEngine: mainEngine))
-    }
-    
 }
+
