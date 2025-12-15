@@ -145,7 +145,7 @@ class GoalViewModel {
     }
     
     func updateAppBadge() {
-        let overdueGoals = goals.filter { $0.done == false && $0.reminderPreference.time.isItInPast }
+        let overdueGoals = goals.filter { $0.done == false && $0.schedule == ScheduleCode.training.rawValue && $0.reminderPreference.time.isItInPast }
         notificationDelegate.notificationService.updateAppBadge(goals: overdueGoals)
     }
     
