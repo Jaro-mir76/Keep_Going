@@ -57,4 +57,5 @@ struct DeletionConfirmationView: View {
     }()
     DeletionConfirmationView(goal: GoalViewModel.exampleGoal()[0])
         .environment(GoalViewModel(mainEngine: mainEngine))
+        .environment(mainEngine)
 }

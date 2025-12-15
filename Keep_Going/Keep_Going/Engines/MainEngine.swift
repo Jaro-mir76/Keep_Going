@@ -11,6 +11,7 @@ import TipKit
 
 @Observable
 class MainEngine {
+    static let shared = MainEngine()
     var doNotAskAgainForNotificationPermission: Bool = false
     let notificationService: NotificationService
     

@@ -9,7 +9,7 @@ import SwiftUI
 
 struct SettingsView: View {
     @Environment(MainEngine.self) private var mainEngine
-    @State private var viewModel: SettingsViewModel?
+    @State private var viewModel = SettingsViewModel()
     @State private var showLogs = false
     
     var body: some View {
@@ -19,10 +19,8 @@ struct SettingsView: View {
                 Toggle("Show introduction again", isOn: $mainEngine.showAppIntroduction)
             }
             Section {
-                if let viewModel = viewModel {
-                    NotificationSettingsView(viewModel: viewModel)
-                }
-                
+                NotificationSettingsView()
+                    .environment(viewModel)
             } header: {
                 Text("Notifications")
             }
@@ -35,9 +33,6 @@ struct SettingsView: View {
             .sheet(isPresented: $showLogs) {
                 LogViewerView()
             }
-        }
-        .onAppear {
-            viewModel = SettingsViewModel(mainEngine: mainEngine)
         }
     }
 }

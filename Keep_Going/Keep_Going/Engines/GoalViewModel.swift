@@ -25,16 +25,16 @@ class GoalViewModel {
     
     var showWarningBadge: Bool = false
     
-    init(mainEngine: MainEngine, notificationDelegate: NotificationDelegate = .shared) {
+    init(mainEngine: MainEngine = MainEngine.shared, notificationDelegate: NotificationDelegate = .shared) {
         self.mainEngine = mainEngine
         self.notificationDelegate = notificationDelegate
         modelContainer = PersistentStorage.shared.modelContainer
         fetchGoals()
     }
     
-    init(previewOnly: Bool, notificationDelegate: NotificationDelegate = .shared) {
-        self.mainEngine = MainEngine()
-        self.notificationDelegate = notificationDelegate
+    init(previewOnly: Bool) {
+        self.mainEngine = MainEngine.shared
+        self.notificationDelegate = NotificationDelegate.shared
         modelContainer = PersistentStorage.shared.modelContainer
         goals = GoalViewModel.exampleGoal()
     }

@@ -10,7 +10,7 @@ import SwiftUI
 struct NotificationSettingsView: View {
     @Environment(MainEngine.self) private var mainEngine
     @Environment(\.scenePhase) private var scenePhase
-    var viewModel: SettingsViewModel
+    @Environment(SettingsViewModel.self) private var viewModel
         
     var body: some View {
         @Bindable var viewModel = viewModel
@@ -54,6 +54,7 @@ struct NotificationSettingsView: View {
 
 #Preview {
     var mainEngine = MainEngine()
-    NotificationSettingsView(viewModel: SettingsViewModel(mainEngine: mainEngine))
+    NotificationSettingsView()
         .environment(MainEngine())
+        .environment(SettingsViewModel())
 }

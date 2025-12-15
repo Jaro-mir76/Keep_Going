@@ -33,10 +33,10 @@ struct AppIconView: View {
             MyBackgroundView()
                 .ignoresSafeArea()
         })
-//        .background(Color.appBackground)
     }
 }
 
 #Preview {
     AppIconView()
+        .environment(MainEngine())
 }

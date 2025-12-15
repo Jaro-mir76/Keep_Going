@@ -14,9 +14,10 @@ import TipKit
 @main
 struct Keep_GoingApp: App {
     @State private var mainEngine: MainEngine
+    @State private var goalViewModel = GoalViewModel()
     
     init() {
-        self.mainEngine = MainEngine()
+        self.mainEngine = MainEngine.shared
         if self.mainEngine.showAppIntroduction {
             self.mainEngine.welcomePageVisible = true
             self.mainEngine.appIconVisible = false
@@ -51,6 +52,7 @@ struct Keep_GoingApp: App {
                 } else {
                     MainView()
                         .environment(mainEngine)
+                        .environment(goalViewModel)
                 }
             }
         }

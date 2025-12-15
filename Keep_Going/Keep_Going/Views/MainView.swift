@@ -11,7 +11,7 @@ import BackgroundTasks
 
 struct MainView: View {
     @Environment(MainEngine.self) private var mainEngine
-    @State private var viewModel: GoalViewModel?
+    @Environment(GoalViewModel.self) private var viewModel
     @State private var showEditing: Bool = false
     @State private var showSettings: Bool = false
     @State private var hasPermission = true
@@ -27,7 +27,7 @@ struct MainView: View {
     var body: some View {
         NavigationStack{
             List{
-                ForEach(viewModel?.goals ?? [], id: \.id) { goal in
+                ForEach(viewModel.goals, id: \.id) { goal in
                     GoalCardView(goal: goal)
                         .swipeActions(edge: .leading, allowsFullSwipe: false) {
                             Button {
@@ -67,21 +67,17 @@ struct MainView: View {
                 SettingsView()
             }
             .overlay(content: {
-                if viewModel?.goals.count == 0 {
+                if viewModel.goals.count == 0 {
                     addNewGoalMessage
                 }
             })
             .onChange(of: scenePhase, { _, newValue in
-                viewModel?.followScenePhaseChange(scenePhase: newValue)
+                viewModel.followScenePhaseChange(scenePhase: newValue)
             })
             .refreshable {
                 mainEngine.repositionBackground.toggle()
             }
         }
-        .environment(viewModel)
-        .onAppear(perform: {
-            viewModel = GoalViewModel(mainEngine: mainEngine)
-        })
     }
     
     func addGoal() {
@@ -115,7 +111,7 @@ struct MainView: View {
             }label: {
                 Image(systemName: "gear")
             }
-            .badge( viewModel?.showWarningBadge ?? false ? "!" : nil )
+            .badge( viewModel.showWarningBadge ? "!" : nil )
         }
     }
     
@@ -150,8 +146,13 @@ struct MainView: View {
 }
 
 #Preview {
-    @Previewable @State var viewModel = GoalViewModel(previewOnly: true)
+    @Previewable @State var viewModel: GoalViewModel = {
+        let vm = GoalViewModel(previewOnly: true)
+        vm.goals = GoalViewModel.exampleGoal()
+        return vm
+    }()
+    
     MainView()
+        .environment(viewModel)
         .environment(MainEngine())
-
 }

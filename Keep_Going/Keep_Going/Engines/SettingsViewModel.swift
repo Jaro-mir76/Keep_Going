@@ -18,7 +18,7 @@ class SettingsViewModel {
     var permissionStatus: UNAuthorizationStatus = .notDetermined
     var detailedSettings: NotificationSettingsInfo?
     
-    init (mainEngine: MainEngine, notificationDelegate: NotificationDelegate = .shared) {
+    init (mainEngine: MainEngine = MainEngine.shared, notificationDelegate: NotificationDelegate = .shared) {
         self.mainEngine = mainEngine
         self.notificationDelegate = notificationDelegate
     }
