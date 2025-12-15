@@ -131,6 +131,8 @@ class MainEngine {
     var welcomePageVisible = false
     var appIconVisible = true
     
+    var repositionBackground: Bool = false
+    
 //    var hasNotificationPermission: Bool = false
 
     func requestNotificationPermission() async {

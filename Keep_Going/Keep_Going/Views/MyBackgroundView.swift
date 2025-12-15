@@ -8,7 +8,7 @@
 import SwiftUI
 
 struct MyBackgroundView: View {
-    var color: Color = .blue
+    @Environment(MainEngine.self) private var mainEngine
     @State private var backgroundGenerator = BackgroundGenerator()
     
     var body: some View {
@@ -17,33 +17,26 @@ struct MyBackgroundView: View {
                 ForEach(backgroundGenerator.entries.indices, id:\.self) { index in
                     let entry = backgroundGenerator.entries[index]
                     entry.symbol
-                        .opacity(0.2)                        .scaleEffect(entry.selected ? 4 : 1)
+                        .opacity(0.2)
                         .position(x: proxy.size.width * entry.x, y: proxy.size.height * entry.y)
-//                        .onTapGesture {
-//                            withAnimation {
-//                                backgroundGenerator.entries[index].selected.toggle()
-//                            }
-//                        }
-//                        .accessibilityAction {
-//                            backgroundGenerator.entries[index].selected.toggle()
-//                        }
+                }
+            }
+            .onChange(of: mainEngine.repositionBackground) { oldValue, newValue in
+                if newValue {
+                    withAnimation(.easeInOut(duration: 2)) {
+                        backgroundGenerator.reposition()
+                    }
+                    mainEngine.repositionBackground.toggle()
                 }
             }
         }
         .font(.system(size: 24))
         .contentShape(Rectangle())
-//        .onTapGesture {
-//            withAnimation(.easeInOut(duration: 2)) {
-//                backgroundGenerator.reposition()
-//            }
-//        }
-//        .accessibilityAction(named: "Reposition") {
-//            backgroundGenerator.reposition()
-//        }
         .drawingGroup()
     }
 }
 
 #Preview {
     MyBackgroundView()
+        .environment(MainEngine())
 }

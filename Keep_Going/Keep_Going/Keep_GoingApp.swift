@@ -41,6 +41,7 @@ struct Keep_GoingApp: App {
                         .environment(mainEngine)
                 } else if mainEngine.appIconVisible {
                     AppIconView()
+                        .environment(mainEngine)
                         .task {
                             try? await Task.sleep(nanoseconds: 500_000_000)
                             withAnimation(.easeInOut(duration: 0.6)) {

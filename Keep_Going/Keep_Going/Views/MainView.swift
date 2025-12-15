@@ -53,7 +53,6 @@ struct MainView: View {
                 toolBarAddGoalButton
                 toolBarSettingsButton
             }
-//            .background(Color.appBackground)
             .sheet(isPresented: $showEditing, onDismiss: {
                 if mainEngine.userIsEditingGoal == true && !mainEngine.hasEditedGoalTip {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
@@ -75,6 +74,9 @@ struct MainView: View {
             .onChange(of: scenePhase, { _, newValue in
                 viewModel?.followScenePhaseChange(scenePhase: newValue)
             })
+            .refreshable {
+                mainEngine.repositionBackground.toggle()
+            }
         }
         .environment(viewModel)
         .onAppear(perform: {

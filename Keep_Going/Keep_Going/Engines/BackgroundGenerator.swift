@@ -33,7 +33,6 @@ struct BackgroundGenerator {
 struct Element {
     var x: Double
     var y: Double
-    var selected: Bool = false
     var symbolIndex: Int
     
     init() {
