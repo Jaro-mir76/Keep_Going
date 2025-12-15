@@ -68,14 +68,7 @@ struct MainView: View {
             }
             .overlay(content: {
                 if viewModel?.goals.count == 0 {
-                    VStack(spacing: 20) {
-                        Text("You don't have any goals yet.")
-                            .font(.title2)
-                            .multilineTextAlignment(.center)
-                        Text("Tap the + button to add one!")
-                            .font(.title2)
-                    }
-                    .padding(30)
+                    addNewGoalMessage
                 }
             })
             .onChange(of: scenePhase, { _, newValue in
@@ -121,6 +114,34 @@ struct MainView: View {
             }
             .badge( viewModel?.showWarningBadge ?? false ? "!" : nil )
         }
+    }
+    
+    private var addNewGoalMessage: some View {
+        VStack(spacing: 20) {
+            Text("You don't have any goals yet.")
+                .font(.title2)
+                .multilineTextAlignment(.center)
+            HStack {
+                Text("Tap the")
+                    .font(.title2)
+                Image(systemName: "plus")
+                    .background {
+                        ZStack{
+                            Circle()
+                                .frame(width: 30, height: 30)
+                                .foregroundStyle(Color.appAccentOrange)
+                        }
+                    }
+                    .padding(5)
+                Text("button to add one!")
+                    .font(.title2)
+            }
+        }
+        .padding(25)
+        .background(content: {
+            RoundedRectangle(cornerRadius: 25, style: .circular)
+                .foregroundStyle(Color.background)
+        })
     }
 }
 
