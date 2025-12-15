@@ -41,8 +41,15 @@ struct PushButton: View {
             Label(function.label, systemImage: function.icon)
                 .labelStyle(.titleOnly)
         }
-        .buttonStyle(.automatic)
+        .buttonStyle(.borderless)
         .buttonBorderShape(.roundedRectangle)
+        .padding(.vertical, 5)
+        .padding(.horizontal, 10)
+        .background(content: {
+            RoundedRectangle(cornerRadius: 25, style: .circular)
+                .foregroundStyle(Color.background)
+                .opacity(0.8)
+        })
     }
 }
 
