@@ -46,6 +46,7 @@ struct MainView: View {
             }
             .background(content: {
                 MyBackgroundView()
+                    .ignoresSafeArea()
             })
             .scrollContentBackground(.hidden)
             .toolbar{

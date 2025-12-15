@@ -25,6 +25,7 @@ struct WelcomeView: View {
 //            .background(Color.appBackground, ignoresSafeAreaEdges: .all)
             .background(content: {
                 MyBackgroundView()
+                    .ignoresSafeArea()
             })
             .tabViewStyle(.page)
             NextSkipDoneButtonsView()

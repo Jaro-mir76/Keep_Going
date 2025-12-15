@@ -31,6 +31,7 @@ struct AppIconView: View {
         .frame(maxWidth: .infinity)
         .background(content: {
             MyBackgroundView()
+                .ignoresSafeArea()
         })
 //        .background(Color.appBackground)
     }

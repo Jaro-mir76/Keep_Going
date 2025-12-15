@@ -215,6 +215,7 @@ struct EditGoalView: View {
                 }
                 .background(content: {
                     MyBackgroundView()
+                        .ignoresSafeArea()
                 })
                 .scrollContentBackground(.hidden)
                 .scrollDismissesKeyboard(.immediately)
