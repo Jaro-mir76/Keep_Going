@@ -26,7 +26,7 @@ struct MainView: View {
     
     var body: some View {
         NavigationStack{
-            ScrollView {
+            List {
                 ForEach(viewModel.goals, id: \.id) { goal in
                     GoalCardView(goal: goal)
                         .swipeActions(edge: .leading, allowsFullSwipe: false) {
@@ -40,9 +40,14 @@ struct MainView: View {
                             }
                         }
                         .tint(.green)
+                        .listRowInsets(EdgeInsets(top: 5, leading: 5, bottom: 5, trailing: 5))
+                        .listRowBackground(Color.clear)
+                        .listRowSeparator(.hidden)
                 }
             }
-            .padding(.horizontal, 15)
+            .scrollContentBackground(.hidden)
+            .listStyle(.plain)
+            .padding(.horizontal, 10)
             .background(content: {
                 MyBackgroundView()
                     .ignoresSafeArea()

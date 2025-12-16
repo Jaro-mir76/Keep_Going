@@ -117,7 +117,7 @@ struct GoalCardView: View {
         .padding(10)
         .background(content: {
             ZStack {
-                UnevenRoundedRectangle(cornerRadii: .init(topLeading: 10, bottomLeading: 10, bottomTrailing: 40, topTrailing: 40))
+                UnevenRoundedRectangle(cornerRadii: .init(topLeading: 30, bottomLeading: 30, bottomTrailing: 30, topTrailing: 30))
                     .stroke(backgroundBorder, lineWidth: 2)
                     .fill(backgroundColor)
                     .opacity(0.8)
