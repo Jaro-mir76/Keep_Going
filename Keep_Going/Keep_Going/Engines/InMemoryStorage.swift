@@ -17,15 +17,11 @@ class InMemoryStorage: ObservableObject, StorageService {
         do {
             container = try ModelContainer(for: Goal.self, Status.self, configurations: configurationMemory)
             Task { @MainActor in
-//                for goal in GoalViewModel.exampleGoal() {
-//                    container.mainContext.insert(goal)
-//                }
-//                container.mainContext.insert(GoalViewModel.exampleGoal()[0])
+                for goal in GoalViewModel.exampleGoal() {
+                    container.mainContext.insert(goal)
+                }
                 try container.mainContext.save()
             }
-//            Task { @MainActor in
-//                print ("goals in memory: \(try container.mainContext.fetchCount(FetchDescriptor<Goal>()))")
-//            }
             return container
         } catch {
             fatalError("Could not create model container in memory either, error: \(error)")

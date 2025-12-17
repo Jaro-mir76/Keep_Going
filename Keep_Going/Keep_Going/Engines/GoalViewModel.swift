@@ -31,7 +31,6 @@ class GoalViewModel {
     init(mainEngine: MainEngine = MainEngine.shared, notificationDelegate: NotificationDelegate = .shared, storageService: StorageService = PersistentStorage.shared) {
         self.mainEngine = mainEngine
         self.notificationDelegate = notificationDelegate
-//        modelContainer = PersistentStorage.shared.modelContainer
         self.storageService = storageService
         fetchGoals()
     }
@@ -39,9 +38,8 @@ class GoalViewModel {
     init(previewOnly: Bool, storageService: StorageService = InMemoryStorage.shared) {
         self.mainEngine = MainEngine.shared
         self.notificationDelegate = NotificationDelegate.shared
-//        modelContainer = PersistentStorage.shared.modelContainer
         self.storageService = storageService
-        goals = GoalViewModel.exampleGoal()
+        fetchGoals()
     }
     
     func checkPermissions() async {

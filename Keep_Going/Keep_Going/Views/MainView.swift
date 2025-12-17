@@ -79,6 +79,7 @@ struct MainView: View {
             })
             .refreshable {
                 mainEngine.repositionBackground.toggle()
+                viewModel.fetchGoals()
             }
         }
     }
@@ -149,13 +150,11 @@ struct MainView: View {
 }
 
 #Preview {
-    @Previewable @State var viewModel: GoalViewModel = {
-        let vm = GoalViewModel(previewOnly: true)
-        vm.goals = GoalViewModel.exampleGoal()
-        return vm
-    }()
+    @Previewable @State var viewModel = GoalViewModel(previewOnly: true)
+//    viewModel.addGoal(goal: GoalViewModel.exampleGoal()[1])
+    viewModel.fetchGoals()
     
-    MainView()
+    return MainView()
         .environment(viewModel)
         .environment(MainEngine())
 }
