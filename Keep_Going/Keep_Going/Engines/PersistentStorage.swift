@@ -8,8 +8,8 @@
 import Foundation
 import SwiftData
 
-class PersistentStorage: ObservableObject {
-    static let shared = PersistentStorage()
+class PersistentStorage: ObservableObject, StorageService {
+    static let shared: StorageService = PersistentStorage()
     
     lazy var modelContainer: ModelContainer = {
         let configurationDisk = ModelConfiguration(isStoredInMemoryOnly: false)

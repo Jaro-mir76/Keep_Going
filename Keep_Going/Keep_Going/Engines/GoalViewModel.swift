@@ -14,7 +14,10 @@ import SwiftUI
 @Observable
 class GoalViewModel {
     var mainEngine: MainEngine
-    let modelContainer: ModelContainer
+    private var storageService: StorageService
+    var modelContainer: ModelContainer {
+        return storageService.modelContainer
+    }
     
     var notificationDelegate: NotificationDelegate
     var permissionStatus: UNAuthorizationStatus = .notDetermined
@@ -25,17 +28,19 @@ class GoalViewModel {
     
     var showWarningBadge: Bool = false
     
-    init(mainEngine: MainEngine = MainEngine.shared, notificationDelegate: NotificationDelegate = .shared) {
+    init(mainEngine: MainEngine = MainEngine.shared, notificationDelegate: NotificationDelegate = .shared, storageService: StorageService = PersistentStorage.shared) {
         self.mainEngine = mainEngine
         self.notificationDelegate = notificationDelegate
-        modelContainer = PersistentStorage.shared.modelContainer
+//        modelContainer = PersistentStorage.shared.modelContainer
+        self.storageService = storageService
         fetchGoals()
     }
     
-    init(previewOnly: Bool) {
+    init(previewOnly: Bool, storageService: StorageService = InMemoryStorage.shared) {
         self.mainEngine = MainEngine.shared
         self.notificationDelegate = NotificationDelegate.shared
-        modelContainer = PersistentStorage.shared.modelContainer
+//        modelContainer = PersistentStorage.shared.modelContainer
+        self.storageService = storageService
         goals = GoalViewModel.exampleGoal()
     }
     
