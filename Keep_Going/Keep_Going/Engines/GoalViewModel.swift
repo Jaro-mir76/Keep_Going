@@ -317,6 +317,7 @@ class GoalViewModel {
                  goalMotivation: "Read 10 pages every second day and you'll read.... a lot every year.",
                  requiredTime: nil,
                  scheduleType: ScheduleType(type: .interval, interval: 3),
+                 reminderPreference: Reminder(hours: .twentyThree, minutes: .fiftyFive),
                  creationDate: Date(timeInterval: -20.day, since: Date.now),
                  history: [
                     Status(scheduleCode: .freeDay, done: false, date: Date(timeInterval: -1.day, since: beginingOfToday)),
