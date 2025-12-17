@@ -70,28 +70,30 @@ struct NotificationService {
     }
     
     func createNotificationMessage(for goals: [Goal]) -> (title: String, body: String) {
-        guard !goals.isEmpty else {
-            return (title: "You have no goals", body: "Keep going and you will have them soon!")
-        }
+//        guard !goals.isEmpty else {
+//            return (title: "You have no goals", body: "Keep going and you will have them soon!")
+//        }
         
         let title = "Keep Going"
         var body = ""
         
         if goals.count == 1 {
             let goal = goals[0]
-            body = "\(goal.name) is waiting for you!"
+//            body = "\(goal.name) is waiting for you!"
+            body = "You \(goal.goalMotivation), so the only way is to do \(goal.name)!"
             if !goal.goalMotivation.isEmpty {
                 body += "\n💪 \(goal.goalMotivation)"
             }
         } else {
             let firstGoal = goals[0]
             let remainingCount = goals.count - 1
-            body = "There is \(firstGoal.name)"
+//            body = "There is \(firstGoal.name)"
+            body = "You \(firstGoal.goalMotivation)"
             
             if remainingCount == 1 {
-                body += " and \(remainingCount) more goal."
+                body += " and \(remainingCount) more thing, so hurry up."
             } else {
-                body += " and \(remainingCount) more goals."
+                body += " and \(remainingCount) more things, but queue is growing fast, so hurry up."
             }
         }
         
