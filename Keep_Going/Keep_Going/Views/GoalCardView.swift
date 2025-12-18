@@ -94,10 +94,7 @@ struct GoalCardView: View {
                 switch (goal.done, goal.schedule) {
                 case (true, _):
                     ZStack {
-                        statusIconBackground
-                        Label("Todays status", systemImage: "checkmark.seal")
-                            .labelStyle(.iconOnly)
-                            .font(.title)
+                        statusIcon(label: "Todays status", systemImage: "checkmark.seal")
                             .foregroundStyle(Color.statusDone)
                             .symbolEffect(.bounce.up.byLayer, options: .nonRepeating, value: animateCheckmark)
                             .task {
@@ -109,19 +106,13 @@ struct GoalCardView: View {
                     }
                 case (false, ScheduleCode.training.rawValue):
                     ZStack {
-                        statusIconBackground
-                        Label("Todays status", systemImage: "seal")
-                            .labelStyle(.iconOnly)
-                            .font(.title)
+                        statusIcon(label: "Todays status", systemImage: "seal")
                             .foregroundStyle(goal.reminderPreference.time.isItInPast ? Color.statusOverdue : Color.statusNotDone)
                     }
                     .popoverTip(markAsDoneTip, arrowEdge: .trailing)
                 case (false, _):
                     ZStack {
-                        statusIconBackground
-                        Label("Todays status", systemImage: "sun.max")
-                            .labelStyle(.iconOnly)
-                            .font(.title)
+                        statusIcon(label: "Todays status", systemImage: "sun.max")
                             .foregroundStyle(Color.statusNotToday)
                     }
                     .popoverTip(markAsDoneTip, arrowEdge: .trailing)
@@ -155,10 +146,15 @@ struct GoalCardView: View {
         }
     }
     
-    private var statusIconBackground: some View {
-        Circle()
-            .frame(width: 45, height: 45)
-            .foregroundStyle(Color.appBackground)
+    private func statusIcon(label: String, systemImage: String) -> some View {
+        ZStack {
+            Circle()
+                .frame(width: 45, height: 45)
+                .foregroundStyle(Color.appBackground)
+            Label(label, systemImage: systemImage)
+                .labelStyle(.iconOnly)
+                .font(.title)
+        }
     }
 }
 
