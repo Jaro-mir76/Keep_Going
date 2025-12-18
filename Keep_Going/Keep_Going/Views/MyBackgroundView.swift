@@ -17,7 +17,7 @@ struct MyBackgroundView: View {
                 ForEach(backgroundGenerator.entries.indices, id:\.self) { index in
                     let entry = backgroundGenerator.entries[index]
                     entry.symbol
-                        .opacity(0.2)
+                        .opacity(0.1)
                         .position(x: proxy.size.width * entry.x, y: proxy.size.height * entry.y)
                 }
             }
@@ -33,6 +33,7 @@ struct MyBackgroundView: View {
         .font(.system(size: 24))
         .contentShape(Rectangle())
         .drawingGroup()
+        .background(Color.appBackground)
     }
 }
 

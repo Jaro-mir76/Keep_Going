@@ -31,7 +31,7 @@ struct ConfettiView: View {
             Particle(
                 id: UUID(),
                 position: CGPoint(x: 180, y: 40),
-                color: Color.appAccentYellow
+                color: Color.appPrimaryAccent
             )
         }
 

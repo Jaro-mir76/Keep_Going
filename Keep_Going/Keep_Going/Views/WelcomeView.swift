@@ -41,21 +41,31 @@ struct WelcomeView: View {
 #Preview("Welcome Page") {
     WelcomePage()
         .frame(maxWidth: .infinity)
-        .background(Color.appBackground, ignoresSafeAreaEdges: .all)
+//        .background(Color.blue, ignoresSafeAreaEdges: .all)
+        .background(content: {
+            MyBackgroundView()
+                .ignoresSafeArea()
+        })
         .environment(MainEngine())
 }
 
 #Preview("Features") {
     FeaturesPage()
         .frame(maxWidth: .infinity)
-        .background(Color.appBackground, ignoresSafeAreaEdges: .all)
+        .background(content: {
+            MyBackgroundView()
+                .ignoresSafeArea()
+        })
         .environment(MainEngine())
 }
 
 #Preview("HowTo") {
     HowToPage()
         .frame(maxWidth: .infinity)
-        .background(Color.appBackground, ignoresSafeAreaEdges: .all)
+        .background(content: {
+            MyBackgroundView()
+                .ignoresSafeArea()
+        })
         .environment(MainEngine())
 }
 
@@ -68,7 +78,7 @@ struct WelcomePage: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 30, style: .circular)
                     .frame(width: 170, height: 170)
-                    .foregroundStyle(Color.appAccentOrange)
+                    .foregroundStyle(Color.appPrimaryAccent)
                     .shadow(color: .black, radius: 5, x: 5, y: 5)
                     .opacity(1.0)
 
@@ -80,19 +90,19 @@ struct WelcomePage: View {
             VStack {
                 Text("Welcome to")
                     .font(.title)
-                    .foregroundStyle(Color.appTextPrimary)
+                    .foregroundStyle(Color.primary)
                 Text("Keep Going")
                     .font(.system(size: 35, design: .rounded))
                     .fontWeight(.semibold)
-                    .foregroundStyle(Color.appAccentOrange)
+                    .foregroundStyle(Color.appPrimaryAccent)
                     .shadow(color: .black.opacity(0.1), radius: 5, x: 1, y: 1)
             }
             .padding(.vertical, 25)
             .padding(.horizontal, 45)
             .background(content: {
                 RoundedRectangle(cornerRadius: 25, style: .circular)
-                    .foregroundStyle(Color.background)
-                    .opacity(0.8)
+                    .foregroundStyle(Color.buttonAccentText)
+                    .opacity(0.4)
             })
             .padding([.top], 40)
 
@@ -111,13 +121,13 @@ struct FeaturesPage: View {
                 VStack(spacing: 30) {
                     Text("Features")
                         .font(.title)
-                        .foregroundStyle(Color.appTextPrimary)
+                        .foregroundStyle(Color.appPrimaryAccent)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
                         .background(content: {
                             RoundedRectangle(cornerRadius: 25, style: .circular)
-                                .foregroundStyle(Color.background)
-                                .opacity(0.8)
+                                .foregroundStyle(Color.buttonAccentText)
+                                .opacity(0.4)
                         })
                         .padding(.top, 70)
 
@@ -142,13 +152,13 @@ struct HowToPage: View {
                 VStack(spacing: 30) {
                     Text("How to do it")
                         .font(.title)
-                        .foregroundStyle(Color.appTextPrimary)
+                        .foregroundStyle(Color.appPrimaryAccent)
                         .padding(.horizontal, 20)
                         .padding(.vertical, 10)
                         .background(content: {
                             RoundedRectangle(cornerRadius: 25, style: .circular)
-                                .foregroundStyle(Color.background)
-                                .opacity(0.8)
+                                .foregroundStyle(Color.buttonAccentText)
+                                .opacity(0.4)
                         })
                         .padding(.top, 70)
 
@@ -179,12 +189,12 @@ struct FeaturesCard: View {
         .padding()
         .background {
             RoundedRectangle(cornerRadius: 20)
-                .foregroundStyle(Color.appAccentOrange)
+                .foregroundStyle(Color.appPrimaryAccent)
                 .opacity(0.8)
                 .shadow(color: .black, radius: 5, x: 3, y: 3)
 //                .brightness(-0.1)
         }
-        .foregroundStyle(Color.appTextPrimary)
+        .foregroundStyle(Color.primary)
     }
 }
 

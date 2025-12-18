@@ -47,8 +47,8 @@ struct PushButton: View {
         .padding(.horizontal, 10)
         .background(content: {
             RoundedRectangle(cornerRadius: 25, style: .circular)
-                .foregroundStyle(Color.background)
-                .opacity(0.8)
+                .foregroundStyle(Color.buttonAccentText)
+                .opacity(0.4)
         })
     }
 }

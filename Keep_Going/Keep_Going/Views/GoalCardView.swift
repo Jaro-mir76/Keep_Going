@@ -15,23 +15,39 @@ struct GoalCardView: View {
     @State private var isPressed: Bool = false
     
     private var backgroundColor: Color {
-        switch (goal.done, goal.schedule) {
-        case (true, _):
-            return Color.taskCompleted
-        case (false, ScheduleCode.training.rawValue):
-            return Color.taskActive
-        case (false, _):
-            return Color.taskInactive
+        switch (goal.schedule, goal.reminderPreference.time.isItInPast) {
+        case (ScheduleCode.training.rawValue, false):
+            return Color.taskActiveBackground
+        case (ScheduleCode.training.rawValue, true):
+            return Color.taskOverdueBackground
+        case (ScheduleCode.freeDay.rawValue, _):
+            return Color.taskInactiveBackground
+        case (_, _):
+            return Color.gray
         }
     }
-    private var backgroundBorder: Color {
-        switch (goal.done, goal.schedule) {
-        case (true, _):
-            return Color.taskCompletedCheck
-        case (false, ScheduleCode.training.rawValue):
-            return Color.taskActiveBorder
-        case (false, _):
-            return Color.taskInactiveBorder
+    private var borderColor: Color {
+        switch (goal.schedule, goal.reminderPreference.time.isItInPast) {
+        case (ScheduleCode.training.rawValue, false):
+            return Color.taskActiveBorder.opacity(0.4)
+        case (ScheduleCode.training.rawValue, true):
+            return Color.taskOverdueBorder.opacity(0.4)
+        case (ScheduleCode.freeDay.rawValue, _):
+            return Color.taskInactiveBorder.opacity(0.7)
+        case (_, _):
+            return Color.gray
+        }
+    }
+    private var foregraundColor: Color {
+        switch (goal.schedule, goal.reminderPreference.time.isItInPast) {
+        case (ScheduleCode.training.rawValue, false):
+            return Color.taskActiveForeground
+        case (ScheduleCode.training.rawValue, true):
+            return Color.taskOverdueForeground
+        case (ScheduleCode.freeDay.rawValue, _):
+            return Color.taskInactiveForeground
+        case (_, _):
+            return Color.gray
         }
     }
     
@@ -79,11 +95,10 @@ struct GoalCardView: View {
                 case (true, _):
                     ZStack {
                         statusIconBackground
-                            .foregroundStyle(Color.appTaskCompleted)
                         Label("Todays status", systemImage: "checkmark.seal")
                             .labelStyle(.iconOnly)
                             .font(.title)
-                            .foregroundStyle(Color.appTaskCompletedCheck)
+                            .foregroundStyle(Color.statusDone)
                             .symbolEffect(.bounce.up.byLayer, options: .nonRepeating, value: animateCheckmark)
                             .task {
                                 animateCheckmark = true
@@ -95,19 +110,19 @@ struct GoalCardView: View {
                 case (false, ScheduleCode.training.rawValue):
                     ZStack {
                         statusIconBackground
-                            .foregroundStyle(Color.appTaskActive)
                         Label("Todays status", systemImage: "seal")
                             .labelStyle(.iconOnly)
                             .font(.title)
+                            .foregroundStyle(goal.reminderPreference.time.isItInPast ? Color.statusOverdue : Color.statusNotDone)
                     }
                     .popoverTip(markAsDoneTip, arrowEdge: .trailing)
                 case (false, _):
                     ZStack {
                         statusIconBackground
-                            .foregroundStyle(Color.appTaskInactive)
                         Label("Todays status", systemImage: "sun.max")
                             .labelStyle(.iconOnly)
                             .font(.title)
+                            .foregroundStyle(Color.statusNotToday)
                     }
                     .popoverTip(markAsDoneTip, arrowEdge: .trailing)
                 }
@@ -118,7 +133,7 @@ struct GoalCardView: View {
         .background(content: {
             ZStack {
                 UnevenRoundedRectangle(cornerRadii: .init(topLeading: 30, bottomLeading: 30, bottomTrailing: 30, topTrailing: 30))
-                    .stroke(backgroundBorder, lineWidth: 2)
+                    .stroke(borderColor, lineWidth: 2)
                     .fill(backgroundColor)
                     .opacity(0.8)
                     
@@ -143,6 +158,7 @@ struct GoalCardView: View {
     private var statusIconBackground: some View {
         Circle()
             .frame(width: 45, height: 45)
+            .foregroundStyle(Color.appBackground)
     }
 }
 

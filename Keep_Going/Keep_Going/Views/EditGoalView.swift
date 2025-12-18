@@ -214,7 +214,7 @@ struct EditGoalView: View {
                     }
                 }
                 .background(content: {
-                    MyBackgroundView()
+                    Color.appBackground
                         .ignoresSafeArea()
                 })
                 .scrollContentBackground(.hidden)

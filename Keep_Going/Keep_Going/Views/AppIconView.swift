@@ -15,7 +15,7 @@ struct AppIconView: View {
             ZStack {
                 RoundedRectangle(cornerRadius: 30, style: .circular)
                     .frame(width: 170, height: 170)
-                    .foregroundStyle(Color.appAccentOrange)
+                    .foregroundStyle(Color.appPrimaryAccent)
                     .shadow(color: .black, radius: 5, x: 5, y: 5)
                     .opacity(0.9)
                 

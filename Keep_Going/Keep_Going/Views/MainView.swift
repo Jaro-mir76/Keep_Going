@@ -97,7 +97,7 @@ struct MainView: View {
                 ZStack{
                     RoundedRectangle(cornerRadius: 45, style: .circular)
                         .frame(width: 36, height: 36)
-                        .foregroundStyle(Color.appAccentOrange)
+                        .foregroundStyle(Color.buttonAccent)
                     Image(systemName: "plus")
                         .backgroundStyle(.black)
                 }
@@ -132,7 +132,7 @@ struct MainView: View {
                         ZStack{
                             Circle()
                                 .frame(width: 30, height: 30)
-                                .foregroundStyle(Color.appAccentOrange)
+                                .foregroundStyle(Color.buttonAccent)
                         }
                     }
                     .padding(5)
@@ -143,7 +143,7 @@ struct MainView: View {
         .padding(25)
         .background(content: {
             RoundedRectangle(cornerRadius: 25, style: .circular)
-                .foregroundStyle(Color.background)
+                .foregroundStyle(Color.backgroundIcon)
                 .opacity(0.8)
         })
     }
