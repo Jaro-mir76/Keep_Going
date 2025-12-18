@@ -102,7 +102,7 @@ struct WelcomePage: View {
             .background(content: {
                 RoundedRectangle(cornerRadius: 25, style: .circular)
                     .foregroundStyle(Color.buttonAccentText)
-                    .opacity(0.4)
+                    .opacity(0.8)
             })
             .padding([.top], 40)
 
@@ -127,7 +127,7 @@ struct FeaturesPage: View {
                         .background(content: {
                             RoundedRectangle(cornerRadius: 25, style: .circular)
                                 .foregroundStyle(Color.buttonAccentText)
-                                .opacity(0.4)
+                                .opacity(0.8)
                         })
                         .padding(.top, 70)
 
@@ -158,7 +158,7 @@ struct HowToPage: View {
                         .background(content: {
                             RoundedRectangle(cornerRadius: 25, style: .circular)
                                 .foregroundStyle(Color.buttonAccentText)
-                                .opacity(0.4)
+                                .opacity(0.8)
                         })
                         .padding(.top, 70)
 

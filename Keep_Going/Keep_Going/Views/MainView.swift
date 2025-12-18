@@ -143,7 +143,7 @@ struct MainView: View {
         .padding(25)
         .background(content: {
             RoundedRectangle(cornerRadius: 25, style: .circular)
-                .foregroundStyle(Color.backgroundIcon)
+                .foregroundStyle(Color.buttonAccentText)
                 .opacity(0.8)
         })
     }
@@ -153,6 +153,18 @@ struct MainView: View {
     @Previewable @State var viewModel = GoalViewModel(previewOnly: true)
 //    viewModel.addGoal(goal: GoalViewModel.exampleGoal()[1])
     viewModel.fetchGoals()
+    
+    return MainView()
+        .environment(viewModel)
+        .environment(MainEngine())
+}
+
+#Preview("No goals") {
+    @Previewable @State var viewModel = {
+        var viewModel = GoalViewModel(previewOnly: true)
+        viewModel.goals.removeAll()
+        return viewModel
+    }()
     
     return MainView()
         .environment(viewModel)
