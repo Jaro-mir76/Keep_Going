@@ -11,6 +11,7 @@ struct IntervalPicker: View {
     @Binding var interval: Int
     @State private var showWheel: Bool = false
     var onInteraction: (() -> Void)? = nil
+    var onShowWheel: () -> Void
     
     var body: some View {
         VStack {
@@ -25,6 +26,13 @@ struct IntervalPicker: View {
                 onInteraction?()
                 withAnimation {
                     showWheel.toggle()
+                }
+            }
+            .onChange(of: showWheel) { _, newValue in
+                if newValue == true {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        onShowWheel()
+                    }
                 }
             }
             if showWheel {
@@ -46,6 +54,6 @@ struct IntervalPicker: View {
 
 #Preview {
     @Previewable @State var interval: Int = 2
-    IntervalPicker(interval: $interval)
+    IntervalPicker(interval: $interval, onShowWheel: {})
 }
 

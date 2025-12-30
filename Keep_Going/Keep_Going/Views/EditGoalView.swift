@@ -15,7 +15,6 @@ struct EditGoalView: View {
         case description
     }
     
-//    let goal: Goal?
     private var windowTitle: String {
         mainEngine.selectedGoal == nil ? "New goal" : "Editing: \(mainEngine.selectedGoal!.name)"
     }
@@ -36,8 +35,8 @@ struct EditGoalView: View {
     let notificationDelegate = NotificationDelegate.shared
     
     @FocusState private var focusedField: FocusedField?
-    @State private var shouldShowReminderTip = false
     @Namespace private var reminderSection
+    @Namespace private var scheduleTypeSection
 
     var body: some View {
         @Bindable var viewModel = viewModel
@@ -73,9 +72,6 @@ struct EditGoalView: View {
                     Section {
                         HStack{
                             Text("Start date")
-                                .font(.footnote)
-                                .textCase(.uppercase)
-                                .foregroundColor(.gray)
                             Spacer()
                             Text(tmpGoal.goalStartDate.formatted(date: .numeric , time: .omitted))
                                 .foregroundStyle(showDatePicker ? .red : .blue)
@@ -106,9 +102,21 @@ struct EditGoalView: View {
                                         .tag(frequency)
                                 }
                             }
-                            .onChange(of: tmpGoal.scheduleType.type) { _, _ in
+                            .onChange(of: tmpGoal.scheduleType.type) { _, newValue in
                                 if !mainEngine.hasSelectedScheduleTip {
-                                    mainEngine.tipsMarkScheduleSelected()
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                                        withAnimation {
+                                            proxy.scrollTo(reminderSection, anchor: .top)
+                                            mainEngine.tipsMarkScheduleSelected()
+                                        }
+                                    }
+                                    
+                                }else {
+                                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){
+                                        withAnimation {
+                                            proxy.scrollTo(scheduleTypeSection, anchor: .top)
+                                        }
+                                    }
                                 }
                             }
                         }
@@ -126,6 +134,10 @@ struct EditGoalView: View {
                         if tmpGoal.scheduleType.type == .interval {
                             IntervalPicker(interval: $tmpGoal.scheduleType.interval, onInteraction: {
                                 focusedField = nil
+                            }, onShowWheel: {
+                                withAnimation {
+                                    proxy.scrollTo(scheduleTypeSection, anchor: .bottom)
+                                }
                             })
                         } else if tmpGoal.scheduleType.type == .weekly {
                             DaysPicker(schedule: $tmpGoal.scheduleType.weeklySchedule, onInteraction: {
@@ -133,33 +145,28 @@ struct EditGoalView: View {
                             })
                         }
                     }
-                    .onChange(of: tmpGoal.scheduleType.type) { _, _ in
-                        if !mainEngine.hasSelectedScheduleTip {
-                            DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
-                                withAnimation {
-                                    proxy.scrollTo(reminderSection, anchor: .top)
-                                    shouldShowReminderTip = true
-                                }
-                            }
-                        }
-                    }
+                    .id(scheduleTypeSection)
                     .onTapGesture {
                         focusedField = nil
                     }
                     Section() {
-                        ReminderTimePickerView(goal: $tmpGoal)
-                            .id(reminderSection)
-                            .popoverTip(shouldShowReminderTip ? reminderTimeTip : nil)
-                            .onChange(of: tmpGoal.reminderPreference.hours) { _, _ in
-                                if !mainEngine.hasSetReminderTip {
-                                    mainEngine.tipsMarkReminderSet()
-                                }
+                        ReminderTimePickerView(goal: $tmpGoal, onReminderTimeWheelShow: {
+                            withAnimation {
+                                proxy.scrollTo(reminderSection, anchor: .bottom)
                             }
-                            .onChange(of: tmpGoal.reminderPreference.minutes) { _, _ in
-                                if !mainEngine.hasSetReminderTip {
-                                    mainEngine.tipsMarkReminderSet()
-                                }
+                        })
+                        .id(reminderSection)
+                        .popoverTip(reminderTimeTip)
+                        .onChange(of: tmpGoal.reminderPreference.hours) { _, _ in
+                            if !mainEngine.hasSetReminderTip {
+                                mainEngine.tipsMarkReminderSet()
                             }
+                        }
+                        .onChange(of: tmpGoal.reminderPreference.minutes) { _, _ in
+                            if !mainEngine.hasSetReminderTip {
+                                mainEngine.tipsMarkReminderSet()
+                            }
+                        }
                     }
                     .onTapGesture {
                         focusedField = nil
@@ -180,7 +187,6 @@ struct EditGoalView: View {
                             VStack {
                                 Text("Do you really want to delete \(goal.name)?")
                                     .font(.title3)
-//                                Text("Deleting \(goal.name) will remove it permanently!")
                                 MyEqualWidthHstack {
                                     Button(action: {
                                         mainEngine.selectedGoal = nil

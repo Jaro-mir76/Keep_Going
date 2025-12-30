@@ -10,46 +10,56 @@ import SwiftUI
 struct ReminderTimePickerView: View {
     @State private var showTimeWheel = false
     @Binding var goal: Goal
+    var onReminderTimeWheelShow: () -> Void
     
     var body: some View {
-        HStack {
-            Text("Preferred reminder time")
-                .font(.footnote)
-                .textCase(.uppercase)
-                .foregroundColor(.gray)
-            Spacer()
-            Text ("\(goal.reminderPreference.hours.rawValue < 10 ? "0": "")\(goal.reminderPreference.hours.rawValue):\(goal.reminderPreference.minutes.rawValue < 10 ? "0": "" )\(goal.reminderPreference.minutes.rawValue)")
-                .foregroundStyle(showTimeWheel ? .red : .blue)
-                .onTapGesture {
-                    withAnimation{
-                        showTimeWheel.toggle()
-                    }
-                }
-        }
-        if showTimeWheel {
-            HStack{
-                Picker("Time Wheel Hours", selection: $goal.reminderPreference.hours) {
-                    ForEach(Reminder.Hours.allCases) { taskDuration in
-                        HStack(){
-                            Spacer()
-                            Text("\(taskDuration.rawValue < 10 ? "0": "")\(taskDuration.rawValue)")
-                                .frame(maxWidth: 40)
-                                .tag(taskDuration)
+        VStack(spacing: 0){
+            HStack {
+                Text("Preferred reminder time")
+//                    .font(.footnote)
+//                    .textCase(.uppercase)
+//                    .foregroundColor(.gray)
+                Spacer()
+                Text ("\(goal.reminderPreference.hours.rawValue < 10 ? "0": "")\(goal.reminderPreference.hours.rawValue):\(goal.reminderPreference.minutes.rawValue < 10 ? "0": "" )\(goal.reminderPreference.minutes.rawValue)")
+                    .foregroundStyle(showTimeWheel ? .red : .blue)
+                    .onTapGesture {
+                        withAnimation{
+                            showTimeWheel.toggle()
                         }
                     }
-                }
-                .pickerStyle(.wheel)
-                Picker("Time Wheel Minutes", selection: $goal.reminderPreference.minutes) {
-                    ForEach(Reminder.Minutes.allCases) { taskDuration in
-                        HStack(){
-                            Text("\(taskDuration.rawValue < 10 ? "0": "")\(taskDuration.rawValue)")
-                                .frame(maxWidth: 40)
-                                .tag(taskDuration)
-                            Spacer()
-                        }
+            }
+            .onChange(of: showTimeWheel) { _, newValue in
+                if newValue == true {
+                    DispatchQueue.main.asyncAfter(deadline: .now() + 0.3) {
+                        onReminderTimeWheelShow()
                     }
                 }
-                .pickerStyle(.wheel)
+            }
+            if showTimeWheel {
+                HStack{
+                    Picker("Time Wheel Hours", selection: $goal.reminderPreference.hours) {
+                        ForEach(Reminder.Hours.allCases) { taskDuration in
+                            HStack(){
+                                Spacer()
+                                Text("\(taskDuration.rawValue < 10 ? "0": "")\(taskDuration.rawValue)")
+                                    .frame(maxWidth: 40)
+                                    .tag(taskDuration)
+                            }
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                    Picker("Time Wheel Minutes", selection: $goal.reminderPreference.minutes) {
+                        ForEach(Reminder.Minutes.allCases) { taskDuration in
+                            HStack(){
+                                Text("\(taskDuration.rawValue < 10 ? "0": "")\(taskDuration.rawValue)")
+                                    .frame(maxWidth: 40)
+                                    .tag(taskDuration)
+                                Spacer()
+                            }
+                        }
+                    }
+                    .pickerStyle(.wheel)
+                }
             }
         }
     }
@@ -57,5 +67,5 @@ struct ReminderTimePickerView: View {
 
 #Preview {
     var mainEngine = MainEngine()
-    ReminderTimePickerView(goal: .constant(GoalViewModel.exampleGoal()[1]))
+    ReminderTimePickerView(goal: .constant(GoalViewModel.exampleGoal()[1]), onReminderTimeWheelShow: {})
 }
