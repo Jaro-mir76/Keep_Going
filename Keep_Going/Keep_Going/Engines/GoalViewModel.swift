@@ -24,6 +24,7 @@ class GoalViewModel {
     
     var goals: [Goal] = []
     private var latestGoalsRefreshDate: Date = Date()
+    var showEditing: Bool = false
     var deletionConfirmationVisible: Bool = false
     
     var showWarningBadge: Bool = false

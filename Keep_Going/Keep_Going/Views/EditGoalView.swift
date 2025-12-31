@@ -25,7 +25,6 @@ struct EditGoalView: View {
     private let reminderTimeTip = ReminderTimeTip()
     private let firstGoalCompleteTip = FirstGoalSavedTip()
     
-    @Environment(\.dismiss) private var dismiss
     @Environment(MainEngine.self) private var mainEngine
     @Environment(GoalViewModel.self) private var viewModel
     
@@ -110,7 +109,6 @@ struct EditGoalView: View {
                                             mainEngine.tipsMarkScheduleSelected()
                                         }
                                     }
-                                    
                                 }else {
                                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.3){
                                         withAnimation {
@@ -184,38 +182,10 @@ struct EditGoalView: View {
                             Spacer()
                         }
                         .sheet(isPresented: $viewModel.deletionConfirmationVisible, content: {
-                            VStack {
-                                Text("Do you really want to delete \(goal.name)?")
-                                    .font(.title3)
-                                MyEqualWidthHstack {
-                                    Button(action: {
-                                        mainEngine.selectedGoal = nil
-                                        viewModel.deletionConfirmationVisible = false
-                                        viewModel.deleteGoal(goal: goal)
-                                        dismiss()
-                                    }, label: {
-                                        Text("Delete")
-                                            .frame(maxWidth: .infinity)
-                                            .padding(5)
-                                            .padding(.horizontal, 10)
-                                    })
-                                        .buttonStyle(.bordered)
-                                        .tint(.red)
-                                    Button(action: {
-                                        viewModel.deletionConfirmationVisible = false
-                                    }, label: {
-                                        Text("Cancel")
-                                            .frame(maxWidth: .infinity)
-                                            .padding(.vertical, 5)
-                                            .padding(.horizontal, 10)
-                                    })
-                                        .buttonStyle(.borderedProminent)
-                                }
-                                .padding(10)
-                            }
-                            .padding(.top, 10)
-                            .padding(.horizontal, 20)
-                            .presentationDetents([.height(170)])
+                            DeletionConfirmationView(goal: goal)
+                                .padding(.top, 10)
+                                .padding(.horizontal, 10)
+                                .presentationDetents([.height(150)])
                         })
                     }
                 }
@@ -263,7 +233,7 @@ struct EditGoalView: View {
     
     private func save() async {
         await viewModel.saveGoal(goal: tmpGoal)
-        dismiss()
+        viewModel.showEditing = false
     }
     
     @ToolbarContentBuilder
@@ -283,7 +253,7 @@ struct EditGoalView: View {
     private var toolBarCancelButton: some ToolbarContent {
         ToolbarItem(placement: .cancellationAction) {
             Button("Cancel") {
-                dismiss()
+                viewModel.showEditing = false
                 viewModel.cancelChanges()
                 
             }

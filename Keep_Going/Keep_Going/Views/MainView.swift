@@ -12,7 +12,6 @@ import BackgroundTasks
 struct MainView: View {
     @Environment(MainEngine.self) private var mainEngine
     @Environment(GoalViewModel.self) private var viewModel
-    @State private var showEditing: Bool = false
     @State private var showSettings: Bool = false
     @State private var hasPermission = true
     @State private var isChecking = true
@@ -25,6 +24,7 @@ struct MainView: View {
     @Environment(\.scenePhase) private var scenePhase
     
     var body: some View {
+        @Bindable var viewModel = viewModel
         NavigationStack{
             List {
                 ForEach(viewModel.goals, id: \.id) { goal in
@@ -33,7 +33,7 @@ struct MainView: View {
                             Button {
                                 mainEngine.selectedGoal = goal
                                 mainEngine.userIsEditingGoal = true
-                                showEditing = true
+                                viewModel.showEditing = true
                             } label: {
                                 Label("Edit", systemImage: "pencil")
                                     .labelStyle(.iconOnly)
@@ -56,7 +56,7 @@ struct MainView: View {
                 toolBarAddGoalButton
                 toolBarSettingsButton
             }
-            .sheet(isPresented: $showEditing, onDismiss: {
+            .sheet(isPresented: $viewModel.showEditing, onDismiss: {
                 if mainEngine.userIsEditingGoal == true && !mainEngine.hasEditedGoalTip {
                     DispatchQueue.main.asyncAfter(deadline: .now() + 0.5) {
                         mainEngine.tipsMarkGoalEdited()
@@ -85,7 +85,7 @@ struct MainView: View {
     }
     
     func addGoal() {
-        showEditing = true
+        viewModel.showEditing = true
     }
     
     @ToolbarContentBuilder

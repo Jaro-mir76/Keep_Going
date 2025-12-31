@@ -15,37 +15,37 @@ struct DeletionConfirmationView: View {
     @Bindable var goal: Goal
     
     var body: some View {
-        VStack{
-            Text("Are you sure you want to delete \(goal.name)?")
-            .font(.title3)
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-                
-            Text("Deleting \(goal.name) will remove it permanently!")
-                .multilineTextAlignment(.center)
-                .fixedSize(horizontal: false, vertical: true)
-            Divider()
+        VStack {
+            Text("Do you really want to delete \(goal.name)?")
+                .font(.title3)
             MyEqualWidthHstack {
-                Spacer()
-                Button("Delete") {
+                Button(action: {
                     viewModel.deletionConfirmationVisible = false
+                    viewModel.showEditing = false
                     mainEngine.selectedGoal = nil
                     viewModel.deleteGoal(goal: goal)
-                    dismiss()
-                }
-                .buttonStyle(.bordered)
-                .tint(.red)
-                Spacer()
-                Button("Cancel") {
+                }, label: {
+                    Text("Delete")
+                        .frame(maxWidth: .infinity)
+                        .padding(5)
+                        .padding(.horizontal, 10)
+                })
+                    .buttonStyle(.bordered)
+                    .tint(.red)
+                    .padding(.horizontal, 10)
+                Button(action: {
                     viewModel.deletionConfirmationVisible = false
-                }
-                .buttonStyle(.borderedProminent)
-                Spacer()
+                }, label: {
+                    Text("Cancel")
+                        .frame(maxWidth: .infinity)
+                        .padding(.vertical, 5)
+                        .padding(.horizontal, 10)
+                })
+                    .buttonStyle(.borderedProminent)
+                    .padding(.horizontal, 10)
             }
-            .padding(.top, 7)
+            .padding(10)
         }
-        .frame(minHeight: 110)
-        .padding(15)
     }
 }
 
