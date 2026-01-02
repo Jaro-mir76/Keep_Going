@@ -19,7 +19,7 @@
 6. To be fixed:
     - app badge seems to show all goals, no only planed for today - DONE
     - introduction tips - last one - edit of goal - it doesn't work because mainEngine.selectedGoal = nil is set in the EditGoalView and Main view somehow needs to know if last save was newGoal or Edit - DONE (probably not perfect but DONE)
-
+    - reminders - in some situations, for example when it is not oppened for longer time it stops to show reminders - to be analysed
         
         
         

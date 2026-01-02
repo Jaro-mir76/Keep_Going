@@ -79,21 +79,20 @@ struct NotificationService {
         
         if goals.count == 1 {
             let goal = goals[0]
-//            body = "\(goal.name) is waiting for you!"
-            body = "You \(goal.goalMotivation), so the only way is to do \(goal.name)!"
             if !goal.goalMotivation.isEmpty {
-                body += "\n💪 \(goal.goalMotivation)"
+                body = "\(goal.goalMotivation), so it's time to roll up sleeves and get \(goal.name) done!"
+            } else {
+                body = "You asked me to remind you about \(goal.name)"
             }
         } else {
             let firstGoal = goals[0]
             let remainingCount = goals.count - 1
-//            body = "There is \(firstGoal.name)"
-            body = "You \(firstGoal.goalMotivation)"
+            body = "\(firstGoal.name)"
             
             if remainingCount == 1 {
-                body += " and \(remainingCount) more thing, so hurry up."
+                body += " and \(remainingCount) more goal is waiting for you, so hurry up!"
             } else {
-                body += " and \(remainingCount) more things, but queue is growing fast, so hurry up."
+                body += " and \(remainingCount) more goals are waiting for you, but queue is growing fast, so hurry up!"
             }
         }
         
