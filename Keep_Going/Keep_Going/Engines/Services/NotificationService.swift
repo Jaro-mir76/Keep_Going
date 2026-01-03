@@ -69,10 +69,7 @@ struct NotificationService {
         }
     }
     
-    func createNotificationMessage(for goals: [Goal]) -> (title: String, body: String) {
-//        guard !goals.isEmpty else {
-//            return (title: "You have no goals", body: "Keep going and you will have them soon!")
-//        }
+    func createNotificationMessage(for goals: [Goal], backlog: [Goal]) -> (title: String, body: String) {
         
         let title = "Keep Going"
         var body = ""
@@ -95,13 +92,14 @@ struct NotificationService {
                 body += " and \(remainingCount) more goals are waiting for you, but queue is growing fast, so hurry up!"
             }
         }
-        
+        if !backlog.isEmpty {
+            body += "\n There \(backlog.count == 1 ? "is" : "are") also \(backlog.count) more \(backlog.count == 1 ? "goal" : "goals") in the backlog!"
+        }
         return (title, body)
     }
     
-    func scheduleGoalReminder(for goals: [Goal], delayInSeconds: TimeInterval = 0, playSound: Bool = true) async {
-//        let identifier: String = NotificationIndentifier.goalNotificationIdentifier.rawValue
-        let message = createNotificationMessage(for: goals)
+    func scheduleGoalReminder(for goals: [Goal], backlog: [Goal] = [], delayInSeconds: TimeInterval = 0, playSound: Bool = true) async {
+        let message = createNotificationMessage(for: goals, backlog: backlog)
         
         let center = UNUserNotificationCenter.current()
         let content = UNMutableNotificationContent()
@@ -126,7 +124,6 @@ struct NotificationService {
     }
     
     func snoozeNotification(for goals: [Goal], minutes: Int, playSound: Bool = true) async {
-//        let identifier: String = NotificationIndentifier.goalNotificationIdentifier.rawValue
         await scheduleGoalReminder(for: goals, delayInSeconds: TimeInterval(minutes * 60), playSound: playSound)
     }
 

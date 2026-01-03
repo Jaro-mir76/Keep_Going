@@ -14,8 +14,9 @@ import UIKit
 class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     static let shared = NotificationDelegate()
     let notificationService = NotificationService()
+    let goalService = GoalService()
     var notificationPermission: Bool = false
-    
+
     let logger = Logger(subsystem: "Keep_Going", category: "Notifications")
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, willPresent notification: UNNotification, withCompletionHandler completionHandler: @escaping (UNNotificationPresentationOptions) -> Void) {
@@ -24,18 +25,22 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     }
     
     func userNotificationCenter(_ center: UNUserNotificationCenter, didReceive response: UNNotificationResponse, withCompletionHandler completionHandler: @escaping () -> Void) {
+
         logger.notice("Notification action received: \(response.actionIdentifier)")
-        
+
         let actionIdentifier = response.actionIdentifier
-        
-        Task {
+
+        completionHandler()
+
+        Task.detached { [weak self] in
+            guard let self else { return }
             switch actionIdentifier {
             case NotificationService.SnoozeOption.tenMinutes.rawValue:
-                await handleSnooze(minutes: 10)
+                await self.handleSnooze(minutes: 10)
             case NotificationService.SnoozeOption.thirtyMinutes.rawValue:
-                await handleSnooze(minutes: 30)
+                await self.handleSnooze(minutes: 30)
             case NotificationService.SnoozeOption.oneHour.rawValue:
-                await handleSnooze(minutes: 60)
+                await self.handleSnooze(minutes: 60)
             case UNNotificationDefaultActionIdentifier:
 //  User tapped notification - open app
                 LoggingEngine.shared.appendLog("User tapped on notification - opening app")
@@ -45,7 +50,6 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
             default:
                 break
             }
-            completionHandler()
         }
     }
     
@@ -107,8 +111,8 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
     
     private func handleSnooze(minutes: Int) async {
         LoggingEngine.shared.appendLog("Snoozing notification for \(minutes) minutes")
-        
-        let goals = fetchPendingGoals()
+
+        let goals = await fetchPendingGoals()
         
         guard !goals.isEmpty else {
             LoggingEngine.shared.appendLog("No pending goals found for snooze")
@@ -119,27 +123,9 @@ class NotificationDelegate: NSObject, UNUserNotificationCenterDelegate {
         LoggingEngine.shared.appendLog("Snoozed notification scheduled successfully")
     }
     
+    @MainActor
     private func fetchPendingGoals() -> [Goal] {
-        let context = ModelContext(PersistentStorage.shared.modelContainer)
-//        guard let reminderPreference = getCurrentReminderPreference() else {return []}
-        
-        let goalsFetch = FetchDescriptor<Goal>(
-            predicate: #Predicate { $0.schedule == 0 && $0.done == false }
-        )
-        do {
-            let goals = try context.fetch(goalsFetch)
-            return goals.filter { $0.reminderPreference.time.isItInPast }
-        } catch {
-            logger.error("Could not fetch goals: \(error.localizedDescription)")
-            return []
-        }
+        let goals = goalService.fetchUncompletedGoals()
+        return goals.filter { $0.reminderPreference.time.isItInPast }
     }
-    
-//    private func getCurrentReminderPreference() -> Reminder? {
-//        let now = Date()
-//        
-//        return Reminder.allCases.first { reminder in
-//            return reminder.time > Date(timeInterval: -900, since: now)
-//        }
-//    }
 }

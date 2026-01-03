@@ -12,5 +12,6 @@ struct AppStorageKeys {
     static let userWantsNotifications = "userWantsNotifications"
     static let latestGoalsRefreshDate = "latestGoalsRefreshDate"
     static let reminderIdentifier = "com.keepgoing.background.goals.reminder"
+    static let backgroundAppRefreshIdentifier = "com.keepgoing.background.app.refresh"
     static let reminderSummaryIdentifier = "com.keepgoing.background.goals.reminder.summary"
 }

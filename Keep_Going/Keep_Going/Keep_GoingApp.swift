@@ -25,7 +25,7 @@ struct Keep_GoingApp: App {
         
         UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
         NotificationService.registerNotificationCategories()
-        BackgroundTaskManager.shared.registerGoalReminder()
+        BackgroundTaskManager.shared.registerAppRefresh()
         
         do {
             try configureTipKit()

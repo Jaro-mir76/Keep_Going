@@ -75,7 +75,9 @@ struct MainView: View {
                 }
             })
             .onChange(of: scenePhase, { _, newValue in
-                viewModel.followScenePhaseChange(scenePhase: newValue)
+                Task {
+                    await viewModel.followScenePhaseChange(scenePhase: newValue)
+                }
             })
             .refreshable {
                 mainEngine.repositionBackground.toggle()
