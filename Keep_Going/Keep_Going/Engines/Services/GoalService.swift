@@ -11,11 +11,13 @@ import SwiftData
 class GoalService {
     private let modelContainer: ModelContainer
     private let notificationService: NotificationService
+    private let context: ModelContext
 
     init(modelContainer: ModelContainer = PersistentStorage.shared.modelContainer,
          notificationService: NotificationService = NotificationService()) {
         self.modelContainer = modelContainer
         self.notificationService = notificationService
+        self.context = ModelContext(modelContainer)
     }
 
     private var goalsFetchDescriptor: FetchDescriptor<Goal> {
@@ -30,11 +32,10 @@ class GoalService {
     }
 
     func refreshGoals() -> [Goal] {
-        let context = ModelContext(modelContainer)
-        return fetchGoals(using: context)
+        return fetchGoals()
     }
-
-    func fetchGoals(using context: ModelContext) -> [Goal] {
+    
+    func fetchGoals() -> [Goal] {
         LoggingEngine.shared.appendLog("\(Date()) > GoalService -> fetchGoals <")
 
         do {
@@ -58,8 +59,8 @@ class GoalService {
             return []
         }
     }
-
-    func addGoal(goal: Goal, using context: ModelContext) {
+    
+    func addGoal(goal: Goal) {
         context.insert(goal)
         whatDoWeHaveToday(goal: goal)
     }
@@ -82,13 +83,12 @@ class GoalService {
             goal.done = newData.done
         }
     }
-
-    func deleteGoal(_ goal: Goal, using context: ModelContext) {
+    
+    func deleteGoal(_ goal: Goal) {
         context.delete(goal)
     }
 
     func fetchUncompletedGoals() -> [Goal] {
-        let context = ModelContext(modelContainer)
         let descriptor = FetchDescriptor<Goal>(
             predicate: #Predicate { $0.schedule == 0 && $0.done == false }
         )

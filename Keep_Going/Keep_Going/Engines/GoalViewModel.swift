@@ -56,7 +56,8 @@ class GoalViewModel {
     }
     
     func fetchGoals() {
-        self.goals = goalService.fetchGoals(using: modelContainer.mainContext)
+//        self.goals = goalService.fetchGoals(using: modelContainer.mainContext)
+        self.goals = goalService.fetchGoals()
         self.latestGoalsRefreshDate = Date()
     }
     
@@ -74,7 +75,8 @@ class GoalViewModel {
     }
     
     func addGoal(goal: Goal) {
-        goalService.addGoal(goal: goal, using: modelContainer.mainContext)
+//        goalService.addGoal(goal: goal, using: modelContainer.mainContext)
+        goalService.addGoal(goal: goal)
         fetchGoals()
     }
     
@@ -105,7 +107,8 @@ class GoalViewModel {
     }
     
     func deleteGoal(goal: Goal) {
-        goalService.deleteGoal(goal, using: modelContainer.mainContext)
+//        goalService.deleteGoal(goal, using: modelContainer.mainContext)
+        goalService.deleteGoal(goal)
         fetchGoals()
     }
     

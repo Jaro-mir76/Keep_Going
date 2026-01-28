@@ -93,7 +93,7 @@ struct NotificationService {
             }
         }
         if !backlog.isEmpty {
-            body += "\n There \(backlog.count == 1 ? "is" : "are") also \(backlog.count) more \(backlog.count == 1 ? "goal" : "goals") in the backlog!"
+            body += "\nThere \(backlog.count == 1 ? "is" : "are") also \(backlog.count) more \(backlog.count == 1 ? "goal" : "goals") in the backlog!"
         }
         return (title, body)
     }

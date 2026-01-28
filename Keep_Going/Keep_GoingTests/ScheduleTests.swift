@@ -13,6 +13,7 @@ struct ScheduleTests {
     
     private var mainEngine = MainEngine()
     private lazy var goalViewModel = GoalViewModel(mainEngine: mainEngine)
+    private lazy var goalService = GoalService()
 
 
     @Test("Next traing date for privided interval 2 -> true", arguments: [
@@ -24,7 +25,7 @@ struct ScheduleTests {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
         let goal2daysInterval = Goal(name: "exampleGoalInterval2Days", goalMotivation: "example goal", scheduleType: ScheduleType(type: .interval, interval: 2), creationDate: date)
 
-        #expect(goalViewModel.isItTrainingDayInterval(goal: goal2daysInterval) == true)
+        #expect(goalService.isItTrainingDayInterval(goal: goal2daysInterval) == true)
     }
     
     @Test("Next traing date for privided interval 2 -> false", arguments: [
@@ -36,7 +37,7 @@ struct ScheduleTests {
         // Write your test here and use APIs like `#expect(...)` to check expected conditions.
         let schedule2daysIntervalVer = Goal(name: "exampleGoalInterval2Days", goalMotivation: "", goalStartDate: date, scheduleType: ScheduleType(type: .interval, interval: 2), creationDate: date)
         
-        #expect( goalViewModel.isItTrainingDayInterval(goal: schedule2daysIntervalVer) == false)
+        #expect( goalService.isItTrainingDayInterval(goal: schedule2daysIntervalVer) == false)
     }
     
     @Test("Training schedule is sorted from Monday to Sunday")
@@ -58,7 +59,7 @@ struct ScheduleTests {
         
         let previousWeek = NSCalendar.current.startOfDay(for: Date()) + timeDifffromGMT - 77.day
         
-        #expect(goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: previousWeek).first == nil)
+        #expect(goalService.trainingDaysSchedule(goal: goalSchedule, startingFrom: previousWeek).first == nil)
     }
        
     @Test("Goal history save")
@@ -68,7 +69,7 @@ struct ScheduleTests {
         #expect(goalHistorySaveTest.history?.count == 0)
         
         //        after saving there should be status
-        goalViewModel.saveStatus(goal: goalHistorySaveTest)
+        goalService.saveStatus(goal: goalHistorySaveTest)
         
         #expect(goalHistorySaveTest.history?.count == 1)
         #expect(goalHistorySaveTest.history?.first?.scheduleCode.rawValue == ScheduleCode.training.rawValue)
@@ -76,20 +77,20 @@ struct ScheduleTests {
         
         // in case the same date old save should be replaced
         goalHistorySaveTest.done = true
-        goalViewModel.saveStatus(goal: goalHistorySaveTest)
+        goalService.saveStatus(goal: goalHistorySaveTest)
         #expect(goalHistorySaveTest.history?.first?.done == true)
         
         let yesterday = Calendar.current.startOfDay(for: Date(timeInterval: Double(-1).day, since: Date()))
         
         goalHistorySaveTest.done = false
         goalHistorySaveTest.date = yesterday
-        goalViewModel.saveStatus(goal: goalHistorySaveTest)
+        goalService.saveStatus(goal: goalHistorySaveTest)
         #expect(goalHistorySaveTest.history?.count == 2)
         #expect(goalHistorySaveTest.history?.first(where: {$0.date == yesterday})?.done == false)
         
         goalHistorySaveTest.done = true
         goalHistorySaveTest.date = yesterday
-        goalViewModel.saveStatus(goal: goalHistorySaveTest)
+        goalService.saveStatus(goal: goalHistorySaveTest)
         #expect(goalHistorySaveTest.history?.count == 2)
         #expect(goalHistorySaveTest.history?.first(where: {$0.date == yesterday})?.done == true)
     }
@@ -105,7 +106,7 @@ struct ScheduleTests {
         goalStartDateComponents.timeZone = .current
         let goalStartDate = Calendar.current.date(from: goalStartDateComponents)!
         let goalSchedule = Goal(name: "goalScheduleTest", goalMotivation: "", goalStartDate: goalStartDate, scheduleType: ScheduleType(type: .weekly, weeklySchedule: [.tuesday, .friday, .sunday]), schedule: nil)
-        let trainingDays = goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: goalStartDate)
+        let trainingDays = goalService.trainingDaysSchedule(goal: goalSchedule, startingFrom: goalStartDate)
         
         #expect(trainingDays.count == 5)
     }
@@ -133,7 +134,7 @@ struct ScheduleTests {
         let testDate = Calendar.current.date(from: testDateComponents)!
         let beginningOfTestDate = Calendar.current.startOfDay(for: testDate)
         
-        #expect(goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: beginningOfTestDate).first == beginningOfTestDate)
+        #expect(goalService.trainingDaysSchedule(goal: goalSchedule, startingFrom: beginningOfTestDate).first == beginningOfTestDate)
 
 //  checking if logic works correctly for goals planed in a future
         var testDate2Components = DateComponents()
@@ -147,7 +148,7 @@ struct ScheduleTests {
         let beginningOfTestDate2 = Calendar.current.startOfDay(for: testDate2)
         
 //  answer should be nil because function should not return any date if goal start date is more than 2 weeks in a future
-        #expect(goalViewModel.trainingDaysSchedule(goal: goalSchedule, startingFrom: beginningOfTestDate2).first == nil)
+        #expect(goalService.trainingDaysSchedule(goal: goalSchedule, startingFrom: beginningOfTestDate2).first == nil)
     }
     
     @Test("Training day base on interval")
@@ -175,7 +176,7 @@ struct ScheduleTests {
         
         print ("goal start date \(goalStartDate) \(schedule2daysInterval.goalStartDate)")
         print ("test date \(beginningOfTestDate) ")
-        #expect(goalViewModel.isItTrainingDayInterval(goal: schedule2daysInterval, startingFrom: beginningOfTestDate) == true)
+        #expect(goalService.isItTrainingDayInterval(goal: schedule2daysInterval, startingFrom: beginningOfTestDate) == true)
 
 //  checking if logic works correctly for goals planed in a future
         var testDate2Components = DateComponents()
@@ -189,7 +190,7 @@ struct ScheduleTests {
         let beginningOfTestDate2 = Calendar.current.startOfDay(for: testDate2)
         
 //  answer should be false because date of checking is before goal start date
-        #expect(goalViewModel.isItTrainingDayInterval(goal: schedule2daysInterval, startingFrom: beginningOfTestDate2) == false)
+        #expect(goalService.isItTrainingDayInterval(goal: schedule2daysInterval, startingFrom: beginningOfTestDate2) == false)
     }
     
     @Test("Save goal to file", .disabled("to be implemented"))
