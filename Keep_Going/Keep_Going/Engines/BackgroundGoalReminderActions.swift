@@ -12,14 +12,12 @@ import UserNotifications
 
 class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
     let notificationService: NotificationService
-    let reminderTimeIdentifier: String
+    let goalService: GoalService
     let logger = Logger(subsystem: "Keep_Going", category: "BackgroundTasksMonitoring")
     
-    init(notificationService: NotificationService = NotificationService(), reminderTimeId: String) {
+    init(notificationService: NotificationService = NotificationService(), goalService: GoalService = GoalService()) {
         self.notificationService = notificationService
-        self.reminderTimeIdentifier = reminderTimeId
-        
-        LoggingEngine.shared.appendLog("BackgroundTasksMonitoring")
+        self.goalService = goalService
     }
     
     private var _executing = false {
@@ -55,31 +53,10 @@ class BackgroundGoalReminderActions: Operation, @unchecked Sendable{
     }
     
     private func executeGoalReminder() async {
-        print (">>> EXECUTION of executeGoalReminder func <<<")
-        logger.notice(">>> EXECUTION of executeGoalReminder func <<<")
-        logger.notice("time: \(Date())")
+        notificationService.cancelNotification()
         
-        LoggingEngine.shared.appendLog(">>> EXECUTION of executeGoalReminder func <<<")
-        LoggingEngine.shared.appendLog("time: \(Date())")
-
-        let context = ModelContext(PersistentStorage.shared.modelContainer)
-        let goalsFetch = FetchDescriptor<Goal>(predicate: #Predicate { $0.schedule == 0 } )
-        do {
-            let goals = try context.fetch(goalsFetch)
-//            let filteredGoals = goals.filter { $0.reminderPreference.backgroundTaskIdentifier == self.reminderTimeIdentifier && $0.done == false
-            let filteredGoals = goals.filter {
-                $0.done == false && $0.reminderPreference.time.isItInFuture
-            }
-            logger.notice("scheduling notification message, goals count: \(filteredGoals.count)")
-            LoggingEngine.shared.appendLog("scheduling notification message, goals count: \(filteredGoals.count)")
-
-//            await notificationService.scheduleNotification(title: "Keep Going", message: "Hey, you have planed \(filteredGoals.count) \(filteredGoals.count > 1 ? "goals" : "goal") for now. Maybe you have a minute?")
-            if !filteredGoals.isEmpty {
-                await notificationService.scheduleGoalReminder(for: filteredGoals)
-            }
-        } catch {
-            print ("Could not fetch goals")
-        }
+        await BackgroundTaskManager.shared.scheduleGoalReminder()
+        
         self.finish()
     }
     

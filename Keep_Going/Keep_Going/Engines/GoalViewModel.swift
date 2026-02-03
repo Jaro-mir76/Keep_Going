@@ -56,16 +56,13 @@ class GoalViewModel {
     }
     
     func fetchGoals() {
-//        self.goals = goalService.fetchGoals(using: modelContainer.mainContext)
         self.goals = goalService.fetchGoals()
         self.latestGoalsRefreshDate = Date()
     }
     
     func refreshIfNecesary(){
-        LoggingEngine.shared.appendLog("\(Date()) > func -> refreshIfNecesary <")
         if !latestGoalsRefreshDate.isSameDay(as: Date()){
             fetchGoals()
-            LoggingEngine.shared.appendLog("\(Date()) > func - refreshIfNecesary -> fetchGoals <")
         }
     }
 
@@ -75,7 +72,6 @@ class GoalViewModel {
     }
     
     func addGoal(goal: Goal) {
-//        goalService.addGoal(goal: goal, using: modelContainer.mainContext)
         goalService.addGoal(goal: goal)
         fetchGoals()
     }
@@ -107,7 +103,6 @@ class GoalViewModel {
     }
     
     func deleteGoal(goal: Goal) {
-//        goalService.deleteGoal(goal, using: modelContainer.mainContext)
         goalService.deleteGoal(goal)
         fetchGoals()
     }
@@ -169,11 +164,7 @@ class GoalViewModel {
         case .background:
             updateAppBadge()
             if !goals.filter({ $0.done == false}).isEmpty {
-                await GoalReminderScheduler.shared.scheduleGoalReminder()
-                LoggingEngine.shared.appendLog("\(Date()) >>> GoalViewModel - executed schedul reminder <<<")
-            } else {
-                BackgroundTaskManager.shared.scheduleAppRefresh()
-                LoggingEngine.shared.appendLog("\(Date()) >>> GoalViewModel - executed schedule app refresh after the midnight <<<")
+                await BackgroundTaskManager.shared.scheduleGoalReminder()
             }
         @unknown default:
             break

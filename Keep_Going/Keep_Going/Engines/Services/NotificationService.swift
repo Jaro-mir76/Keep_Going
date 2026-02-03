@@ -10,6 +10,8 @@ import UserNotifications
 
 struct NotificationService {
     
+    typealias ReminderMessage = (title: String, body: String)
+    
     enum NotificationIndentifier: String {
         case goalNotificationIdentifier = "com.keepgoing.notification.identifier"
         case goalReminderCategory = "com.keepgoing.reminder.identifier"
@@ -69,8 +71,7 @@ struct NotificationService {
         }
     }
     
-    func createNotificationMessage(for goals: [Goal], backlog: [Goal]) -> (title: String, body: String) {
-        
+    func createNotificationMessageForReminder(for goals: [Goal], backlog: [Goal]) -> ReminderMessage {
         let title = "Keep Going"
         var body = ""
         
@@ -98,8 +99,32 @@ struct NotificationService {
         return (title, body)
     }
     
+    func createNotificationMessageForSummary(for goals: [Goal], backlog: [Goal]) -> ReminderMessage {
+        
+        let title = "Keep Going - Summary"
+        var body = ""
+        
+        if goals.count == 1 {
+            let goal = goals[0]
+            if !goal.goalMotivation.isEmpty {
+                body = "... \(goal.goalMotivation) is still within your reach!"
+            } else {
+                body = "Seems only \(goal.name) left for today, so it is still within your reach!\nBut if you don't have the energy, don't worry, you can always come back tomorrow with a fresh start!"
+            }
+        } else {            
+            body = "There are still \(goals.count) goals but don't give up, come back tomorrow with a fresh start!\n Winning are those who don't give up on first obstacle!"
+        }
+        return (title, body)
+    }
+    
     func scheduleGoalReminder(for goals: [Goal], backlog: [Goal] = [], delayInSeconds: TimeInterval = 0, playSound: Bool = true) async {
-        let message = createNotificationMessage(for: goals, backlog: backlog)
+        
+        let message = createNotificationMessageForReminder(for: goals, backlog: backlog)
+        
+        await scheduleGoalReminder(for: goals, backlog: backlog, message: message, delayInSeconds: delayInSeconds, playSound: playSound)
+    }
+    
+    func scheduleGoalReminder(for goals: [Goal], backlog: [Goal] = [], message: ReminderMessage, delayInSeconds: TimeInterval = 0, playSound: Bool = true) async {
         
         let center = UNUserNotificationCenter.current()
         let content = UNMutableNotificationContent()
@@ -121,6 +146,13 @@ struct NotificationService {
         } catch {
             print("scheduleNotification - Could not schedule notification, error: \(error)")
         }
+    }
+    
+    func scheduleGoalReminderSummary(for goals: [Goal], backlog: [Goal] = [], delayInSeconds: TimeInterval = 0, playSound: Bool = true) async {
+        
+        let message = createNotificationMessageForSummary(for: goals, backlog: backlog)
+        
+        await scheduleGoalReminder(for: goals, backlog: backlog, message: message, delayInSeconds: delayInSeconds, playSound: playSound)
     }
     
     func snoozeNotification(for goals: [Goal], minutes: Int, playSound: Bool = true) async {

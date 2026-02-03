@@ -4,10 +4,6 @@
 <dict>
 	<key>BGTaskSchedulerPermittedIdentifiers</key>
 	<array>
-		<string>com.keepgoing.background.goals.reminder.morning</string>
-		<string>com.keepgoing.background.goals.reminder.midDay</string>
-		<string>com.keepgoing.background.goals.reminder.afternoon</string>
-		<string>com.keepgoing.background.goals.reminder.evening</string>
 		<string>com.keepgoing.background.goals.reminder</string>
 		<string>com.keepgoing.background.goals.reminder.summary</string>
 		<string>com.keepgoing.background.app.refresh</string>

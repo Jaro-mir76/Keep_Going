@@ -1,18 +1,22 @@
 //
-//  BackgroundAppRefresh.swift
+//  BackgroundGoalFinalReminderActions.swift
 //  Keep_Going
 //
-//  Created by Jaromir Jagieluk on 02.01.2026.
+//  Created by Jaromir Jagieluk on 28.01.2026.
 //
 
 import Foundation
+import SwiftData
 import os
+import UserNotifications
 
-class BackgroundAppRefresh: Operation, @unchecked Sendable {
-    private let goalService: GoalService
+class BackgroundGoalReminderSummaryActions: Operation, @unchecked Sendable{
+    let notificationService: NotificationService
+    let goalService: GoalService
     let logger = Logger(subsystem: "Keep_Going", category: "BackgroundTasksMonitoring")
-
-    init(goalService: GoalService = GoalService()) {
+    
+    init(notificationService: NotificationService = NotificationService(), goalService: GoalService = GoalService()) {
+        self.notificationService = notificationService
         self.goalService = goalService
     }
     
@@ -44,23 +48,13 @@ class BackgroundAppRefresh: Operation, @unchecked Sendable {
         }
         _executing = true
         Task {
-            await executeAppRefresh()
+            await executeGoalFinalReminder()
         }
     }
     
-    private func executeAppRefresh() async {
-        print (">>> EXECUTION of executeAppRefresh func <<<")
-        LoggingEngine.shared.appendLog(">>> EXECUTION of executeAppRefresh func <<<")
-
-// Refresh goals for the new day
-        let goals = goalService.refreshGoals()
-        goalService.updateAppBadge(goals: goals)
-
-        print ("BackgroundAppRefresh - refreshed \(goals.count) goals")
-        LoggingEngine.shared.appendLog("BackgroundAppRefresh - refreshed \(goals.count) goals")
-
-// Schedule reminder for the new day (goalReminderScheduler.scheduleGoalReminder() will check if there are any uncompleted goals)
-        await BackgroundTaskManager.shared.scheduleGoalReminder()
+    private func executeGoalFinalReminder() async {
+        let filteredGoals = goalService.fetchUncompletedGoals()
+        await notificationService.scheduleGoalReminderSummary(for: filteredGoals)
         
         self.finish()
     }

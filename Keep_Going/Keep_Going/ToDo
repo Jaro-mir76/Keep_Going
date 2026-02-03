@@ -20,7 +20,12 @@
     - app badge seems to show all goals, no only planed for today - DONE
     - introduction tips - last one - edit of goal - it doesn't work because mainEngine.selectedGoal = nil is set in the EditGoalView and Main view somehow needs to know if last save was newGoal or Edit - DONE (probably not perfect but DONE)
     - reminders - in some situations, for example when it is not oppened for longer time it stops to show reminders - to be analysed - problem is that at some point in time there is not active goals and new background taks is not scheduled and entire process stopps >>> change approach, instead of scheduling background taks schedule directly reminder, and once there is not goals for current day schedule reminder for first goal next day - DONE
-    
+    - reminders:
+        - modify GoalReminderScheduler - so it schedule background taks scheduling reminder - DONE
+        - check if GoalReminderScheduler can use simplier procedure to find first goal - DONE without creation of Dates etc. - DONE
+        - add scheduling GoalReminderSummary ... to the app - DONE
+        - ensure all background task are registered during app start - DONE
+        
         
         
         

@@ -17,15 +17,21 @@ struct Keep_GoingApp: App {
     @State private var goalViewModel = GoalViewModel()
     
     init() {
+        UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
+        NotificationService.registerNotificationCategories()
+        BackgroundTaskManager.shared.registerAllTasks()
+        
+        Task {
+            await BackgroundTaskManager.shared.cancelScheduledRequests()
+            BackgroundTaskManager.shared.scheduleAppRefresh()
+            BackgroundTaskManager.shared.scheduleGoalReminderSummary()
+        }
+        
         self.mainEngine = MainEngine.shared
         if self.mainEngine.showAppIntroduction {
             self.mainEngine.welcomePageVisible = true
             self.mainEngine.appIconVisible = false
         }
-        
-        UNUserNotificationCenter.current().delegate = NotificationDelegate.shared
-        NotificationService.registerNotificationCategories()
-        BackgroundTaskManager.shared.registerAppRefresh()
         
         do {
             try configureTipKit()

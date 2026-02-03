@@ -36,11 +36,13 @@ class GoalService {
     }
     
     func fetchGoals() -> [Goal] {
-        LoggingEngine.shared.appendLog("\(Date()) > GoalService -> fetchGoals <")
-
         do {
             var goals = try context.fetch(goalsFetchDescriptor)
             for goal in goals {
+//  MARK: 2 lines balow are used only for debuging purposes 
+                print("> GoalService -> fetchGoals - checking: \(goal.name) - is it same day: \(Calendar.current.isDateInToday(goal.date))")
+                LoggingEngine.shared.appendLog("> GoalService -> fetchGoals - checking: \(goal.name) - is it same day: \(Calendar.current.isDateInToday(goal.date))")
+                
                 if !Calendar.current.isDateInToday(goal.date) {
                     saveStatus(goal: goal)
                     if goal.schedule == ScheduleCode.training.rawValue, goal.done == false {
